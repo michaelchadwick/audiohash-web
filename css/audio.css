@@ -1,0 +1,36 @@
+h3
+{
+  margin: 2px;
+  padding: 2px;
+}
+input[type="file"]
+{
+  width: 170px;
+}
+.sound
+{
+  background: #ddd;
+  border: 1px solid #000;
+  float: left;
+  margin: 2px;
+  padding: 5px;
+}
+.ctrl-row div
+{
+  background: #eef;
+  float: left;
+}
+.ctrl-label
+{
+  clear: left;
+  padding: 4px;
+  text-align: right;
+  height: 20px;
+  width: 100px;
+}
+.ctrl-input
+{
+  padding: 4px;
+  height: 20px;
+  width: 240px;
+}
