@@ -16,6 +16,7 @@ var AudioPlayer = (function() {
   var rangeVolume;
   var btnPlay;
   var btnStop;
+  var lblVol;
 
   // Constructor
   var AudioPlayer = function() {
@@ -33,6 +34,7 @@ var AudioPlayer = (function() {
     rangeVolume = document.createElement('input');
     btnPlay = document.createElement('button');
     btnStop = document.createElement('button');
+    lblVol = document.createElement('label');
 
     soundDiv.classList.add('sound');
     soundHeader.innerText = "Sound " + soundNumber;
@@ -43,8 +45,8 @@ var AudioPlayer = (function() {
     fileUpload.addEventListener('change', function(e) {
       var reader = new FileReader();
       reader.onload = function(e) {
-        AudioPlayer.initSound(this.result, soundId);
-        console.log("soundId at initSound", soundId);
+        AudioPlayer.initSound(this.result, AudioPlayer.getSoundId());
+        console.log("soundId at initSound", AudioPlayer.getSoundId());
       };
       reader.readAsArrayBuffer(this.files[0]);
     }, false);
@@ -55,6 +57,9 @@ var AudioPlayer = (function() {
     rangeVolume.max = 100;
     rangeVolume.value = 100;
     rangeVolume.addEventListener('input', AudioPlayer.changeVolume(this));
+    rangeVolume.addEventListener('change', function(e) {
+      lblVol.innerText = rangeVolume.value;
+    }, false);
 
     btnPlay.id = "btnPlay" + soundNumber;
     btnPlay.innerText = "Play/Pause";
@@ -65,21 +70,25 @@ var AudioPlayer = (function() {
     btnStop.innerText = "Stop";
     btnStop.addEventListener('click', AudioPlayer.stop);
     btnStop.disabled = true;
-
+    
+    lblVol.id = "lblVol" + soundNumber;
+    lblVol.innerText = "100";
+    
     document.body.appendChild(soundDiv);
     soundDiv.appendChild(soundHeader);
     soundDiv.appendChild(fileUpload);
     soundDiv.appendChild(rangeVolume);
     soundDiv.appendChild(btnPlay);
     soundDiv.appendChild(btnStop);
+    soundDiv.appendChild(lblVol);
 
     soundNumber++;
   }
 
   // Methods
-  var getSoundId = function() {
+  AudioPlayer.getSoundId = function() {
     return soundId;
-  }
+  };
 
   AudioPlayer.play = function(startOffset) {
     if(!audioContext.createGain)
@@ -137,6 +146,8 @@ var AudioPlayer = (function() {
 })();
 
 window.onload = function() {
-  var sound0 = new AudioPlayer();
-  var sound1 = new AudioPlayer();
+  var snd0 = new AudioPlayer();
+  console.log("snd0.soundID", snd0.constructor.getSoundId());
+  var snd1 = new AudioPlayer();
+  console.log("snd1.soundID", snd1.constructor.getSoundId());
 }

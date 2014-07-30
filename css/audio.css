@@ -1,21 +1,46 @@
-h3
+body
+{
+  font-family: Consolas, fixed-width;
+  size: 1em;
+}
+h1, h2, h3
 {
   margin: 2px;
   padding: 2px;
 }
-input[type="file"]
-{
-  border: 1px solid #89a;
-  padding: 4px;
-  width: 230px;
-}
 .sound
 {
-  background: #ddd;
-  border: 1px solid #000;
+  background: #eefcff;
+  border: 2px solid #000;
   float: left;
-  margin: 2px;
-  padding: 5px;
+  margin: 3px;
+  padding: 8px 10px 8px 6px;
+  width: 250px;
+}
+.sound > *
+{
+  clear: left;
+  float: left;
+}
+.sound input[type="file"]
+{
+  border: 2px solid #00a6ce;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.sound input[type='range']
+{
+  width: 100%;
+}
+.sound button:last-of-type
+{
+  clear: none;
+}
+.sound label
+{
+  clear: none;
+  padding: 4px;
 }
 .ctrl-row div
 {
