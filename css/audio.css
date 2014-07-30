@@ -5,6 +5,8 @@ h3
 }
 input[type="file"]
 {
+  border: 1px solid #89a;
+  padding: 4px;
   width: 230px;
 }
 .sound
