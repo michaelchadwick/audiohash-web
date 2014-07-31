@@ -70,10 +70,10 @@ var AudioPlayer = (function() {
     btnStop.innerText = "Stop";
     btnStop.addEventListener('click', AudioPlayer.stop);
     btnStop.disabled = true;
-    
+
     lblVol.id = "lblVol" + soundNumber;
     lblVol.innerText = "100";
-    
+
     document.body.appendChild(soundDiv);
     soundDiv.appendChild(soundHeader);
     soundDiv.appendChild(fileUpload);
@@ -147,7 +147,7 @@ var AudioPlayer = (function() {
 
 window.onload = function() {
   var snd0 = new AudioPlayer();
-  console.log("snd0.soundID", snd0.constructor.getSoundId());
+  console.log("snd0.constructor.getSoundID", snd0.constructor.getSoundId());
   var snd1 = new AudioPlayer();
-  console.log("snd1.soundID", snd1.constructor.getSoundId());
+  console.log("snd1.constructor.getSoundID", snd1.constructor.getSoundId());
 }
