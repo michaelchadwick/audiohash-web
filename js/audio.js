@@ -13,7 +13,7 @@ var AudioPlayer = (function() {
   var soundDiv;
   var soundHeader;
   var fileUpload;
-  var rangeVolume;
+  var rngVolume;
   var btnPlay;
   var btnStop;
   var lblVol;
@@ -31,15 +31,15 @@ var AudioPlayer = (function() {
     soundDiv = document.createElement('div');
     soundHeader = document.createElement('h3');
     fileUpload = document.createElement('input');
-    rangeVolume = document.createElement('input');
+    rngVolume = document.createElement('input');
     btnPlay = document.createElement('button');
     btnStop = document.createElement('button');
     lblVol = document.createElement('label');
 
     soundDiv.classList.add('sound');
-    soundHeader.innerText = "Sound " + soundNumber;
+    soundHeader.innerText = "Sound " + soundId;
 
-    fileUpload.id = "fileUpload" + soundNumber;
+    fileUpload.id = "fileUpload" + soundId;
     fileUpload.type = "file";
     fileUpload.accept = "audio/*";
     fileUpload.addEventListener('change', function(e) {
@@ -51,33 +51,38 @@ var AudioPlayer = (function() {
       reader.readAsArrayBuffer(this.files[0]);
     }, false);
 
-    rangeVolume.id = "rangeVolume" + soundNumber;
-    rangeVolume.type = "range";
-    rangeVolume.min = 0;
-    rangeVolume.max = 100;
-    rangeVolume.value = 100;
-    rangeVolume.addEventListener('input', AudioPlayer.changeVolume(this));
-    rangeVolume.addEventListener('change', function(e) {
-      lblVol.innerText = rangeVolume.value;
+    rngVolume.id = "rngVolume" + soundId;
+    rngVolume.type = "range";
+    rngVolume.min = 0;
+    rngVolume.max = 100;
+    rngVolume.value = 100;
+    rngVolume.addEventListener('input', AudioPlayer.changeVolume(this));
+    rngVolume.addEventListener('change', function(e) {
+      var rangeVolN = e.srcElement;
+      var lblVolN = document.getElementById("lblVol" + soundId);
+      
+      lblVolN.innerText = rangeVolN.value;
+      console.log("rngVolume" + soundId + ".value", rangeVolN.value);
+      console.log("e", e);
     }, false);
 
-    btnPlay.id = "btnPlay" + soundNumber;
+    btnPlay.id = "btnPlay" + soundId;
     btnPlay.innerText = "Play/Pause";
     btnPlay.addEventListener('click', AudioPlayer.toggle);
     btnPlay.disabled = true;
 
-    btnStop.id = "btnStop" + soundNumber;
+    btnStop.id = "btnStop" + soundId;
     btnStop.innerText = "Stop";
     btnStop.addEventListener('click', AudioPlayer.stop);
     btnStop.disabled = true;
 
-    lblVol.id = "lblVol" + soundNumber;
+    lblVol.id = "lblVol" + soundId;
     lblVol.innerText = "100";
 
     document.body.appendChild(soundDiv);
     soundDiv.appendChild(soundHeader);
     soundDiv.appendChild(fileUpload);
-    soundDiv.appendChild(rangeVolume);
+    soundDiv.appendChild(rngVolume);
     soundDiv.appendChild(btnPlay);
     soundDiv.appendChild(btnStop);
     soundDiv.appendChild(lblVol);
@@ -89,6 +94,9 @@ var AudioPlayer = (function() {
   AudioPlayer.getSoundId = function() {
     return soundId;
   };
+  AudioPlayer.getrngVolume = function() {
+    return rngVolume.value;
+  }
 
   AudioPlayer.play = function(startOffset) {
     if(!audioContext.createGain)
@@ -150,4 +158,6 @@ window.onload = function() {
   console.log("snd0.constructor.getSoundID", snd0.constructor.getSoundId());
   var snd1 = new AudioPlayer();
   console.log("snd1.constructor.getSoundID", snd1.constructor.getSoundId());
+  var snd2 = new AudioPlayer();
+  console.log("snd2.constructor.getSoundID", snd2.constructor.getSoundId());
 }
