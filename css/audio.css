@@ -8,10 +8,24 @@ h1, h2, h3
   margin: 2px;
   padding: 2px;
 }
+#btnCreateAudioPlayer
+{
+  clear: left;
+  float: left;
+}
+#audioPlayers
+{
+  background: #ccc;
+  border: 2px solid #000;
+  clear: left;
+  float: left;
+  margin: 2px;
+  padding: 2px;
+}
 .sound
 {
   background: #eefcff;
-  border: 2px solid #000;
+  border: 2px solid #777;
   float: left;
   margin: 3px;
   padding: 8px 10px 8px 6px;
