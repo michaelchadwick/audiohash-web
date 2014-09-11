@@ -3,15 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Web Audio Test</title>
+  <title>Audio Sampler Platter | make sampler platters of your audio</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
   <link href="css/audio.css" rel="stylesheet" media="screen">
-  <script type="text/javascript" src="js/audio.js"></script>
 </head>
 <body>
 
-  <h1>Web Audio API Test</h1>
-      
+  <h1>Audio Sampler Platter</h1>
+
+  <!-- Dashboard, of sorts -->
+  <div id="dashboard">
+    <div id="audioPlayersCount">
+      <label id="lblAudioPlayersCount"></label>/<label id="lblAudioPlayersCountMax"></label> audio players created.
+    </div>
+    <button id="btnCreateAudioPlayer">Create AudioPlayer</button>
+  </div>
+
+  <!-- AudioPlayers will go here -->
+  <div id="audioPlayers"></div>
+
+  <!-- JS goodies payload -->
+  <script src="js/jquery.js"></script>
+  <!-- backbone js pattern -->
+  <!--<script src="js/json2.js"></script>
+  <script src="js/underscore.js"></script>
+  <script src="js/backbone.js"></script>
+  <script src="js/backbone.localStorage.js"></script>
+  <script src="js/audio-bb.js"></script>-->
+  
+  <!-- different js pattern -->
+  <script type="text/javascript" src="js/audio2.js"></script>
+  
+  <!-- initial js pattern -->
+  <!--<script type="text/javascript" src="js/audio.js"></script>-->
 </body>
 </html>
