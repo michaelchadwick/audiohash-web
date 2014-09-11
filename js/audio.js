@@ -45,8 +45,8 @@ var AudioPlayer = (function() {
     fileUpload.addEventListener('change', function(e) {
       var reader = new FileReader();
       reader.onload = function(e) {
-        AudioPlayer.initSound(this.result, AudioPlayer.getSoundId());
-        console.log("soundId at initSound", AudioPlayer.getSoundId());
+        AudioPlayer.initSound(this.result, soundId);
+        console.log("soundId at initSound", soundId);
       };
       reader.readAsArrayBuffer(this.files[0]);
     }, false);
@@ -57,14 +57,7 @@ var AudioPlayer = (function() {
     rngVolume.max = 100;
     rngVolume.value = 100;
     rngVolume.addEventListener('input', AudioPlayer.changeVolume(this));
-    rngVolume.addEventListener('change', function(e) {
-      var rangeVolN = e.srcElement;
-      var lblVolN = document.getElementById("lblVol" + soundId);
-      
-      lblVolN.innerText = rangeVolN.value;
-      console.log("rngVolume" + soundId + ".value", rangeVolN.value);
-      console.log("e", e);
-    }, false);
+    rngVolume.addEventListener('change', AudioPlayer.updateVolumeLabel, false);
 
     btnPlay.id = "btnPlay" + soundId;
     btnPlay.innerText = "Play/Pause";
@@ -79,7 +72,7 @@ var AudioPlayer = (function() {
     lblVol.id = "lblVol" + soundId;
     lblVol.innerText = "100";
 
-    document.body.appendChild(soundDiv);
+    document.getElementById("audioPlayers").appendChild(soundDiv);
     soundDiv.appendChild(soundHeader);
     soundDiv.appendChild(fileUpload);
     soundDiv.appendChild(rngVolume);
@@ -88,15 +81,40 @@ var AudioPlayer = (function() {
     soundDiv.appendChild(lblVol);
 
     soundNumber++;
-  }
+  };
 
   // Methods
+  AudioPlayer.updateVolumeLabel = function(e) {
+    var rangeVolN = e.srcElement;
+    console.log("rangeVolN", rangeVolN);
+    var lblVolN = document.getElementById("lblVol" + AudioPlayer.getSoundId());
+    console.log("lblVolN", lblVolN);
+
+    lblVolN.innerText = rangeVolN.value;
+    console.log("rngVolume" + soundId + ".value", rangeVolN.value);
+  };
+
+  AudioPlayer.initSound = function(arrayBuffer, sId) {
+    audioContext.decodeAudioData(arrayBuffer, function(buffer) {
+      audioBuffer = buffer;
+      console.log("btnPlay" + sId);
+      var btnP = document.getElementById("btnPlay" + sId);
+      btnP.disabled = false;
+      console.log("btnStop" + sId);
+      var btnS = document.getElementById("btnStop" + sId);
+      btnS.disabled = false;
+    }, function(e) {
+      console.log('Error decoding file', e);
+    });
+  };
+
   AudioPlayer.getSoundId = function() {
     return soundId;
   };
-  AudioPlayer.getrngVolume = function() {
+
+  AudioPlayer.getRngVolume = function() {
     return rngVolume.value;
-  }
+  };
 
   AudioPlayer.play = function(startOffset) {
     if(!audioContext.createGain)
@@ -111,18 +129,18 @@ var AudioPlayer = (function() {
     source.loop = false;
 
     source.start(0, startOffset);
-  }
+  };
 
   AudioPlayer.pause = function(curTime) {
     startOffset = curTime;
     source.stop();
-  }
+  };
 
   AudioPlayer.changeVolume = function(element) {
     var volume = element.value;
     var fraction = parseInt(element.value) / parseInt(element.max);
     gainNode.gain.value = fraction * fraction;
-  }
+  };
 
   AudioPlayer.stop = function() {
     if (!source.stop) {
@@ -130,34 +148,27 @@ var AudioPlayer = (function() {
     }
     startOffset = 0;
     source.stop(0);
-  }
+  };
 
   AudioPlayer.toggle = function() {
     this.playing ? AudioPlayer.pause(audioContext.currentTime) : AudioPlayer.play(startOffset);
     this.playing = !this.playing;
-  }
-
-  AudioPlayer.initSound = function(arrayBuffer, sId) {
-    audioContext.decodeAudioData(arrayBuffer, function(buffer) {
-      audioBuffer = buffer;
-      console.log("btnPlay" + sId);
-      var btnP = document.getElementById("btnPlay" + sId);
-      btnP.disabled = false;
-      var btnS = document.getElementById("btnStop" + sId);
-      btnS.disabled = false;
-    }, function(e) {
-      console.log('Error decoding file', e);
-    });
-  }
+  };
 
   return AudioPlayer;
 })();
 
 window.onload = function() {
   var snd0 = new AudioPlayer();
-  console.log("snd0.constructor.getSoundID", snd0.constructor.getSoundId());
   var snd1 = new AudioPlayer();
-  console.log("snd1.constructor.getSoundID", snd1.constructor.getSoundId());
   var snd2 = new AudioPlayer();
+  console.log("snd0.constructor.getSoundID", snd0.constructor.getSoundId());
+  console.log("snd1.constructor.getSoundID", snd1.constructor.getSoundId());
   console.log("snd2.constructor.getSoundID", snd2.constructor.getSoundId());
-}
+};
+
+var btnCreateAP = document.getElementById("btnCreateAudioPlayer");
+btnCreateAP.addEventListener("click", function() {
+  console.log("created new audio player");
+  snd = new AudioPlayer();
+});
