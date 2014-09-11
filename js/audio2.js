@@ -134,7 +134,6 @@ AudioPlayer.prototype.initSound = function(arrayBuffer, audioPlayer, sId) {
 
 // play the audio file from a specific startOffset
 AudioPlayer.prototype.play = function(startOffset) {
-  console.log("this play", this);
   this.startTime = this.audioContext.currentTime;
   
   if(!this.audioContext.createGain) {
@@ -155,61 +154,44 @@ AudioPlayer.prototype.play = function(startOffset) {
 
 // pause the audio file and record its currentTime
 AudioPlayer.prototype.pause = function(curTime) {
-  console.log("this pause", this);
-  console.log("this.startTime", this.startTime);
-  console.log("this.curTime", curTime);
   this.source.stop();
   this.startOffset += curTime - this.startTime;
-  console.log("this.startOffset", this.startOffset);
-  
 };
 
 // stop playing the audio file
 AudioPlayer.prototype.stopAudio = function() {
-  console.log("this stop", this);
   var sId = this.id.split("btnStop")[1];
   var snd = audioPlayers[sId];
   snd.startOffset = 0;
   snd.source.stop();
   snd.playing = !snd.playing;
-  console.log("snd.playing?", snd.playing);
 };
 
 // when the play/pause button is pressed, toggle its status
 AudioPlayer.prototype.toggle = function() {
   var sId = this.id.split("btnPlay")[1];
   var snd = audioPlayers[sId];
-  console.log("toggled beginning: snd.playing?", snd.playing);
-  console.log("snd.startOffset", snd.startOffset);
   // if playing, pause and capture currentTime; if not, then play from startOffset
   snd.playing ? snd.pause(snd.audioContext.currentTime) : snd.play(snd.startOffset);
   // flip playing mode status
   snd.playing = !snd.playing;
-  console.log("toggled ending: snd.playing?", snd.playing);
 };
 
 window.onload = function() {
-  var apCountMax = document.getElementById("lblAudioPlayersCountMax");
-  apCountMax.innerText = audioPlayersCountMax;
+  document.getElementById("lblAudioPlayersCountMax").innerText = audioPlayersCountMax;
   audioPlayers.push(snd0 = new AudioPlayer());
-  snd1 = new AudioPlayer();
-  audioPlayers.push(snd1);
-  snd2 = new AudioPlayer();
-  audioPlayers.push(snd2);
-  
-  console.log("list of AudioPlayers: ", audioPlayers);
+  audioPlayers.push(snd1 = new AudioPlayer());
+  audioPlayers.push(snd2 = new AudioPlayer());
   
   snd0.lblVolume.innerText = snd0.getRngVolume();
   snd1.lblVolume.innerText = snd1.getRngVolume();
   snd2.lblVolume.innerText = snd2.getRngVolume();
 };
 
-var btnCreateAP = document.getElementById("btnCreateAudioPlayer");
-btnCreateAP.addEventListener("click", function() {
+document.getElementById("btnCreateAudioPlayer").addEventListener("click", function() {
   if (soundNumber < 6) {
     audioPlayers.push(new AudioPlayer());
-    console.log(audioPlayers);
   } else {
-    alert("The maximum number of AudioPlayers (6) has been reached. No more can be created.");
+    alert("The maximum number of AudioPlayers (" + audioPlayersCountMax + ") has been reached. No more can be created.");
   }
 });
