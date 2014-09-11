@@ -4,6 +4,7 @@ var audioPlayers = [];
 
 var AudioPlayer = AudioPlayer || {};
 
+// AudioPlayer "class" implementation
 function AudioPlayer() {
   // Variables
   var that = this;
@@ -12,16 +13,17 @@ function AudioPlayer() {
   this.audioBuffer = null;
   this.gainNode = this.audioContext.createGain();
   this.source = null;
+  this.startTime = 0;
   this.startOffset = 0;
 
   this.soundDiv = document.createElement('div');
   this.soundHeader = document.createElement('h3');
   this.fileUpload = document.createElement('input');
   this.rngVolume = document.createElement('input');
+  this.lblVolume = document.createElement('label');
   this.btnPlay = document.createElement('button');
   this.btnStop = document.createElement('button');
-  this.lblVol = document.createElement('label');
-
+  
   this.soundDiv.classList.add('sound');
   this.soundHeader.innerText = "Sound " + this.soundId;
 
@@ -44,9 +46,13 @@ function AudioPlayer() {
   this.rngVolume.type = "range";
   this.rngVolume.min = 0;
   this.rngVolume.max = 100;
+  // set the volume to something random from 0 to 100
   this.rngVolume.value = Math.floor((Math.random() * 80) + 20);
   this.rngVolume.addEventListener('input', this.changeVolume);
   this.rngVolume.addEventListener('change', this.updateVolumeLabel);
+  
+  this.lblVolume.id = "lblVolume" + this.soundId;
+  this.lblVolume.innerText = this.rngVolume.value;
 
   this.btnPlay.id = "btnPlay" + this.soundId;
   this.btnPlay.innerText = "Play/Pause";
@@ -55,19 +61,16 @@ function AudioPlayer() {
 
   this.btnStop.id = "btnStop" + this.soundId;
   this.btnStop.innerText = "Stop";
-  this.btnStop.addEventListener('click', this.stop);
+  this.btnStop.addEventListener('click', this.stopAudio);
   this.btnStop.disabled = true;
-
-  this.lblVol.id = "lblVol" + this.soundId;
-  this.lblVol.innerText = this.rngVolume.value;
 
   document.getElementById("audioPlayers").appendChild(this.soundDiv);
   this.soundDiv.appendChild(this.soundHeader);
   this.soundDiv.appendChild(this.fileUpload);
   this.soundDiv.appendChild(this.rngVolume);
+  this.soundDiv.appendChild(this.lblVolume);
   this.soundDiv.appendChild(this.btnPlay);
   this.soundDiv.appendChild(this.btnStop);
-  this.soundDiv.appendChild(this.lblVol);
 
   soundNumber++;
   
@@ -87,6 +90,7 @@ AudioPlayer.prototype.getRngVolume = function() {
   return this.rngVolume.value;
 };
 
+// change the internal gain node value
 AudioPlayer.prototype.changeVolume = function(element) {
   var volume = element.srcElement.value;
   var volumeMax = element.srcElement.max;
@@ -96,14 +100,26 @@ AudioPlayer.prototype.changeVolume = function(element) {
   snd.gainNode.gain.value = fraction * fraction;
 };
 
+// init the volume to the range element's value
+AudioPlayer.prototype.initVolume = function(element) {
+  var volume = element.value;
+  var volumeMax = element.max;
+  var fraction = parseInt(volume) / parseInt(volumeMax);
+  var sId = element.id.split("rngVolume")[1];
+  var snd = audioPlayers[sId];
+  snd.gainNode.gain.value = fraction * fraction;
+}
+
+// update the volume label
 AudioPlayer.prototype.updateVolumeLabel = function(e) {
   var rangeVolN = e.srcElement;
   var sId = this.id.split("rngVolume")[1];
-  var lblVolId = "lblVol".concat(sId);
-  var lblVolN = document.getElementById(lblVolId);
-  lblVolN.innerText = rangeVolN.value;
+  var lblVolumeId = "lblVolume".concat(sId);
+  var lblVolumeN = document.getElementById(lblVolumeId);
+  lblVolumeN.innerText = rangeVolN.value;
 };
 
+// load the sound into a buffer
 AudioPlayer.prototype.initSound = function(arrayBuffer, audioPlayer, sId) {
   audioPlayer.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
     audioPlayer.audioBuffer = buffer;
@@ -116,12 +132,17 @@ AudioPlayer.prototype.initSound = function(arrayBuffer, audioPlayer, sId) {
   });
 };
 
+// play the audio file from a specific startOffset
 AudioPlayer.prototype.play = function(startOffset) {
+  console.log("this play", this);
+  this.startTime = this.audioContext.currentTime;
+  
   if(!this.audioContext.createGain) {
     this.audioContext.createGain = this.audioContext.createGainNode;
   }
   this.gainNode = this.audioContext.createGain();
-
+  this.initVolume(this.rngVolume);
+  
   this.source = this.audioContext.createBufferSource();
   this.source.buffer = this.audioBuffer;
 
@@ -129,37 +150,40 @@ AudioPlayer.prototype.play = function(startOffset) {
   this.gainNode.connect(this.audioContext.destination);
   this.source.loop = false;
 
-  this.source.start(0, this.startOffset);
+  this.source.start(0, startOffset % this.audioBuffer.duration);
 };
 
+// pause the audio file and record its currentTime
 AudioPlayer.prototype.pause = function(curTime) {
   console.log("this pause", this);
+  console.log("this.startTime", this.startTime);
   console.log("this.curTime", curTime);
-  this.startOffset = curTime;
-  console.log("this.startOffset", this.startOffset);
   this.source.stop();
+  this.startOffset += curTime - this.startTime;
+  console.log("this.startOffset", this.startOffset);
+  
 };
 
-AudioPlayer.prototype.stop = function() {
+// stop playing the audio file
+AudioPlayer.prototype.stopAudio = function() {
+  console.log("this stop", this);
   var sId = this.id.split("btnStop")[1];
   var snd = audioPlayers[sId];
-  if (!snd.source.stop) {
-    console.log("snd.source is not stopped");
-    snd.source.stop = snd.source.noteOff;
-  }
-  console.log("snd.source.noteOff", snd.source.noteOff);
   snd.startOffset = 0;
-  console.log("snd.startOffset", snd.startOffset);
-  snd.source.noteOff(snd.audioContext.currentTime);
+  snd.source.stop();
+  snd.playing = !snd.playing;
   console.log("snd.playing?", snd.playing);
 };
 
+// when the play/pause button is pressed, toggle its status
 AudioPlayer.prototype.toggle = function() {
   var sId = this.id.split("btnPlay")[1];
   var snd = audioPlayers[sId];
   console.log("toggled beginning: snd.playing?", snd.playing);
   console.log("snd.startOffset", snd.startOffset);
+  // if playing, pause and capture currentTime; if not, then play from startOffset
   snd.playing ? snd.pause(snd.audioContext.currentTime) : snd.play(snd.startOffset);
+  // flip playing mode status
   snd.playing = !snd.playing;
   console.log("toggled ending: snd.playing?", snd.playing);
 };
@@ -175,9 +199,9 @@ window.onload = function() {
   
   console.log("list of AudioPlayers: ", audioPlayers);
   
-  snd0.lblVol.innerText = snd0.getRngVolume();
-  snd1.lblVol.innerText = snd1.getRngVolume();
-  snd2.lblVol.innerText = snd2.getRngVolume();
+  snd0.lblVolume.innerText = snd0.getRngVolume();
+  snd1.lblVolume.innerText = snd1.getRngVolume();
+  snd2.lblVolume.innerText = snd2.getRngVolume();
 };
 
 var btnCreateAP = document.getElementById("btnCreateAudioPlayer");

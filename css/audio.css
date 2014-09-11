@@ -1,59 +1,137 @@
+/* Basic HTML elements */
 body
 {
+  background: #fed;
   font-family: Consolas, fixed-width;
-  size: 1em;
+  font-size: 1em;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
 }
 h1, h2, h3
 {
-  margin: 2px;
-  padding: 2px;
+  margin: 0;
+  padding: 0;
 }
-#btnCreateAudioPlayer
+p {
+  margin: 0;
+}
+
+/* Main Structure */
+div#aspapp {
+
+}
+header {
+  background: #f88;
+  border-bottom: 1px solid #000;
+  margin: 0;
+  padding: 5px 10px;
+}
+div#sub-header {
+  background: #fcb;
+  border-bottom: 1px solid #777;
+  margin: 0;
+  padding: 5px 10px;
+}
+footer {
+  background: #fdc;
+  clear: left;
+  padding: 10px;
+}
+
+/* Sections */
+section#dashboard {
+  background: #f4d244;
+  border-bottom: 1px solid #aaa;
+  padding: 5px 10px;
+}
+  section#dashboard-inner {
+    clear: both;
+    margin: 0;
+    max-height: 100px;
+    min-height: 30px;
+    padding: 0;
+  }
+  section#buttons {
+    clear: left;
+    float: left;
+    margin: 0;
+  }
+    section#buttons button {
+      background: #faa;
+      border: 1px solid #000;
+      -webkit-box-shadow: 1px 1px 1px 1px #000000;
+      box-shadow: 1px 1px 1px 1px #000000;
+      color: #111;
+      cursor: pointer;
+      font-weight: bold;
+      padding: 4px;
+    }
+    section#buttons button:hover {
+      background: #fbb;
+    }
+  section#audioPlayersCount {
+    float: left;
+    padding: 5px 10px;
+  }
+section#audioPlayers
 {
   clear: left;
   float: left;
-}
-#audioPlayers
-{
-  background: #ccc;
-  border: 2px solid #000;
-  clear: left;
-  float: left;
   margin: 2px;
-  padding: 2px;
+  padding: 5px;
 }
+
+/* Classes */
 .sound
 {
   background: #eefcff;
   border: 2px solid #777;
   float: left;
   margin: 3px;
-  padding: 8px 10px 8px 6px;
-  width: 250px;
+  padding: 0 8px 3px 0;
+  width: 235px;
 }
 .sound > *
 {
   clear: left;
   float: left;
 }
+.sound h3 {
+  background: #444;
+  color: #fff;
+  margin: 0 0 7px;
+  padding: 5px;
+  width: 100%;
+}
 .sound input[type="file"]
 {
   margin: 0;
-  padding: 0;
+  padding: 8px;
   width: 100%;
 }
 .sound input[type='range']
 {
-  width: 100%;
+  clear: left;
+  float: left;
+  margin: 5px 8px 5px 8px;
+  padding: 0;
+  width: 190px;
+}
+.sound label
+{
+  background: #CDF4FD;
+  clear: none;
+  float: left;
+  padding: 5px;
+}
+.sound button {
+  margin: 5px 0 5px 8px;
 }
 .sound button:last-of-type
 {
   clear: none;
-}
-.sound label
-{
-  clear: none;
-  padding: 4px;
+  margin-left: 4px;
 }
 .ctrl-row div
 {
