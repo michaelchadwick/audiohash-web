@@ -85,7 +85,7 @@ section#audioPlayers
 /* Classes */
 .sound
 {
-  background: #eefcff;
+  background: #fefefe;
   border: 2px solid #777;
   float: left;
   margin: 3px;
@@ -100,8 +100,16 @@ section#audioPlayers
 .sound h3 {
   background: #444;
   color: #fff;
+  margin: 0;
+  padding: 2px 5px;
+  width: 100%;
+}
+.sound .sound-status {
+  background: #555;
+  color: #fff;
+  font-size: 0.75em;
   margin: 0 0 7px;
-  padding: 5px;
+  padding: 2px 5px;
   width: 100%;
 }
 .sound input[type="file"]

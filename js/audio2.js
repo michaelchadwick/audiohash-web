@@ -2,6 +2,13 @@ var soundNumber = 0;
 var audioPlayersCountMax = 6;
 var audioPlayers = [];
 
+// sound status constants
+const SND_STATUS_PLAYING = "playing";
+const SND_STATUS_STOPPED = "stopped";
+const SND_STATUS_PAUSED = "paused";
+const SND_STATUS_UNLOADED = "unloaded";
+const SND_STATUS_LOADED = "loaded and ready";
+
 var AudioPlayer = AudioPlayer || {};
 
 // AudioPlayer "class" implementation
@@ -15,9 +22,12 @@ function AudioPlayer() {
   this.source = null;
   this.startTime = 0;
   this.startOffset = 0;
+  this.isPaused = false;
+  this.isStopped = true;
 
   this.soundDiv = document.createElement('div');
   this.soundHeader = document.createElement('h3');
+  this.soundStatus = document.createElement('div');
   this.fileUpload = document.createElement('input');
   this.rngVolume = document.createElement('input');
   this.lblVolume = document.createElement('label');
@@ -26,6 +36,9 @@ function AudioPlayer() {
   
   this.soundDiv.classList.add('sound');
   this.soundHeader.innerText = "Sound " + this.soundId;
+  this.soundStatus.id = "soundStatus" + this.soundId;
+  this.soundStatus.classList.add('sound-status');
+  this.soundStatus.innerText = SND_STATUS_UNLOADED;
 
   this.fileUpload.id = "fileUpload" + this.soundId;
   this.fileUpload.type = "file";
@@ -33,10 +46,8 @@ function AudioPlayer() {
   this.fileUpload.addEventListener('change', function(e) {
     var reader = new FileReader();
     var sId = that.soundId;
-    console.log("that", that.soundId);
     var initSound = that.initSound;
     reader.onload = function(e) {
-      console.log("soundId at initSound", sId);
       initSound(this.result, that, sId);
     };
     reader.readAsArrayBuffer(this.files[0]);
@@ -66,6 +77,7 @@ function AudioPlayer() {
 
   document.getElementById("audioPlayers").appendChild(this.soundDiv);
   this.soundDiv.appendChild(this.soundHeader);
+  this.soundDiv.appendChild(this.soundStatus);
   this.soundDiv.appendChild(this.fileUpload);
   this.soundDiv.appendChild(this.rngVolume);
   this.soundDiv.appendChild(this.lblVolume);
@@ -75,11 +87,7 @@ function AudioPlayer() {
   soundNumber++;
   
   document.getElementById("lblAudioPlayersCount").innerText = soundNumber;
-
-  console.log("AudioPlayer " + this.soundId + " instantiated");
 };
-
-var that = this;
 
 // Methods
 AudioPlayer.prototype.getSoundId = function() {
@@ -119,6 +127,13 @@ AudioPlayer.prototype.updateVolumeLabel = function(e) {
   lblVolumeN.innerText = rangeVolN.value;
 };
 
+// update the current sound status
+AudioPlayer.prototype.updateSoundStatus = function(sId, status) {
+  var curSoundStatusId = "soundStatus".concat(sId);
+  var curSoundStatusN = document.getElementById(curSoundStatusId);
+  curSoundStatusN.innerText = status;
+};
+
 // load the sound into a buffer
 AudioPlayer.prototype.initSound = function(arrayBuffer, audioPlayer, sId) {
   audioPlayer.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
@@ -127,6 +142,7 @@ AudioPlayer.prototype.initSound = function(arrayBuffer, audioPlayer, sId) {
     btnP.disabled = false;
     var btnS = document.getElementById("btnStop" + sId);
     btnS.disabled = false;
+    audioPlayer.updateSoundStatus(sId, SND_STATUS_LOADED);
   }, function(e) {
     console.log('Error decoding file', e);
   });
@@ -144,18 +160,32 @@ AudioPlayer.prototype.play = function(startOffset) {
   
   this.source = this.audioContext.createBufferSource();
   this.source.buffer = this.audioBuffer;
+  
+  var audioPlayerN = this;
+  this.source.onended = function() {
+    var pauseOrStopStatus = audioPlayerN.isPaused ? SND_STATUS_PAUSED : SND_STATUS_STOPPED;
+    if (audioPlayerN.isStopped) audioPlayerN.playing = false;
+    audioPlayerN.updateSoundStatus(audioPlayerN.soundId, pauseOrStopStatus);
+  };
 
   this.source.connect(this.gainNode);
   this.gainNode.connect(this.audioContext.destination);
   this.source.loop = false;
 
   this.source.start(0, startOffset % this.audioBuffer.duration);
+  
+  this.isStopped = false;
+  this.isPaused = false;
+
+  this.updateSoundStatus(this.soundId, SND_STATUS_PLAYING);
 };
 
 // pause the audio file and record its currentTime
 AudioPlayer.prototype.pause = function(curTime) {
   this.source.stop();
+  this.isPaused = true;
   this.startOffset += curTime - this.startTime;
+  this.updateSoundStatus(this.soundId, SND_STATUS_PAUSED);
 };
 
 // stop playing the audio file
@@ -164,7 +194,10 @@ AudioPlayer.prototype.stopAudio = function() {
   var snd = audioPlayers[sId];
   snd.startOffset = 0;
   snd.source.stop();
-  snd.playing = !snd.playing;
+  snd.playing = false;
+  snd.isPaused = false;
+  snd.isStopped = true;
+  snd.updateSoundStatus(snd.soundId, SND_STATUS_STOPPED);
 };
 
 // when the play/pause button is pressed, toggle its status
@@ -182,10 +215,6 @@ window.onload = function() {
   audioPlayers.push(snd0 = new AudioPlayer());
   audioPlayers.push(snd1 = new AudioPlayer());
   audioPlayers.push(snd2 = new AudioPlayer());
-  
-  snd0.lblVolume.innerText = snd0.getRngVolume();
-  snd1.lblVolume.innerText = snd1.getRngVolume();
-  snd2.lblVolume.innerText = snd2.getRngVolume();
 };
 
 document.getElementById("btnCreateAudioPlayer").addEventListener("click", function() {
