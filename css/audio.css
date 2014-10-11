@@ -74,6 +74,21 @@ section#dashboard {
     float: left;
     padding: 5px 10px;
   }
+section#audioSamplerControls
+{
+  clear: left;
+  float: left;
+  margin: 2px;
+  padding: 5px;
+}
+  section#audioSamplerControls input#rngSampleSize
+  {
+    width: 80px;
+  }
+  section#audioSamplerControls input#txtSampleSize
+  {
+    width: 20px;
+  }
 section#audioPlayers
 {
   clear: left;

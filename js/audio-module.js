@@ -43,6 +43,9 @@ var ASPApp = (function () {
   var incSoundNumber = function() {
     _soundNumber++;
   }
+  var updateAudioPlayerCount = function() {
+    document.getElementById("lblAudioPlayersCount").innerText = getSoundNumber();
+  }
   var getAudioContextsMax = function() {
     return _audioContextsMax;
   }
@@ -51,13 +54,14 @@ var ASPApp = (function () {
   }
   var makeAudioPlayer = function() {
     _audioPlayerArray.push(new AudioPlayer());
+    incSoundNumber();
+    updateAudioPlayerCount();
     return _audioPlayerArray[_audioPlayerArray.length-1];
   }
 
   return {
     testFunc:             testFunc,
     getSoundNumber:       getSoundNumber,
-    incSoundNumber:       incSoundNumber,
     getAudioContextsMax:  getAudioContextsMax,
     getAudioPlayerArray:  getAudioPlayerArray, 
     makeAudioPlayer:      makeAudioPlayer
@@ -83,8 +87,12 @@ var AudioPlayer = function() {
   
   //// AudioPlayer Methods
   // property getters
-  var getSoundId = function() { return this.soundId; };
-  var getRngVolume = function() { return this.rngVolume.value; };
+  var getSoundId = function() { 
+    return this.soundId; 
+  };
+  var getRngVolume = function() { 
+    return this.rngVolume.value; 
+  };
   
   // test function
   var testFunc = function() {
@@ -117,6 +125,7 @@ var AudioPlayer = function() {
     var sId = this.id.split("rngVolume")[1];
     var lblVolumeId = "lblVolume".concat(sId);
     var lblVolumeN = document.getElementById(lblVolumeId);
+    console.log("sId updatevol", sId);
     lblVolumeN.innerText = rangeVolN.value;
   };
 
@@ -202,7 +211,7 @@ var AudioPlayer = function() {
     // flip playing mode status
     snd.playing = !snd.playing;
   };
-
+  
   this.soundDiv = document.createElement('div');
   this.soundHeader = document.createElement('h3');
   this.soundStatus = document.createElement('div');
@@ -260,22 +269,35 @@ var AudioPlayer = function() {
   this.soundDiv.appendChild(this.lblVolume);
   this.soundDiv.appendChild(this.btnPlay);
   this.soundDiv.appendChild(this.btnStop);
-
-  ASPApp.incSoundNumber();
-  
-  document.getElementById("lblAudioPlayersCount").innerText = ASPApp.getSoundNumber();
 };
 
 function initPageUI() {
-  document.getElementById("lblAudioPlayersCountMax").innerText = ASPApp.getAudioContextsMax();
-  document.getElementById("lblAudioPlayersCount").innerText = ASPApp.getSoundNumber();
-  document.getElementById("btnCreateAudioPlayer").addEventListener("click", function() {
+  var apCountMax = document.getElementById("lblAudioPlayersCountMax");
+  var apCount = document.getElementById("lblAudioPlayersCount");
+  var createAP = document.getElementById("btnCreateAudioPlayer");
+  var makeASP = document.getElementById("btnMakeASP");
+  var sampleSizeVal = document.getElementById("rngSampleSize");
+  var sampleSizeTxt = document.getElementById("txtSampleSize");
+  
+  apCountMax.innerText = ASPApp.getAudioContextsMax();
+  apCount.innerText = ASPApp.getSoundNumber();
+  createAP.addEventListener("click", function() {
     if (ASPApp.getSoundNumber() < 5) {
       ASPApp.makeAudioPlayer();
     } else {
       alert("The maximum number of AudioContexts (6) has been reached. No more can be created.");
     }
   });
+  makeASP.addEventListener("click", function() {
+    if (ASPApp.getSoundNumber() < 2)
+    {
+      alert("You need at least two sounds to make an audio sampler platter");
+    }
+  });
+  sampleSizeVal.addEventListener("change", function(e) {
+    sampleSizeTxt.value=e.srcElement.value;
+  });
+  sampleSizeTxt.value=sampleSizeVal.value;
 }
 
 /*
@@ -287,4 +309,6 @@ window.onload = function() {
   
   // make an example AudioPlayer
   ASPApp.makeAudioPlayer();
+  
+  var snd0 = ASPApp.getAudioPlayerArray(0);
 };
