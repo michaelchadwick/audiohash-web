@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Audio Sampler Platter | make sampler platters of your audio</title>
-  <meta name="description" content="Single page application that loads audio files and then makes a sampler track out of them.">
-  <meta name="title" content="Audio Sampler Platter">
+  <title>Sound Sampler Platter | make sampler platters of your sounds</title>
+  <meta name="description" content="Single page application that loads sound files and then makes a sampler track out of them.">
+  <meta name="title" content="Sound Sampler Platter">
   <meta name="viewport" content="width=device-width">
   <link href="favicon.ico" rel="favicon" />
   <link href="favicon.ico" rel="icon" type="image/x-icon" />
-  <link href="css/audio.css" rel="stylesheet" media="screen" />
+  <link href="css/style.css" rel="stylesheet" media="screen" />
 </head>
 
 <body>
@@ -17,60 +17,44 @@
   <div id="aspapp">
 
     <header>
-      <h1>Audio Sampler Platter</h1>
+      <h1>Sound Sampler Platter</h1>
     </header>
 
     <div id="sub-header">
-      <p><strong>Make sampler platters of your audio.</strong> 1) Create some AudioPlayers, 2) Load up files, 3) Choose how much of each you want sampled, 4) Click "Make ASP!" and a link to your new ASP will be created for you to download.</p>
+      <p><strong>Make sampler platters of your sounds.</strong> 1) Create some SoundPlayers, 2) Load up files, 3) Choose how much of each you want sampled, 4) Click "Make SSP!" and a link to your new SSP will be created for you to download.</p>
     </div>
 
     <!-- Dashboard, of sorts -->
     <section id="dashboard">
       <section id="dashboard-inner">
         <section id="buttons">
-          <button id="btnCreateAudioPlayer">Create AudioPlayer</button>
+          <button id="btnCreateSoundPlayer">Create SoundPlayer</button>
         </section>
-        <section id="audioPlayersCount">
-          <label id="lblAudioPlayersCount"></label>/<label id="lblAudioPlayersCountMax"></label> audio players created.
+        <section id="soundPlayersCount">
+          <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sound players created.
         </section>
       </section>
     </section>
     
-    <!-- Tools for making the ASP -->
-    <section id="audioSamplerControls">
+    <!-- Tools for making the SSP -->
+    <section id="soundSamplerControls">
       <label for="rngSampleSize">How big should the sample size be (in seconds)?</label>
       <input id="rngSampleSize" type="range" min="10" max="30" />
       <input type="text" id="txtSampleSize" value="" />
-      <input type="button" id="btnMakeASP" value="Make ASP!" />
+      <input type="button" id="btnMakeSSP" value="Make SSP!" />
+      <a href="#" id="linkDownloadSSP">Download SSP</a>
     </section>
 
-    <!-- AudioPlayers will go here -->
-    <section id="audioPlayers"></section>
+    <!-- SoundPlayers will go here -->
+    <section id="soundPlayers"></section>
 
     <footer>
     Created by <a href="https://github.com/michaelchadwick">Michael Chadwick</a><!-- using <a href="http://backbonejs.org">Backbone</a>-->
     </footer>
 
-    <!-- JS goodies payload -->
-    <script src="js/lib/jquery.js"></script>
-    <!-- backbone js pattern -->
-    <!--<script src="js/lib/json2.js"></script>
-    <script src="js/lib/underscore.js"></script>
-    <script src="js/lib/backbone.js"></script>
-    <script src="js/lib/backbone.localStorage.js"></script>
-    <script src="js/audio-bb.js"></script>-->
-
-    <!-- test js -->
-    <!--<script type="text/javascript" src="js/test.js"></script>-->
-    
-    <!-- module js pattern -->
-    <script type="text/javascript" src="js/audio-module.js"></script>
-    
-    <!-- prototyping js pattern -->
-    <!--<script type="text/javascript" src="js/audio-prototyping.js"></script>-->
-
-    <!-- initial js pattern -->
-    <!--<script type="text/javascript" src="js/audio.js"></script>-->
+    <!-- JS -->
+    <script type="text/javascript" src="js/lib/jquery.js"></script>
+    <script type="text/javascript" src="js/sound-module.js"></script>
 
   </div>
 
