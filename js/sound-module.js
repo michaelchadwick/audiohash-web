@@ -26,7 +26,10 @@ var SSPApp = (function () {
   var _audioContextsMax = 6;
   var _soundPlayerArray = [];
 
-  // audioContext maker
+  ///////////////////////////////////
+  //// General-Purpose Functions ////
+  ///////////////////////////////////
+  // private
   var _getContext = function() {
     var ac = null;
     if ( !window.AudioContext && !window.webkitAudioContext ) {
@@ -38,20 +41,25 @@ var SSPApp = (function () {
       return ac;
     };
   }();
-  var _ctx = _getContext();
-  
-  //// Public Methods
-  var testFunc = function() {
-    console.log("SSPApp made successfully!");
+  var _isAPArrayEmpty = function() {
+    var isEmpty = false;
+    _soundPlayerArray.forEach(function(sound) {
+      if (!sound.audioBuffer) {
+        isEmpty = true;
+      }
+    });
+    return isEmpty;
   }
-  var getSoundNumber = function() {
-    return _soundNumber;
-  }
-  var incSoundNumber = function() {
+  var _incSoundNumber = function() {
     _soundNumber++;
   }
-  var updateSoundPlayerCount = function() {
+  var _updateSoundPlayerCount = function() {
     document.getElementById("lblSoundPlayersCount").innerText = getSoundNumber();
+  }
+  
+  // public
+  var getSoundNumber = function() {
+    return _soundNumber;
   }
   var getAudioContextsMax = function() {
     return _audioContextsMax;
@@ -62,19 +70,10 @@ var SSPApp = (function () {
   var getSoundPlayerArray = function() {
     return _soundPlayerArray;
   }
-  var isAPArrayEmpty = function() {
-    var isEmpty = false;
-    _soundPlayerArray.forEach(function(sound) {
-      if (!sound.audioBuffer) {
-        isEmpty = true;
-      }
-    });
-    return isEmpty;
-  }
   var makeSoundPlayer = function() {
     _soundPlayerArray.push(new SoundPlayer());
-    incSoundNumber();
-    updateSoundPlayerCount();
+    _incSoundNumber();
+    _updateSoundPlayerCount();
     return _soundPlayerArray[_soundPlayerArray.length-1];
   }
   
@@ -82,16 +81,26 @@ var SSPApp = (function () {
   //// Sound Sampler Platter Functions ////
   /////////////////////////////////////////
   
-  function makeWavFile(sspBuffer) {
+  // private
+  function _enableDownload(blob, givenFilename) {
+    var url = (window.URL || window.webkitURL).createObjectURL(blob);
+    var link = document.getElementById("linkDownloadSSP");
+    var d = new Date();
+    var defaultFilename = "soundSamplerPlatter" + d.curDateTime() + ".wav";
+    link.style.display = "inline";
+    link.href = url;
+    link.download = givenFilename || defaultFilename;
+  }
+  function _makeWavFile(sspBuffer) {
     var buffer = new ArrayBuffer(44 + sspBuffer.length * 2);
     var view = new DataView(buffer);
     
     // RIFF chunk descriptor
-    writeUTFBytes(view, 0, 'RIFF');
+    _writeUTFBytes(view, 0, 'RIFF');
     view.setUint32(4, 44 + sspBuffer.length * 2, true);
-    writeUTFBytes(view, 8, 'WAVE');
+    _writeUTFBytes(view, 8, 'WAVE');
     // FMT sub-chunk
-    writeUTFBytes(view, 12, 'fmt ');
+    _writeUTFBytes(view, 12, 'fmt ');
     view.setUint32(16, 16, true);
     view.setUint16(20, 1, true);
     // stereo (2 channels)
@@ -101,7 +110,7 @@ var SSPApp = (function () {
     view.setUint16(32, 4, true);
     view.setUint16(34, 16, true);
     // data sub-chunk
-    writeUTFBytes(view, 36, 'data');
+    _writeUTFBytes(view, 36, 'data');
     view.setUint32(40, sspBuffer.length * 2, true);
  
     // write the PCM samples
@@ -115,16 +124,14 @@ var SSPApp = (function () {
     }
     return (new Blob ( [ view ], { type : 'audio/wav' } ));
   }
-  
-  function writeUTFBytes(view, offset, string) {
+  function _writeUTFBytes(view, offset, string) {
     var lng = string.length;
     for (var i = 0; i < lng; i++)
     {
       view.setUint8(offset + i, string.charCodeAt(i));
     }
-  }
-  
-  function getSoundChannelsMin(sndArr) {
+  } 
+  function _getSoundChannelsMin(sndArr) {
     var sndChannelsArr = [];
     sndArr.forEach(function(snd) {
       sndChannelsArr.push(snd.audioBuffer.numberOfChannels);
@@ -132,9 +139,10 @@ var SSPApp = (function () {
     return Math.min.apply(Math,sndChannelsArr);
   }
   
+  // public
   function makeSSP(sndArr) {
-    var numberOfChannels = getSoundChannelsMin(sndArr);
-    var sspBuffer = _ctx.createBuffer(
+    var numberOfChannels = _getSoundChannelsMin(sndArr);
+    var sspBuffer = _getContext().createBuffer(
       numberOfChannels, 
       (sndArr[0].audioBuffer.length + sndArr[1].audioBuffer.length), 
       sndArr[0].audioBuffer.sampleRate
@@ -147,28 +155,16 @@ var SSPApp = (function () {
       channel.set(sndArr[1].audioBuffer.getChannelData(i), sndArr[0].audioBuffer.length);
     }
 
-    var blob = makeWavFile(sspBuffer);
+    var blob = _makeWavFile(sspBuffer);
     
-    enableDownload(blob);
+    _enableDownload(blob);
   }
   
-  function enableDownload(blob, givenFilename) {
-    var url = (window.URL || window.webkitURL).createObjectURL(blob);
-    var link = document.getElementById("linkDownloadSSP");
-    var d = new Date();
-    var defaultFilename = "soundSamplerPlatter" + d.curDateTime() + ".wav";
-    link.style.display = "inline";
-    link.href = url;
-    link.download = givenFilename || defaultFilename;
-  }
-
   return {
-    testFunc:             testFunc,
     getSoundNumber:       getSoundNumber,
     getAudioContextsMax:  getAudioContextsMax,
     getSoundPlayer:       getSoundPlayer,
     getSoundPlayerArray:  getSoundPlayerArray,
-    isAPArrayEmpty:       isAPArrayEmpty,
     makeSoundPlayer:      makeSoundPlayer,
     makeSSP:              makeSSP
   }
@@ -197,11 +193,6 @@ var SoundPlayer = function() {
   var getRngVolume = function() { 
     return this.rngVolume.value; 
   };
-  
-  // test function
-  var testFunc = function() {
-    console.log("SoundPlayer made successfully!");
-  }
   
   // change the internal gain node value
   var changeVolume = function(element) {
@@ -315,6 +306,9 @@ var SoundPlayer = function() {
     snd.playing = !snd.playing;
   };
   
+  ////////////////////
+  // User Interface //
+  ////////////////////
   this.soundDiv = document.createElement('div');
   this.soundHeader = document.createElement('h3');
   this.soundStatus = document.createElement('div');
@@ -364,7 +358,8 @@ var SoundPlayer = function() {
   this.btnStop.addEventListener('click', stopSound);
   this.btnStop.disabled = true;
 
-  document.getElementById("soundPlayers").appendChild(this.soundDiv);
+  var divSoundPlayers = document.getElementById("soundPlayers");
+  divSoundPlayers.appendChild(this.soundDiv);
   this.soundDiv.appendChild(this.soundHeader);
   this.soundDiv.appendChild(this.soundStatus);
   this.soundDiv.appendChild(this.fileUpload);
@@ -395,7 +390,7 @@ function initPageUI() {
     if (SSPApp.getSoundNumber() < 2) {
       alert("You need at least two sounds to make a sound sampler platter");
     }
-    else if (SSPApp.isAPArrayEmpty()) {
+    else if (SSPApp._isAPArrayEmpty()) {
       alert("You haven't loaded enough sounds yet!");
     }
     else {
