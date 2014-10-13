@@ -24,7 +24,7 @@ Date.prototype.curDateTime = function() {
 var SSPApp = (function () { 
   //// Variables
   var _soundNumber = 0;
-  var _audioContextsMax = 6;
+  var _soundPlayerMax = 10; // arbitrary, may change or go away
   var _soundPlayerArray = [];
 
   /******************************
@@ -32,7 +32,7 @@ var SSPApp = (function () {
   *******************************/
   
   // private
-  var _getContext = function() {
+  var _createContext = function() {
     var ac = null;
     if ( !window.AudioContext && !window.webkitAudioContext ) {
       console.warn('Web Audio API not supported in this browser');
@@ -43,6 +43,7 @@ var SSPApp = (function () {
       return ac;
     };
   }();
+  var _audioContext = _createContext();
   var _isAPArrayEmpty = function() {
     var isEmpty = false;
     _soundPlayerArray.forEach(function(sound) {
@@ -63,14 +64,17 @@ var SSPApp = (function () {
   var getSoundNumber = function() {
     return _soundNumber;
   }
-  var getAudioContextsMax = function() {
-    return _audioContextsMax;
+  var getAudioContext = function() {
+    return _audioContext;
   }
   var getSoundPlayer = function(index) {
     return _soundPlayerArray[index];
   }
   var getSoundPlayerArray = function() {
     return _soundPlayerArray;
+  }
+  var getSoundPlayerMax = function() {
+    return _soundPlayerMax;
   }
   var makeSoundPlayer = function(numOfPlayers) {
     var playerCount = (numOfPlayers || 1);
@@ -167,11 +171,13 @@ var SSPApp = (function () {
     _enableDownload(blob);
   }
   
+  // public functions
   return {
     getSoundNumber:       getSoundNumber,
-    getAudioContextsMax:  getAudioContextsMax,
+    getAudioContext:      getAudioContext,
     getSoundPlayer:       getSoundPlayer,
     getSoundPlayerArray:  getSoundPlayerArray,
+    getSoundPlayerMax:    getSoundPlayerMax,
     makeSoundPlayer:      makeSoundPlayer,
     makeSSP:              makeSSP
   }
@@ -182,7 +188,7 @@ var SoundPlayer = function() {
   //// Variables
   var that = this;
   this.soundId = SSPApp.getSoundNumber();
-  this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  this.audioContext = SSPApp.getAudioContext();
   this.audioBuffer = null;
   this.gainNode = this.audioContext.createGain();
   this.source = null;
@@ -378,20 +384,20 @@ var SoundPlayer = function() {
 
 //// Set up the initial web application user interface
 function initPageUI() {
-  var apCountMax = document.getElementById("lblSoundPlayersCountMax");
-  var apCount = document.getElementById("lblSoundPlayersCount");
+  var spCountMax = document.getElementById("lblSoundPlayersCountMax");
+  var spCount = document.getElementById("lblSoundPlayersCount");
   var createAP = document.getElementById("btnCreateSoundPlayer");
   var makeSSP = document.getElementById("btnMakeSSP");
   var sampleSizeVal = document.getElementById("rngSampleSize");
   var sampleSizeTxt = document.getElementById("txtSampleSize");
   
-  apCountMax.innerText = SSPApp.getAudioContextsMax();
-  apCount.innerText = SSPApp.getSoundNumber();
+  spCountMax.innerText = SSPApp.getSoundPlayerMax();
+  spCount.innerText = SSPApp.getSoundNumber();
   createAP.addEventListener("click", function() {
-    if (SSPApp.getSoundNumber() < 5) {
+    if (SSPApp.getSoundNumber() < SSPApp.getSoundPlayerMax()) {
       SSPApp.makeSoundPlayer();
     } else {
-      alert("The maximum number of AudioContexts (6) has been reached. No more can be created.");
+      alert("Can't create new SoundPlayer as the maximum number has been reached.");
     }
   });
   makeSSP.addEventListener("click", function() {
