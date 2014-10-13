@@ -1,6 +1,6 @@
-/***************************
-Javascript Module Strategy
-***************************/
+/*******************************
+** Javascript Module Strategy **
+********************************/
 
 //// Global Constants
 var SND_STATUS_PLAYING = "playing";
@@ -9,6 +9,7 @@ var SND_STATUS_PAUSED = "paused";
 var SND_STATUS_UNLOADED = "unloaded";
 var SND_STATUS_LOADED = "loaded and ready";
 
+//// Useful Date function for generating filenames
 Date.prototype.curDateTime = function() {
   var year = this.getFullYear().toString();
   var month = (this.getMonth()+1).toString();
@@ -19,16 +20,17 @@ Date.prototype.curDateTime = function() {
   return year + (month[1] ? month : "0" + month[0]) + (day[1] ? day : "0" + day[0]) + "-" + (hh[1] ? hh : "0" + hh[0]) + (mm[1] ? mm : "0" + mm[0]) + (ss[1] ? ss : "0" + ss[0]);
 }
 
-// SSPApp "class" module implementation
+//// Sound Sampler Platter web application "class" module implementation
 var SSPApp = (function () { 
   //// Variables
   var _soundNumber = 0;
   var _audioContextsMax = 6;
   var _soundPlayerArray = [];
 
-  ///////////////////////////////////
-  //// General-Purpose Functions ////
-  ///////////////////////////////////
+  /******************************
+  ** General-Purpose Functions **
+  *******************************/
+  
   // private
   var _getContext = function() {
     var ac = null;
@@ -70,16 +72,21 @@ var SSPApp = (function () {
   var getSoundPlayerArray = function() {
     return _soundPlayerArray;
   }
-  var makeSoundPlayer = function() {
-    _soundPlayerArray.push(new SoundPlayer());
-    _incSoundNumber();
-    _updateSoundPlayerCount();
+  var makeSoundPlayer = function(numOfPlayers) {
+    var playerCount = (numOfPlayers || 1);
+    if (playerCount <= 0) playerCount = 1;
+    for (var i = 0; i < playerCount; i++) {
+      _soundPlayerArray.push(new SoundPlayer());
+      _incSoundNumber();
+      _updateSoundPlayerCount();
+    }
+
     return _soundPlayerArray[_soundPlayerArray.length-1];
   }
   
-  /////////////////////////////////////////
-  //// Sound Sampler Platter Functions ////
-  /////////////////////////////////////////
+  /************************************
+  ** Sound Sampler Platter Functions **
+  *************************************/
   
   // private
   function _enableDownload(blob, givenFilename) {
@@ -170,7 +177,7 @@ var SSPApp = (function () {
   }
 })();
 
-// SoundPlayer "class" module implementation
+//// SoundPlayer "class" module implementation
 var SoundPlayer = function() {
   //// Variables
   var that = this;
@@ -185,7 +192,7 @@ var SoundPlayer = function() {
   this.isStopped = true;
   this.playing = false;
   
-  //// SoundPlayer Methods
+  //// Methods
   // property getters
   var getSoundId = function() { 
     return this.soundId; 
@@ -306,9 +313,9 @@ var SoundPlayer = function() {
     snd.playing = !snd.playing;
   };
   
-  ////////////////////
-  // User Interface //
-  ////////////////////
+  /*******************
+  ** User Interface **
+  *******************/
   this.soundDiv = document.createElement('div');
   this.soundHeader = document.createElement('h3');
   this.soundStatus = document.createElement('div');
@@ -369,6 +376,7 @@ var SoundPlayer = function() {
   this.soundDiv.appendChild(this.btnStop);
 };
 
+//// Set up the initial web application user interface
 function initPageUI() {
   var apCountMax = document.getElementById("lblSoundPlayersCountMax");
   var apCount = document.getElementById("lblSoundPlayersCount");
@@ -403,14 +411,8 @@ function initPageUI() {
   sampleSizeTxt.value=sampleSizeVal.value;
 }
 
-// Set up the app with default settings and an example SoundPlayer
 window.onload = function() {
-  // set up basic page UI stuff
   initPageUI();
   
-  // make an example SoundPlayer
-  SSPApp.makeSoundPlayer();
-  SSPApp.makeSoundPlayer();
-  
-  var snd0 = SSPApp.getSoundPlayer(0);
+  SSPApp.makeSoundPlayer(2);
 };
