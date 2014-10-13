@@ -281,6 +281,7 @@ var SoundPlayer = function() {
     var soundPlayerN = snd;
     snd.source.onended = function() {
       var pauseOrStopStatus = soundPlayerN.isPaused ? SND_STATUS_PAUSED : SND_STATUS_STOPPED;
+      if (pauseOrStopStatus == SND_STATUS_STOPPED) soundPlayerN.isStopped = true;
       if (soundPlayerN.isStopped) soundPlayerN.playing = false;
       updateSoundStatus(soundPlayerN.soundId, pauseOrStopStatus);
     };
