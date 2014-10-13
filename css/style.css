@@ -89,6 +89,10 @@ section#soundSamplerControls
   {
     width: 20px;
   }
+  section#soundSamplerControls a#linkDownloadSSP
+  {
+    display: none;
+  }
 section#soundPlayers
 {
   clear: left;

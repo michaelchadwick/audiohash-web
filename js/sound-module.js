@@ -9,6 +9,16 @@ var SND_STATUS_PAUSED = "paused";
 var SND_STATUS_UNLOADED = "unloaded";
 var SND_STATUS_LOADED = "loaded and ready";
 
+Date.prototype.curDateTime = function() {
+  var year = this.getFullYear().toString();
+  var month = (this.getMonth()+1).toString();
+  var day = this.getDate().toString();
+  var hh = this.getHours().toString();
+  var mm = this.getMinutes().toString();
+  var ss = this.getSeconds().toString();
+  return year + (month[1] ? month : "0" + month[0]) + (day[1] ? day : "0" + day[0]) + "-" + (hh[1] ? hh : "0" + hh[0]) + (mm[1] ? mm : "0" + mm[0]) + (ss[1] ? ss : "0" + ss[0]);
+}
+
 // SSPApp "class" module implementation
 var SSPApp = (function () { 
   //// Variables
@@ -28,7 +38,6 @@ var SSPApp = (function () {
       return ac;
     };
   }();
-
   var _ctx = _getContext();
   
   //// Public Methods
@@ -73,13 +82,13 @@ var SSPApp = (function () {
   //// Sound Sampler Platter Functions ////
   /////////////////////////////////////////
   
-  function makeWavFile(ssp) {
-    var buffer = new ArrayBuffer(44 + ssp.length * 2);
+  function makeWavFile(sspBuffer) {
+    var buffer = new ArrayBuffer(44 + sspBuffer.length * 2);
     var view = new DataView(buffer);
     
     // RIFF chunk descriptor
     writeUTFBytes(view, 0, 'RIFF');
-    view.setUint32(4, 44 + ssp.length * 2, true);
+    view.setUint32(4, 44 + sspBuffer.length * 2, true);
     writeUTFBytes(view, 8, 'WAVE');
     // FMT sub-chunk
     writeUTFBytes(view, 12, 'fmt ');
@@ -93,18 +102,17 @@ var SSPApp = (function () {
     view.setUint16(34, 16, true);
     // data sub-chunk
     writeUTFBytes(view, 36, 'data');
-    view.setUint32(40, ssp.length * 2, true);
+    view.setUint32(40, sspBuffer.length * 2, true);
  
     // write the PCM samples
-    var lng = ssp.length;
+    var lng = sspBuffer.length;
     var index = 44;
     var volume = 1;
     for (var i = 0; i < lng; i++)
     {
-      view.setInt16(index, ssp[i] * (0x7FFF * volume), true);
+      view.setInt16(index, sspBuffer[i] * (0x7FFF * volume), true);
       index += 2;
     }
-    console.log("about to return WAV blog");
     return (new Blob ( [ view ], { type : 'audio/wav' } ));
   }
   
@@ -116,35 +124,42 @@ var SSPApp = (function () {
     }
   }
   
-  function makeSSP(soundArray) {
-    var numberOfChannels = 0;
-    var soundChannelsArray = [];
-    soundArray.forEach(function(sound) {
-      soundChannelsArray.push(sound.audioBuffer.numberOfChannels);
+  function getSoundChannelsMin(sndArr) {
+    var sndChannelsArr = [];
+    sndArr.forEach(function(snd) {
+      sndChannelsArr.push(snd.audioBuffer.numberOfChannels);
     });
-    numberOfChannels = Math.min.apply(Math,soundChannelsArray);
-    var ssp = _ctx.createBuffer(numberOfChannels, (soundArray[0].audioBuffer.length + soundArray[1].audioBuffer.length), soundArray[0].audioBuffer.sampleRate);
+    return Math.min.apply(Math,sndChannelsArr);
+  }
+  
+  function makeSSP(sndArr) {
+    var numberOfChannels = getSoundChannelsMin(sndArr);
+    var sspBuffer = _ctx.createBuffer(
+      numberOfChannels, 
+      (sndArr[0].audioBuffer.length + sndArr[1].audioBuffer.length), 
+      sndArr[0].audioBuffer.sampleRate
+    );
     for (var i=0; i<numberOfChannels; i++)
     {
-      var channel = ssp.getChannelData(i);
-      channel.set(soundArray[0].audioBuffer.getChannelData(i), 0);
-      channel.set(soundArray[1].audioBuffer.getChannelData(i), soundArray[0].audioBuffer.length);
+      var channel = sspBuffer.getChannelData(i);
+      console.log("channel");
+      channel.set(sndArr[0].audioBuffer.getChannelData(i), 0);
+      channel.set(sndArr[1].audioBuffer.getChannelData(i), sndArr[0].audioBuffer.length);
     }
-    
-    console.log("about to make wav file");
-    
-    var blob = makeWavFile(ssp);
-    
-    console.log("made blob");
+
+    var blob = makeWavFile(sspBuffer);
     
     enableDownload(blob);
   }
   
-  function enableDownload(blob, filename) {
+  function enableDownload(blob, givenFilename) {
     var url = (window.URL || window.webkitURL).createObjectURL(blob);
     var link = document.getElementById("linkDownloadSSP");
+    var d = new Date();
+    var defaultFilename = "soundSamplerPlatter" + d.curDateTime() + ".wav";
+    link.style.display = "inline";
     link.href = url;
-    link.download = filename || "soundSamplerPlatter.wav";
+    link.download = givenFilename || defaultFilename;
   }
 
   return {
