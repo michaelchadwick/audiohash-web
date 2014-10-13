@@ -109,19 +109,19 @@ section#soundPlayers
   float: left;
   margin: 3px;
   padding: 0 8px 3px 0;
-  width: 235px;
+  width: 245px;
 }
 .sound > *
 {
   clear: left;
   float: left;
 }
-.sound h3 {
+.sound .sound-header {
   background: #444;
   color: #fff;
   margin: 0;
   padding: 2px 5px;
-  width: 100%;
+  width: 99%;
 }
 .sound .sound-status {
   background: #555;
@@ -129,7 +129,20 @@ section#soundPlayers
   font-size: 0.75em;
   margin: 0 0 7px;
   padding: 2px 5px;
-  width: 100%;
+  width: 99%;
+}
+.sound.activated
+{
+  background: #ECF4EE;
+  border: 2px solid #2CB43C;
+}
+.sound.activated .sound-header
+{
+  background: #117719;
+}
+.sound.activated .sound-status
+{
+  background: #1B8F1D;
 }
 .sound input[type="file"]
 {

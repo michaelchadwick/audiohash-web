@@ -186,7 +186,7 @@ var SSPApp = (function () {
 //// SoundPlayer "class" module implementation
 var SoundPlayer = function() {
   //// Variables
-  var that = this;
+  var curSoundPlayer = this;
   this.soundId = SSPApp.getSoundNumber();
   this.audioContext = SSPApp.getAudioContext();
   this.audioBuffer = null;
@@ -248,14 +248,22 @@ var SoundPlayer = function() {
     soundPlayer.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
       soundPlayer.audioBuffer = buffer;
       var btnP = document.getElementById("btnPlay" + sId);
-      btnP.disabled = false;
       var btnS = document.getElementById("btnStop" + sId);
+      btnP.disabled = false;
       btnS.disabled = false;
       updateSoundStatus(sId, SND_STATUS_LOADED);
+      document.getElementById("sound" + sId).classList.add("activated");
     }, function(e) {
       console.warn('Error decoding file', e);
     });
   };
+  
+  var disableSound = function(sId) {
+    document.getElementById("sound" + sId).classList.remove("activated");
+    SSPApp.getSoundPlayer(sId).audioBuffer = null;
+    document.getElementById("btnPlay" + sId).disabled = true;
+    document.getElementById("btnStop" + sId).disabled = true;
+  }
 
   // play the sound from a specific startOffset
   var playSound = function(snd) {
@@ -323,7 +331,7 @@ var SoundPlayer = function() {
   ** User Interface **
   *******************/
   this.soundDiv = document.createElement('div');
-  this.soundHeader = document.createElement('h3');
+  this.soundHeader = document.createElement('div');
   this.soundStatus = document.createElement('div');
   this.fileUpload = document.createElement('input');
   this.rngVolume = document.createElement('input');
@@ -332,6 +340,8 @@ var SoundPlayer = function() {
   this.btnStop = document.createElement('button');
 
   this.soundDiv.classList.add('sound');
+  this.soundDiv.id = "sound" + this.soundId;
+  this.soundHeader.classList.add("sound-header");
   this.soundHeader.innerText = "Sound " + this.soundId;
   this.soundStatus.id = "soundStatus" + this.soundId;
   this.soundStatus.classList.add('sound-status');
@@ -342,12 +352,18 @@ var SoundPlayer = function() {
   this.fileUpload.accept = "audio/*";
   this.fileUpload.addEventListener('change', function(e) {
     var reader = new FileReader();
-    var sId = that.soundId;
-    //var initSound = that.initSound;
+    var sId = curSoundPlayer.soundId;
     reader.onload = function(e) {
-      initSound(this.result, that, sId);
+      initSound(this.result, curSoundPlayer, sId);
     };
-    reader.readAsArrayBuffer(this.files[0]);
+    if (e.srcElement.value != "")
+    {
+      reader.readAsArrayBuffer(this.files[0]);
+    }
+    else
+    {
+      disableSound(sId);
+    }
   }, false);
 
   this.rngVolume.id = "rngVolume" + this.soundId;
