@@ -21,7 +21,7 @@ Date.prototype.curDateTime = function() {
 }
 
 //// Sound Sampler Platter web application "class" module implementation
-var SSPApp = (function () { 
+var Admixt = (function () { 
   //// Variables
   var _soundNumber = 0;
   var _soundPlayerMax = 10; // arbitrary, may change or go away
@@ -95,20 +95,20 @@ var SSPApp = (function () {
   // private
   function _enableDownload(blob, givenFilename) {
     var url = (window.URL || window.webkitURL).createObjectURL(blob);
-    var link = document.getElementById("linkDownloadSSP");
+    var link = document.getElementById("linkDownloadTheThing");
     var d = new Date();
-    var defaultFilename = "soundSamplerPlatter" + d.curDateTime() + ".wav";
+    var defaultFilename = "admixt" + d.curDateTime() + ".wav";
     link.style.display = "inline";
     link.href = url;
     link.download = givenFilename || defaultFilename;
   }
-  function _makeWavFile(sspBuffer, sampleRate) {
-    var buffer = new ArrayBuffer(44 + sspBuffer.length * 2);
+  function _makeWavFile(admixtBuffer, sampleRate) {
+    var buffer = new ArrayBuffer(44 + admixtBuffer.length * 2);
     var view = new DataView(buffer);
     
     // RIFF chunk descriptor
     _writeUTFBytes(view, 0, 'RIFF');
-    view.setUint32(4, 44 + sspBuffer.length * 2, true);
+    view.setUint32(4, 44 + admixtBuffer.length * 2, true);
     _writeUTFBytes(view, 8, 'WAVE');
     // FMT sub-chunk
     _writeUTFBytes(view, 12, 'fmt ');
@@ -122,13 +122,13 @@ var SSPApp = (function () {
     view.setUint16(34, 16, true);
     // data sub-chunk
     _writeUTFBytes(view, 36, 'data');
-    view.setUint32(40, sspBuffer.length * 2, true);
+    view.setUint32(40, admixtBuffer.length * 2, true);
  
     // write the PCM samples
     var index = 44;
-    for (var i = 0; i < sspBuffer.length; i++)
+    for (var i = 0; i < admixtBuffer.length; i++)
     {
-      var s = Math.max(-1, Math.min(1, sspBuffer[i]));
+      var s = Math.max(-1, Math.min(1, admixtBuffer[i]));
       view.setInt16(index, s < 0 ? (s * 0x8000) : (s * 0x7FFF), true);
       index += 2;
     }
@@ -151,21 +151,21 @@ var SSPApp = (function () {
   }
   
   // public
-  function makeSSP(sndArr) {
+  function makeTheThing(sndArr) {
     var numberOfChannels = _getSoundChannelsMin(sndArr);
-    var sspBuffer = getAudioContext().createBuffer(
+    var admixtBuffer = getAudioContext().createBuffer(
       numberOfChannels, 
       (sndArr[0].audioBuffer.length + sndArr[1].audioBuffer.length), 
       sndArr[0].audioBuffer.sampleRate
     );
     for (var i=0; i < numberOfChannels; i++)
     {
-      var channel = sspBuffer.getChannelData(i);
+      var channel = admixtBuffer.getChannelData(i);
       channel.set(sndArr[0].audioBuffer.getChannelData(i), 0);
       channel.set(sndArr[1].audioBuffer.getChannelData(i), sndArr[0].audioBuffer.length);
     }
 
-    var blob = _makeWavFile(sspBuffer, sndArr[0].audioBuffer.sampleRate);
+    var blob = _makeWavFile(admixtBuffer, sndArr[0].audioBuffer.sampleRate);
     
     _enableDownload(blob);
   }
@@ -179,7 +179,7 @@ var SSPApp = (function () {
     getSoundPlayerArray:  getSoundPlayerArray,
     getSoundPlayerMax:    getSoundPlayerMax,
     makeSoundPlayer:      makeSoundPlayer,
-    makeSSP:              makeSSP
+    makeTheThing:              makeTheThing
   }
 })();
 
@@ -187,8 +187,8 @@ var SSPApp = (function () {
 var SoundPlayer = function() {
   //// Variables
   var curSoundPlayer = this;
-  this.soundId = SSPApp.getSoundNumber();
-  this.audioContext = SSPApp.getAudioContext();
+  this.soundId = Admixt.getSoundNumber();
+  this.audioContext = Admixt.getAudioContext();
   this.audioBuffer = null;
   this.gainNode = this.audioContext.createGain();
   this.source = null;
@@ -213,7 +213,7 @@ var SoundPlayer = function() {
     var volumeMax = element.srcElement.max;
     var fraction = parseInt(volume) / parseInt(volumeMax);
     var sId = element.srcElement.id.split("rngVolume")[1];
-    var snd = SSPApp.getSoundPlayer(sId);
+    var snd = Admixt.getSoundPlayer(sId);
     snd.gainNode.gain.value = fraction * fraction;
   };
 
@@ -223,7 +223,7 @@ var SoundPlayer = function() {
     var volumeMax = element.max;
     var fraction = parseInt(volume) / parseInt(volumeMax);
     var sId = element.id.split("rngVolume")[1];
-    var snd = SSPApp.getSoundPlayer(sId);
+    var snd = Admixt.getSoundPlayer(sId);
     snd.gainNode.gain.value = fraction * fraction;
   }
 
@@ -261,7 +261,7 @@ var SoundPlayer = function() {
   // set audioBuffer to null and turn off play/pause/stop controls
   var disableSound = function(sId) {
     document.getElementById("sound" + sId).classList.remove("activated");
-    SSPApp.getSoundPlayer(sId).audioBuffer = null;
+    Admixt.getSoundPlayer(sId).audioBuffer = null;
     document.getElementById("btnPlay" + sId).disabled = true;
     document.getElementById("btnStop" + sId).disabled = true;
   }
@@ -310,7 +310,7 @@ var SoundPlayer = function() {
   // stop playing the sound
   var stopSound = function() {
     var sId = this.id.split("btnStop")[1];
-    var snd = SSPApp.getSoundPlayer(sId);
+    var snd = Admixt.getSoundPlayer(sId);
     snd.startOffset = 0;
     snd.source.stop();
     snd.playing = false;
@@ -322,7 +322,7 @@ var SoundPlayer = function() {
   // when the play/pause button is pressed, toggle the current sound's status
   var togglePlayState = function() {
     var sId = this.id.split("btnPlay")[1];
-    var snd = SSPApp.getSoundPlayer(sId);
+    var snd = Admixt.getSoundPlayer(sId);
     // if playing, pause and capture currentTime; if not, then play from startOffset
     snd.playing ? pauseSound(snd) : playSound(snd);
     // flip playing mode status
@@ -405,28 +405,28 @@ function initPageUI() {
   var spCountMax = document.getElementById("lblSoundPlayersCountMax");
   var spCount = document.getElementById("lblSoundPlayersCount");
   var createAP = document.getElementById("btnCreateSoundPlayer");
-  var makeSSP = document.getElementById("btnMakeSSP");
+  var makeTheThing = document.getElementById("btnMakeTheThing");
   var sampleSizeVal = document.getElementById("rngSampleSize");
   var sampleSizeTxt = document.getElementById("txtSampleSize");
   
-  spCountMax.innerText = SSPApp.getSoundPlayerMax();
-  spCount.innerText = SSPApp.getSoundNumber();
+  spCountMax.innerText = Admixt.getSoundPlayerMax();
+  spCount.innerText = Admixt.getSoundNumber();
   createAP.addEventListener("click", function() {
-    if (SSPApp.getSoundNumber() < SSPApp.getSoundPlayerMax()) {
-      SSPApp.makeSoundPlayer();
+    if (Admixt.getSoundNumber() < Admixt.getSoundPlayerMax()) {
+      Admixt.makeSoundPlayer();
     } else {
       alert("Can't create new SoundPlayer as the maximum number has been reached.");
     }
   });
-  makeSSP.addEventListener("click", function() {
-    if (SSPApp.getSoundNumber() < 2) {
-      alert("You need at least two sounds to make a sound sampler platter");
+  makeTheThing.addEventListener("click", function() {
+    if (Admixt.getSoundNumber() < 2) {
+      alert("You need at least two sounds to make an admixt.");
     }
-    else if (SSPApp.isAPArrayEmpty()) {
+    else if (Admixt.isAPArrayEmpty()) {
       alert("You haven't loaded enough sounds yet!");
     }
     else {
-      SSPApp.makeSSP(SSPApp.getSoundPlayerArray());
+      Admixt.makeTheThing(Admixt.getSoundPlayerArray());
     }
   });
   sampleSizeVal.addEventListener("change", function(e) {
@@ -438,5 +438,5 @@ function initPageUI() {
 window.onload = function() {
   initPageUI();
   
-  SSPApp.makeSoundPlayer(2);
+  Admixt.makeSoundPlayer(2);
 };
