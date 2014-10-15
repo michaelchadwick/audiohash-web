@@ -44,15 +44,6 @@ var SSPApp = (function () {
     };
   }();
   var _audioContext = _createContext();
-  var _isAPArrayEmpty = function() {
-    var isEmpty = false;
-    _soundPlayerArray.forEach(function(sound) {
-      if (!sound.audioBuffer) {
-        isEmpty = true;
-      }
-    });
-    return isEmpty;
-  }
   var _incSoundNumber = function() {
     _soundNumber++;
   }
@@ -61,6 +52,15 @@ var SSPApp = (function () {
   }
   
   // public
+  var isAPArrayEmpty = function() {
+    var isEmpty = false;
+    _soundPlayerArray.forEach(function(sound) {
+      if (!sound.audioBuffer) {
+        isEmpty = true;
+      }
+    });
+    return isEmpty;
+  }
   var getSoundNumber = function() {
     return _soundNumber;
   }
@@ -102,7 +102,7 @@ var SSPApp = (function () {
     link.href = url;
     link.download = givenFilename || defaultFilename;
   }
-  function _makeWavFile(sspBuffer) {
+  function _makeWavFile(sspBuffer, sampleRate) {
     var buffer = new ArrayBuffer(44 + sspBuffer.length * 2);
     var view = new DataView(buffer);
     
@@ -116,8 +116,8 @@ var SSPApp = (function () {
     view.setUint16(20, 1, true);
     // stereo (2 channels)
     view.setUint16(22, 2, true);
-    view.setUint32(24, 44100, true);
-    view.setUint32(28, 44100 * 4, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 4, true);
     view.setUint16(32, 4, true);
     view.setUint16(34, 16, true);
     // data sub-chunk
@@ -125,14 +125,14 @@ var SSPApp = (function () {
     view.setUint32(40, sspBuffer.length * 2, true);
  
     // write the PCM samples
-    var lng = sspBuffer.length;
     var index = 44;
-    var volume = 1;
-    for (var i = 0; i < lng; i++)
+    for (var i = 0; i < sspBuffer.length; i++)
     {
-      view.setInt16(index, sspBuffer[i] * (0x7FFF * volume), true);
+      var s = Math.max(-1, Math.min(1, sspBuffer[i]));
+      view.setInt16(index, s < 0 ? (s * 0x8000) : (s * 0x7FFF), true);
       index += 2;
     }
+    
     return (new Blob ( [ view ], { type : 'audio/wav' } ));
   }
   function _writeUTFBytes(view, offset, string) {
@@ -147,32 +147,32 @@ var SSPApp = (function () {
     sndArr.forEach(function(snd) {
       sndChannelsArr.push(snd.audioBuffer.numberOfChannels);
     });
-    return Math.min.apply(Math,sndChannelsArr);
+    return Math.min.apply(Math, sndChannelsArr);
   }
   
   // public
   function makeSSP(sndArr) {
     var numberOfChannels = _getSoundChannelsMin(sndArr);
-    var sspBuffer = _getContext().createBuffer(
+    var sspBuffer = getAudioContext().createBuffer(
       numberOfChannels, 
       (sndArr[0].audioBuffer.length + sndArr[1].audioBuffer.length), 
       sndArr[0].audioBuffer.sampleRate
     );
-    for (var i=0; i<numberOfChannels; i++)
+    for (var i=0; i < numberOfChannels; i++)
     {
       var channel = sspBuffer.getChannelData(i);
-      console.log("channel");
       channel.set(sndArr[0].audioBuffer.getChannelData(i), 0);
       channel.set(sndArr[1].audioBuffer.getChannelData(i), sndArr[0].audioBuffer.length);
     }
 
-    var blob = _makeWavFile(sspBuffer);
+    var blob = _makeWavFile(sspBuffer, sndArr[0].audioBuffer.sampleRate);
     
     _enableDownload(blob);
   }
   
   // public functions
   return {
+    isAPArrayEmpty:       isAPArrayEmpty,
     getSoundNumber:       getSoundNumber,
     getAudioContext:      getAudioContext,
     getSoundPlayer:       getSoundPlayer,
@@ -258,6 +258,7 @@ var SoundPlayer = function() {
     });
   };
   
+  // set audioBuffer to null and turn off play/pause/stop controls
   var disableSound = function(sId) {
     document.getElementById("sound" + sId).classList.remove("activated");
     SSPApp.getSoundPlayer(sId).audioBuffer = null;
@@ -421,7 +422,7 @@ function initPageUI() {
     if (SSPApp.getSoundNumber() < 2) {
       alert("You need at least two sounds to make a sound sampler platter");
     }
-    else if (SSPApp._isAPArrayEmpty()) {
+    else if (SSPApp.isAPArrayEmpty()) {
       alert("You haven't loaded enough sounds yet!");
     }
     else {
