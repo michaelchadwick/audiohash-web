@@ -65,6 +65,7 @@ section#dashboard {
       color: #111;
       cursor: pointer;
       font-weight: bold;
+      margin-top: 2px;
       padding: 4px;
     }
     section#buttons button:hover {
@@ -79,7 +80,7 @@ section#soundSamplerControls
   clear: left;
   float: left;
   margin: 2px;
-  padding: 5px;
+  padding: 4px 8px;
 }
   section#soundSamplerControls input#rngSampleSize
   {
