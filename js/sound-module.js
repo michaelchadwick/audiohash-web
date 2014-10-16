@@ -55,23 +55,37 @@ var Admixt = (function () {
   var getAudioContext = function() {
     return _audioContext();
   }
-  var getSoundPlayer = function(index) {
-    return _soundPlayerArray[index];
+  var getSoundPlayer = function(sId) {
+    console.log("getSoundPlayer list IDs", _listSoundPlayerIds());
+    console.log("getSoundPlayer sId", sId);
+    var position = _listSoundPlayerIds().indexOf(parseInt(sId));
+    console.log("getSoundPlayer position", position);
+    return _soundPlayerArray[position];
   }
   var getSoundPlayerArray = function() {
     return _soundPlayerArray;
   }
+  var getSoundPlayerArrayLength = function() {
+    return _soundPlayerArray.length;
+  }
   var getSoundPlayerMax = function() {
     return _soundPlayerMax;
   }
-  
+
   //// Functions
   // private
+  function _listSoundPlayerIds() {
+    var arrIds = [];
+    for (var i = 0; i < _soundPlayerArray.length; i++) {
+      arrIds.push(_soundPlayerArray[i].soundId)
+    }
+    return arrIds;
+  }
   function _incSoundNumber() {
     _soundNumber++;
   }
   function _updateSoundPlayerCount() {
-    document.getElementById("lblSoundPlayersCount").innerText = getSoundNumber();
+    document.getElementById("lblSoundPlayersCount").innerText = getSoundPlayerArrayLength();
   }
   function _displayHexDrump(bufferString) {
     document.getElementById("hex-dump").style.display = "block";
@@ -180,11 +194,28 @@ var Admixt = (function () {
     if (playerCount <= 0) playerCount = 1;
     for (var i = 0; i < playerCount; i++) {
       _soundPlayerArray.push(new SoundPlayer());
+      console.log("post-create spArray IDs", _listSoundPlayerIds());
       _incSoundNumber();
       _updateSoundPlayerCount();
     }
 
     return _soundPlayerArray[_soundPlayerArray.length-1];
+  }
+  function destroySoundPlayer(sId) {
+    console.log("deleting sId", sId);
+    if (_soundPlayerArray.length > 1) {
+      var position = _listSoundPlayerIds().indexOf(sId);
+      _soundPlayerArray.splice(position, 1);
+      console.log("post-create spArray IDs", _listSoundPlayerIds());
+      console.log("post-create spArray", getSoundPlayerArray());
+    } else {
+      _soundPlayerArray = [];
+      console.log("post-create spArray IDs", getSoundPlayerArray());
+    }
+    
+    var divSoundPlayers = document.getElementById("soundPlayers");
+    divSoundPlayers.removeChild(document.getElementById("sound" + sId));
+    _updateSoundPlayerCount();
   }
   function createSampler(sndArr) {
     var numberOfChannels = _getSoundChannelsMin(sndArr);
@@ -232,14 +263,16 @@ var Admixt = (function () {
   
   // public functions
   return {
-    isSPArrayEmpty:       isSPArrayEmpty,
-    getSoundNumber:       getSoundNumber,
-    getAudioContext:      getAudioContext,
-    getSoundPlayer:       getSoundPlayer,
-    getSoundPlayerArray:  getSoundPlayerArray,
-    getSoundPlayerMax:    getSoundPlayerMax,
-    createSoundPlayer:    createSoundPlayer,
-    createSampler:        createSampler
+    isSPArrayEmpty:             isSPArrayEmpty,
+    getSoundNumber:             getSoundNumber,
+    getAudioContext:            getAudioContext,
+    getSoundPlayer:             getSoundPlayer,
+    getSoundPlayerArray:        getSoundPlayerArray,
+    getSoundPlayerArrayLength:  getSoundPlayerArrayLength,
+    getSoundPlayerMax:          getSoundPlayerMax,
+    createSoundPlayer:          createSoundPlayer,
+    destroySoundPlayer:         destroySoundPlayer,
+    createSampler:              createSampler
   }
 })();
 
@@ -256,16 +289,9 @@ var SoundPlayer = function() {
   this.startOffset = 0;
   this.isPaused = false;
   this.isStopped = true;
-  this.playing = false;
+  this.isPlaying = false;
   
   //// Methods
-  // property getters
-  var getSoundId = function() { 
-    return this.soundId; 
-  };
-  var getRngVolume = function() { 
-    return this.rngVolume.value; 
-  };
   
   // change the internal gain node value
   var changeVolume = function(element) {
@@ -305,6 +331,7 @@ var SoundPlayer = function() {
 
   // load the sound into a buffer
   var initSound = function(arrayBuffer, soundPlayer, sId) {
+    console.log("initSound soundPlayer", soundPlayer);
     soundPlayer.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
       soundPlayer.audioBuffer = buffer;
       var btnP = document.getElementById("btnPlay" + sId);
@@ -343,7 +370,7 @@ var SoundPlayer = function() {
     snd.source.onended = function() {
       var pauseOrStopStatus = soundPlayerN.isPaused ? SND_STATUS_PAUSED : SND_STATUS_STOPPED;
       if (pauseOrStopStatus == SND_STATUS_STOPPED) soundPlayerN.isStopped = true;
-      if (soundPlayerN.isStopped) soundPlayerN.playing = false;
+      if (soundPlayerN.isStopped) soundPlayerN.isPlaying = false;
       updateSoundStatus(soundPlayerN.soundId, pauseOrStopStatus);
     };
 
@@ -373,7 +400,7 @@ var SoundPlayer = function() {
     var snd = Admixt.getSoundPlayer(sId);
     snd.startOffset = 0;
     snd.source.stop();
-    snd.playing = false;
+    snd.isPlaying = false;
     snd.isPaused = false;
     snd.isStopped = true;
     updateSoundStatus(snd.soundId, SND_STATUS_STOPPED);
@@ -384,9 +411,9 @@ var SoundPlayer = function() {
     var sId = this.id.split("btnPlay")[1];
     var snd = Admixt.getSoundPlayer(sId);
     // if playing, pause and capture currentTime; if not, then play from startOffset
-    snd.playing ? pauseSound(snd) : playSound(snd);
+    snd.isPlaying ? pauseSound(snd) : playSound(snd);
     // flip playing mode status
-    snd.playing = !snd.playing;
+    snd.isPlaying = !snd.isPlaying;
   };
   
   /*******************
@@ -394,6 +421,7 @@ var SoundPlayer = function() {
   *******************/
   this.soundDiv = document.createElement('div');
   this.soundHeader = document.createElement('div');
+  this.soundDestroyer = document.createElement('div');
   this.soundStatus = document.createElement('div');
   this.fileUpload = document.createElement('input');
   this.rngVolume = document.createElement('input');
@@ -405,6 +433,12 @@ var SoundPlayer = function() {
   this.soundDiv.id = "sound" + this.soundId;
   this.soundHeader.classList.add("sound-header");
   this.soundHeader.innerText = "Sound " + this.soundId;
+  this.soundDestroyer.id = "sound-destroyer" + this.soundId;
+  this.soundDestroyer.classList.add("sound-destroyer");
+  this.soundDestroyer.innerHTML = "<a href='#'>X</a>";
+  this.soundDestroyer.addEventListener('click', function(e) {
+    Admixt.destroySoundPlayer(curSoundPlayer.soundId);
+  });
   this.soundStatus.id = "soundStatus" + this.soundId;
   this.soundStatus.classList.add('sound-status');
   this.soundStatus.innerText = SND_STATUS_UNLOADED;
@@ -452,6 +486,7 @@ var SoundPlayer = function() {
   var divSoundPlayers = document.getElementById("soundPlayers");
   divSoundPlayers.appendChild(this.soundDiv);
   this.soundDiv.appendChild(this.soundHeader);
+  this.soundHeader.appendChild(this.soundDestroyer);
   this.soundDiv.appendChild(this.soundStatus);
   this.soundDiv.appendChild(this.fileUpload);
   this.soundDiv.appendChild(this.rngVolume);
@@ -472,18 +507,18 @@ function initPageUI() {
   spCountMax.innerText = Admixt.getSoundPlayerMax();
   spCount.innerText = Admixt.getSoundNumber();
   createSP.addEventListener("click", function() {
-    if (Admixt.getSoundNumber() < Admixt.getSoundPlayerMax()) {
+    if (Admixt.getSoundPlayerArrayLength() < Admixt.getSoundPlayerMax()) {
       Admixt.createSoundPlayer();
     } else {
       alert("Can't create new SoundPlayer as the maximum number has been reached.");
     }
   });
   createSampler.addEventListener("click", function() {
-    if (Admixt.getSoundNumber() < 2) {
+    if (Admixt.getSoundPlayerArrayLength < 2) {
       alert("You need at least two sounds to make a sampler.");
     }
     else if (Admixt.isSPArrayEmpty()) {
-      alert("You haven't loaded enough sounds yet!");
+      alert("You haven't loaded sounds into all of the existing SoundPlayers yet!");
     }
     else {
       Admixt.createSampler(Admixt.getSoundPlayerArray());

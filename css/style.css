@@ -130,6 +130,37 @@ section#hex-dump
   padding: 2px 5px;
   width: 99%;
 }
+  .sound-destroyer {
+    background: #222;
+    border: 2px solid #000;
+    float: right;
+    font-size: 0.9em;
+    font-weight: bold;
+    height: 15px;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    top: 0px;
+    width: 15px;
+  }
+  .sound-destroyer:hover {
+    background: #555;
+  }
+  .sound-destroyer:hover a {
+    color: #f00;
+  }
+  .sound-destroyer a {
+    color: #fff;
+    left: 4px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    text-decoration: none;
+    top: -1px;
+  }
+  .sound-destroyer a:hover {
+    color: #f00;
+  }
 .sound .sound-status {
   background: #555;
   color: #fff;
