@@ -1,6 +1,6 @@
-/*******************************
-** Javascript Module Strategy **
-********************************/
+/**********************************************************
+** Admixt - combine sounds for one sound sampler platter **
+***********************************************************/
 
 //// Global Constants
 var SND_STATUS_PLAYING = "playing";
@@ -20,19 +20,14 @@ Date.prototype.curDateTime = function() {
   return year + (month[1] ? month : "0" + month[0]) + (day[1] ? day : "0" + day[0]) + "-" + (hh[1] ? hh : "0" + hh[0]) + (mm[1] ? mm : "0" + mm[0]) + (ss[1] ? ss : "0" + ss[0]);
 }
 
-//// Sound Sampler Platter web application "class" module implementation
+//// Admixt web application "class" module implementation
 var Admixt = (function () { 
   //// Variables
-  var _soundNumber = 0;
-  var _soundPlayerMax = 10; // arbitrary, may change or go away
-  var _soundPlayerArray = [];
-
-  /******************************
-  ** General-Purpose Functions **
-  *******************************/
-  
   // private
-  var _createContext = function() {
+  var _soundNumber = 0; // used to give each SP a unique ID
+  var _soundPlayerMax = 10; // arbitrary, may change or go away
+  var _soundPlayerArray = []; // holds all the existing SPs
+  var _audioContext = function() {
     var ac = null;
     if ( !window.AudioContext && !window.webkitAudioContext ) {
       console.warn('Web Audio API not supported in this browser');
@@ -42,17 +37,10 @@ var Admixt = (function () {
     return function() {
       return ac;
     };
-  }();
-  var _audioContext = _createContext();
-  var _incSoundNumber = function() {
-    _soundNumber++;
-  }
-  var _updateSoundPlayerCount = function() {
-    document.getElementById("lblSoundPlayersCount").innerText = getSoundNumber();
-  }
+  }(); 
   
   // public
-  var isAPArrayEmpty = function() {
+  var isSPArrayEmpty = function() {
     var isEmpty = false;
     _soundPlayerArray.forEach(function(sound) {
       if (!sound.audioBuffer) {
@@ -65,7 +53,7 @@ var Admixt = (function () {
     return _soundNumber;
   }
   var getAudioContext = function() {
-    return _audioContext;
+    return _audioContext();
   }
   var getSoundPlayer = function(index) {
     return _soundPlayerArray[index];
@@ -76,7 +64,118 @@ var Admixt = (function () {
   var getSoundPlayerMax = function() {
     return _soundPlayerMax;
   }
-  var makeSoundPlayer = function(numOfPlayers) {
+  
+  //// Functions
+  // private
+  function _incSoundNumber() {
+    _soundNumber++;
+  }
+  function _updateSoundPlayerCount() {
+    document.getElementById("lblSoundPlayersCount").innerText = getSoundNumber();
+  }
+  function _displayHexDrump(bufferString) {
+    document.getElementById("hex-dump").style.display = "block";
+    document.getElementById("hex-dump-contents").innerHTML = _hexDump(bufferString);
+  }
+  function _getSoundChannelsMin(sndArr) {
+    var sndChannelsArr = [];
+    sndArr.forEach(function(snd) {
+      sndChannelsArr.push(snd.audioBuffer.numberOfChannels);
+    });
+    return Math.min.apply(Math, sndChannelsArr);
+  }
+  function _getSoundSlice(audioBuffer) {
+    var sliceNumber = document.getElementById("txtSampleSize");
+    var randBegin = Math.Random() * (audioBuffer.length - sliceNumber);
+    var randEnd = randBegin + sliceNumber;
+    return audioBuffer.slice(randBegin, randEnd);
+  }
+  function _enableDownload(blob, givenFilename) {
+    var url = (window.URL || window.webkitURL).createObjectURL(blob);
+    var link = document.getElementById("linkDownloadSampler");
+    var d = new Date();
+    var defaultFilename = "sampler" + d.curDateTime() + ".wav";
+    link.style.display = "inline";
+    link.href = url;
+    link.download = givenFilename || defaultFilename;
+  }
+  function _writePCMSamples(output, offset, input) {
+    for (var i = 0; i < input.length; i++, offset+=2){
+      var s = Math.max(-1, Math.min(1, input[i]));
+      output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+  }
+  function _writeString(view, offset, string) {
+    for (var i = 0; i < string.length; i++){
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  } 
+  function _encodeWavFile(samples, sampleRate) {
+    var buffer = new ArrayBuffer(44 + samples.length * 2);
+    var view = new DataView(buffer);
+    
+    // RIFF identifier
+    _writeString(view, 0, 'RIFF');
+    // file length
+    view.setUint32(4, 36 + samples.length * 2, true);
+    // RIFF type
+    _writeString(view, 8, 'WAVE');
+    // format chunk identifier
+    _writeString(view, 12, 'fmt ');
+    // format chunk length
+    view.setUint32(16, 16, true);
+    // sample format (raw)
+    view.setUint16(20, 1, true);
+    // stereo (2 channels)
+    view.setUint16(22, 2, true);
+    // sample rate
+    view.setUint32(24, sampleRate, true);
+    // byte rate (sample rate * block align)
+    view.setUint32(28, sampleRate * 4, true);
+    // block align (channels * bytes/sample)
+    view.setUint16(32, 4, true);
+    // bits/sample
+    view.setUint16(34, 16, true);
+    // data chunk identifier
+    _writeString(view, 36, 'data');
+    // data chunk length
+    view.setUint32(40, samples.length * 2, true);
+    // write the PCM samples
+    _writePCMSamples(view, 44, samples);
+    
+    return view;
+  }
+  function _hexDump(buffer) {
+    var lines = [];
+    
+    for (var i = 0; i < buffer.length; i += 16) {
+      var hex = [];
+      var ascii = [];           
+        
+      for (var x = 0; x < 16; x++) {
+        var b = buffer.charCodeAt(i + x).toString(16).toUpperCase();
+        b = b.length == 1 ? '0' + b : b;
+        hex.push(b + " ");
+        
+        if (buffer.charCodeAt(i + x) > 126 || buffer.charCodeAt(i + x) < 32) {
+            ascii.push('.');
+        } else {
+            ascii.push(buffer.charAt(i + x));
+        }
+        
+        if ((x + 1) % 8 == 0) {
+            hex.push(" ");
+        }
+      }
+        
+      lines.push([hex.join(''), ascii.join('')].join(''));
+    }
+    
+    return lines.join('\n');
+  }
+  
+  // public
+  function createSoundPlayer(numOfPlayers) {
     var playerCount = (numOfPlayers || 1);
     if (playerCount <= 0) playerCount = 1;
     for (var i = 0; i < playerCount; i++) {
@@ -87,99 +186,60 @@ var Admixt = (function () {
 
     return _soundPlayerArray[_soundPlayerArray.length-1];
   }
-  
-  /************************************
-  ** Sound Sampler Platter Functions **
-  *************************************/
-  
-  // private
-  function _enableDownload(blob, givenFilename) {
-    var url = (window.URL || window.webkitURL).createObjectURL(blob);
-    var link = document.getElementById("linkDownloadTheThing");
-    var d = new Date();
-    var defaultFilename = "admixt" + d.curDateTime() + ".wav";
-    link.style.display = "inline";
-    link.href = url;
-    link.download = givenFilename || defaultFilename;
-  }
-  function _makeWavFile(admixtBuffer, sampleRate) {
-    var buffer = new ArrayBuffer(44 + admixtBuffer.length * 2);
-    var view = new DataView(buffer);
-    
-    // RIFF chunk descriptor
-    _writeUTFBytes(view, 0, 'RIFF');
-    view.setUint32(4, 44 + admixtBuffer.length * 2, true);
-    _writeUTFBytes(view, 8, 'WAVE');
-    // FMT sub-chunk
-    _writeUTFBytes(view, 12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    // stereo (2 channels)
-    view.setUint16(22, 2, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * 4, true);
-    view.setUint16(32, 4, true);
-    view.setUint16(34, 16, true);
-    // data sub-chunk
-    _writeUTFBytes(view, 36, 'data');
-    view.setUint32(40, admixtBuffer.length * 2, true);
- 
-    // write the PCM samples
-    var index = 44;
-    for (var i = 0; i < admixtBuffer.length; i++)
-    {
-      var s = Math.max(-1, Math.min(1, admixtBuffer[i]));
-      view.setInt16(index, s < 0 ? (s * 0x8000) : (s * 0x7FFF), true);
-      index += 2;
-    }
-    
-    return (new Blob ( [ view ], { type : 'audio/wav' } ));
-  }
-  function _writeUTFBytes(view, offset, string) {
-    var lng = string.length;
-    for (var i = 0; i < lng; i++)
-    {
-      view.setUint8(offset + i, string.charCodeAt(i));
-    }
-  } 
-  function _getSoundChannelsMin(sndArr) {
-    var sndChannelsArr = [];
-    sndArr.forEach(function(snd) {
-      sndChannelsArr.push(snd.audioBuffer.numberOfChannels);
-    });
-    return Math.min.apply(Math, sndChannelsArr);
-  }
-  
-  // public
-  function makeTheThing(sndArr) {
+  function createSampler(sndArr) {
     var numberOfChannels = _getSoundChannelsMin(sndArr);
-    var admixtBuffer = getAudioContext().createBuffer(
-      numberOfChannels, 
-      (sndArr[0].audioBuffer.length + sndArr[1].audioBuffer.length), 
+    var sndLengthSum = (function() {
+      var lng = 0;
+      for (var i = 0; i < sndArr.length; i++) {
+        lng += sndArr[i].audioBuffer.length;
+      }
+      return lng;
+    })();
+
+    var samplerBuffer = getAudioContext().createBuffer(
+      numberOfChannels,
+      sndLengthSum,
       sndArr[0].audioBuffer.sampleRate
     );
-    for (var i=0; i < numberOfChannels; i++)
-    {
-      var channel = admixtBuffer.getChannelData(i);
-      channel.set(sndArr[0].audioBuffer.getChannelData(i), 0);
-      channel.set(sndArr[1].audioBuffer.getChannelData(i), sndArr[0].audioBuffer.length);
-    }
 
-    var blob = _makeWavFile(admixtBuffer, sndArr[0].audioBuffer.sampleRate);
+    for (var i = 0; i < numberOfChannels; i++) {
+      var channel = samplerBuffer.getChannelData(i);
+      channel.set(sndArr[0].audioBuffer.getChannelData(i), 0);
+      for (var j = 1; j < sndArr.length; j++) {
+         channel.set(sndArr[j].audioBuffer.getChannelData(i), sndArr[j-1].audioBuffer.length);
+      }
+    }
     
-    _enableDownload(blob);
+    console.log("new samplerBuffer", samplerBuffer);
+    
+    // makes a temp audio buffer source to play the sampler
+    // var audioSource = getAudioContext().createBufferSource();
+//     audioSource.buffer = samplerBuffer;
+//     audioSource.connect(getAudioContext().destination);
+//     audioSource.playbackRate.value = 1;
+//     audioSource.start();
+    
+    // encode our newly made audio blob into a wav file
+    var dataView = _encodeWavFile(samplerBuffer, samplerBuffer.sampleRate);
+    var audioBlob = new Blob([dataView], { type : 'audio/wav' });
+    
+    // post new wav file to download link
+    _enableDownload(audioBlob);
+    
+    // post hex dump
+    //_displayHexDump(audioBlob.toString());
   }
   
   // public functions
   return {
-    isAPArrayEmpty:       isAPArrayEmpty,
+    isSPArrayEmpty:       isSPArrayEmpty,
     getSoundNumber:       getSoundNumber,
     getAudioContext:      getAudioContext,
     getSoundPlayer:       getSoundPlayer,
     getSoundPlayerArray:  getSoundPlayerArray,
     getSoundPlayerMax:    getSoundPlayerMax,
-    makeSoundPlayer:      makeSoundPlayer,
-    makeTheThing:              makeTheThing
+    createSoundPlayer:    createSoundPlayer,
+    createSampler:        createSampler
   }
 })();
 
@@ -404,29 +464,29 @@ var SoundPlayer = function() {
 function initPageUI() {
   var spCountMax = document.getElementById("lblSoundPlayersCountMax");
   var spCount = document.getElementById("lblSoundPlayersCount");
-  var createAP = document.getElementById("btnCreateSoundPlayer");
-  var makeTheThing = document.getElementById("btnMakeTheThing");
+  var createSP = document.getElementById("btnCreateSoundPlayer");
+  var createSampler = document.getElementById("btnCreateSampler");
   var sampleSizeVal = document.getElementById("rngSampleSize");
   var sampleSizeTxt = document.getElementById("txtSampleSize");
   
   spCountMax.innerText = Admixt.getSoundPlayerMax();
   spCount.innerText = Admixt.getSoundNumber();
-  createAP.addEventListener("click", function() {
+  createSP.addEventListener("click", function() {
     if (Admixt.getSoundNumber() < Admixt.getSoundPlayerMax()) {
-      Admixt.makeSoundPlayer();
+      Admixt.createSoundPlayer();
     } else {
       alert("Can't create new SoundPlayer as the maximum number has been reached.");
     }
   });
-  makeTheThing.addEventListener("click", function() {
+  createSampler.addEventListener("click", function() {
     if (Admixt.getSoundNumber() < 2) {
-      alert("You need at least two sounds to make an admixt.");
+      alert("You need at least two sounds to make a sampler.");
     }
-    else if (Admixt.isAPArrayEmpty()) {
+    else if (Admixt.isSPArrayEmpty()) {
       alert("You haven't loaded enough sounds yet!");
     }
     else {
-      Admixt.makeTheThing(Admixt.getSoundPlayerArray());
+      Admixt.createSampler(Admixt.getSoundPlayerArray());
     }
   });
   sampleSizeVal.addEventListener("change", function(e) {
@@ -438,5 +498,5 @@ function initPageUI() {
 window.onload = function() {
   initPageUI();
   
-  Admixt.makeSoundPlayer(2);
+  Admixt.createSoundPlayer(2);
 };
