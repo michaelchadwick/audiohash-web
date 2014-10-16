@@ -83,6 +83,8 @@ section#soundSamplerControls
 }
   section#soundSamplerControls input#rngSampleSize
   {
+    position: relative;
+    top: 5px;
     width: 80px;
   }
   section#soundSamplerControls input#txtSampleSize
@@ -116,7 +118,7 @@ section#hex-dump
   float: left;
   margin: 3px;
   padding: 0 8px 3px 0;
-  width: 245px;
+  width: 200px;
 }
 .sound > *
 {
@@ -137,10 +139,10 @@ section#hex-dump
     font-size: 0.9em;
     font-weight: bold;
     height: 15px;
+    left: 2px;
     margin: 0;
     padding: 0;
     position: relative;
-    top: 0px;
     width: 15px;
   }
   .sound-destroyer:hover {
@@ -169,19 +171,32 @@ section#hex-dump
   padding: 2px 5px;
   width: 99%;
 }
-.sound.activated
+.sound.loaded
+{
+  background: #f3f4ec;
+  border: 2px solid #b4a72c;
+}
+  .sound.loaded .sound-header
+  {
+    background: #717711;
+  }
+  .sound.loaded .sound-status
+  {
+    background: #8f8a1b;
+  }
+.sound.playing
 {
   background: #ECF4EE;
   border: 2px solid #2CB43C;
 }
-.sound.activated .sound-header
-{
-  background: #117719;
-}
-.sound.activated .sound-status
-{
-  background: #1B8F1D;
-}
+  .sound.playing .sound-header
+  {
+    background: #117719;
+  }
+  .sound.playing .sound-status
+  {
+    background: #1B8F1D;
+  }
 .sound input[type="file"]
 {
   margin: 0;
@@ -194,7 +209,7 @@ section#hex-dump
   float: left;
   margin: 5px 8px 5px 8px;
   padding: 0;
-  width: 190px;
+  width: 145px;
 }
 .sound label
 {

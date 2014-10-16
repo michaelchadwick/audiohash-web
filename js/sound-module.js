@@ -56,10 +56,7 @@ var Admixt = (function () {
     return _audioContext();
   }
   var getSoundPlayer = function(sId) {
-    console.log("getSoundPlayer list IDs", _listSoundPlayerIds());
-    console.log("getSoundPlayer sId", sId);
     var position = _listSoundPlayerIds().indexOf(parseInt(sId));
-    console.log("getSoundPlayer position", position);
     return _soundPlayerArray[position];
   }
   var getSoundPlayerArray = function() {
@@ -194,7 +191,6 @@ var Admixt = (function () {
     if (playerCount <= 0) playerCount = 1;
     for (var i = 0; i < playerCount; i++) {
       _soundPlayerArray.push(new SoundPlayer());
-      console.log("post-create spArray IDs", _listSoundPlayerIds());
       _incSoundNumber();
       _updateSoundPlayerCount();
     }
@@ -202,15 +198,11 @@ var Admixt = (function () {
     return _soundPlayerArray[_soundPlayerArray.length-1];
   }
   function destroySoundPlayer(sId) {
-    console.log("deleting sId", sId);
     if (_soundPlayerArray.length > 1) {
       var position = _listSoundPlayerIds().indexOf(sId);
       _soundPlayerArray.splice(position, 1);
-      console.log("post-create spArray IDs", _listSoundPlayerIds());
-      console.log("post-create spArray", getSoundPlayerArray());
     } else {
       _soundPlayerArray = [];
-      console.log("post-create spArray IDs", getSoundPlayerArray());
     }
     
     var divSoundPlayers = document.getElementById("soundPlayers");
@@ -319,7 +311,10 @@ var SoundPlayer = function() {
     var sId = this.id.split("rngVolume")[1];
     var lblVolumeId = "lblVolume".concat(sId);
     var lblVolumeN = document.getElementById(lblVolumeId);
-    lblVolumeN.innerText = rangeVolN.value;
+    var newVol = rangeVolN.value;
+    if (newVol < 100) newVol = "0" + newVol;
+    if (newVol < 10) newVol = "0" + newVol;
+    lblVolumeN.innerText = newVol;
   };
 
   // update the current sound status label
@@ -327,11 +322,19 @@ var SoundPlayer = function() {
     var curSoundStatusId = "soundStatus".concat(sId);
     var curSoundStatusN = document.getElementById(curSoundStatusId);
     curSoundStatusN.innerText = status;
+    if (status == SND_STATUS_PAUSED || status == SND_STATUS_STOPPED) {
+      document.getElementById("sound" + sId).classList.remove("playing");
+      document.getElementById("sound" + sId).classList.add("loaded");
+    } else if (status == SND_STATUS_PLAYING) {
+      document.getElementById("sound" + sId).classList.remove("loaded");
+      document.getElementById("sound" + sId).classList.add("playing");
+    } else if (status == SND_STATUS_LOADED) {
+      document.getElementById("sound" + sId).classList.add("loaded");
+    }
   };
 
   // load the sound into a buffer
   var initSound = function(arrayBuffer, soundPlayer, sId) {
-    console.log("initSound soundPlayer", soundPlayer);
     soundPlayer.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
       soundPlayer.audioBuffer = buffer;
       var btnP = document.getElementById("btnPlay" + sId);
@@ -339,7 +342,6 @@ var SoundPlayer = function() {
       btnP.disabled = false;
       btnS.disabled = false;
       updateSoundStatus(sId, SND_STATUS_LOADED);
-      document.getElementById("sound" + sId).classList.add("activated");
     }, function(e) {
       console.warn('Error decoding file', e);
     });
@@ -347,7 +349,7 @@ var SoundPlayer = function() {
   
   // set audioBuffer to null and turn off play/pause/stop controls
   var disableSound = function(sId) {
-    document.getElementById("sound" + sId).classList.remove("activated");
+    document.getElementById("sound" + sId).classList.remove("loaded");
     Admixt.getSoundPlayer(sId).audioBuffer = null;
     document.getElementById("btnPlay" + sId).disabled = true;
     document.getElementById("btnStop" + sId).disabled = true;
@@ -391,6 +393,7 @@ var SoundPlayer = function() {
     snd.source.stop();
     snd.isPaused = true;
     snd.startOffset += snd.audioContext.currentTime - snd.startTime;
+    
     updateSoundStatus(snd.soundId, SND_STATUS_PAUSED);
   };
 
@@ -403,6 +406,7 @@ var SoundPlayer = function() {
     snd.isPlaying = false;
     snd.isPaused = false;
     snd.isStopped = true;
+    
     updateSoundStatus(snd.soundId, SND_STATUS_STOPPED);
   };
 
@@ -471,7 +475,10 @@ var SoundPlayer = function() {
   this.rngVolume.addEventListener('change', updateVolumeLabel);
 
   this.lblVolume.id = "lblVolume" + this.soundId;
-  this.lblVolume.innerText = this.rngVolume.value;
+  var initVol = this.rngVolume.value;
+  if (initVol < 100) initVol = "0" + initVol;
+  if (initVol < 10) initVol = "0" + initVol;
+  this.lblVolume.innerText = initVol;
 
   this.btnPlay.id = "btnPlay" + this.soundId;
   this.btnPlay.innerText = "Play/Pause";
