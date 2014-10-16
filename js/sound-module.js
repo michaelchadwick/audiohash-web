@@ -235,12 +235,12 @@ var Admixt = (function () {
     
     console.log("new samplerBuffer", samplerBuffer);
     
-    // makes a temp audio buffer source to play the sampler
-    // var audioSource = getAudioContext().createBufferSource();
-//     audioSource.buffer = samplerBuffer;
-//     audioSource.connect(getAudioContext().destination);
-//     audioSource.playbackRate.value = 1;
-//     audioSource.start();
+    //makes a temp audio buffer source to play the sampler
+    var audioSource = getAudioContext().createBufferSource();
+    audioSource.buffer = samplerBuffer;
+    audioSource.connect(getAudioContext().destination);
+    audioSource.playbackRate.value = 1;
+    audioSource.start();
     
     // encode our newly made audio blob into a wav file
     var dataView = _encodeWavFile(samplerBuffer, samplerBuffer.sampleRate);
@@ -371,8 +371,12 @@ var SoundPlayer = function() {
     var soundPlayerN = snd;
     snd.source.onended = function() {
       var pauseOrStopStatus = soundPlayerN.isPaused ? SND_STATUS_PAUSED : SND_STATUS_STOPPED;
-      if (pauseOrStopStatus == SND_STATUS_STOPPED) soundPlayerN.isStopped = true;
-      if (soundPlayerN.isStopped) soundPlayerN.isPlaying = false;
+      if (pauseOrStopStatus == SND_STATUS_STOPPED) {
+        soundPlayerN.isStopped = true;
+        soundPlayerN.isPaused = false;
+        soundPlayerN.isPlaying = false;
+        soundPlayerN.startOffset = 0;
+      }
       updateSoundStatus(soundPlayerN.soundId, pauseOrStopStatus);
     };
 
