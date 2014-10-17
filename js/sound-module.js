@@ -19,6 +19,11 @@ Date.prototype.curDateTime = function() {
   var ss = this.getSeconds().toString();
   return year + (month[1] ? month : "0" + month[0]) + (day[1] ? day : "0" + day[0]) + "-" + (hh[1] ? hh : "0" + hh[0]) + (mm[1] ? mm : "0" + mm[0]) + (ss[1] ? ss : "0" + ss[0]);
 }
+//// Number extension that will allow rounding to a specific decimal place
+//// cribbed from http://www.jacklmoore.com/notes/rounding-in-javascript/
+Number.prototype.round = function(decimals) {
+  return Number(Math.round(this+'e'+decimals)+'e-'+decimals);
+}
 
 //// Admixt web application "class" module implementation
 var Admixt = (function () { 
@@ -152,7 +157,12 @@ var Admixt = (function () {
     // data chunk length
     view.setUint32(40, samples.length * 2, true);
     // write the PCM samples
-    _writePCMSamples(view, 44, samples);
+    //_writePCMSamples(view, 44, samples);
+    var offset = 44;
+    for (var i = 0; i < view.length; i++, offset+=2){
+      var s = Math.max(-1, Math.min(1, view[i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
     
     return view;
   }
@@ -334,6 +344,19 @@ var SoundPlayer = function() {
       document.getElementById("sound" + sId).classList.add("loaded");
     }
   };
+  
+  // displays info about the sound
+  var updateSoundInfo = function(sId) {
+    var snd = Admixt.getSoundPlayer(sId);
+    var sndStats = document.getElementById("soundInfo" + sId);
+    var sndDuration = snd.audioBuffer.duration;
+    sndDuration = sndDuration > 60 ? (sndDuration / 60).round(2) + "m, " : sndDuration.round(2) + "s, ";
+    var sndSampleRate = snd.audioBuffer.sampleRate / 1000;
+    var sndChannels = snd.audioBuffer.numberOfChannels;
+    sndStats.style.display = "block";
+    sndStats.innerHTML = sndDuration + sndChannels + "ch, " + sndSampleRate.round(1) + "KHz";
+    console.log(snd);
+  }
 
   // load the sound into a buffer
   var initSound = function(arrayBuffer, soundPlayer, sId) {
@@ -344,6 +367,7 @@ var SoundPlayer = function() {
       btnP.disabled = false;
       btnS.disabled = false;
       updateSoundStatus(sId, SND_STATUS_LOADED);
+      updateSoundInfo(sId);
     }, function(e) {
       console.warn('Error decoding file', e);
     });
@@ -433,6 +457,7 @@ var SoundPlayer = function() {
   this.soundHeader = document.createElement('div');
   this.soundDestroyer = document.createElement('div');
   this.soundStatus = document.createElement('div');
+  this.soundInfo = document.createElement('div');
   this.fileUpload = document.createElement('input');
   this.rngVolume = document.createElement('input');
   this.lblVolume = document.createElement('label');
@@ -452,6 +477,9 @@ var SoundPlayer = function() {
   this.soundStatus.id = "soundStatus" + this.soundId;
   this.soundStatus.classList.add('sound-status');
   this.soundStatus.innerText = SND_STATUS_UNLOADED;
+  this.soundInfo.id = "soundInfo" + this.soundId;
+  this.soundInfo.classList.add('sound-info');
+  this.soundInfo.style.display = "none";
 
   this.fileUpload.id = "fileUpload" + this.soundId;
   this.fileUpload.type = "file";
@@ -501,6 +529,7 @@ var SoundPlayer = function() {
   this.soundDiv.appendChild(this.soundHeader);
   this.soundHeader.appendChild(this.soundDestroyer);
   this.soundDiv.appendChild(this.soundStatus);
+  this.soundDiv.appendChild(this.soundInfo);
   this.soundDiv.appendChild(this.fileUpload);
   this.soundDiv.appendChild(this.rngVolume);
   this.soundDiv.appendChild(this.lblVolume);

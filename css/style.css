@@ -172,10 +172,20 @@ section#hex-dump
   background: #555;
   color: #fff;
   font-size: 0.75em;
+  margin: 0;
+  padding: 2px 5px;
+  width: 99%;
+}
+.sound .sound-info
+{
+  background: #666;
+  color: #fff;
+  font-size: 0.75em;
   margin: 0 0 7px;
   padding: 2px 5px;
   width: 99%;
 }
+
 .sound.loaded
 {
   background: #f3f4ec;
@@ -189,6 +199,14 @@ section#hex-dump
   {
     background: #8f8a1b;
   }
+  .sound.loaded .sound-info
+  {
+    background: #a59f23;
+  }
+  .sound.loaded label
+  {
+    background: #717711;
+  }
 .sound.playing
 {
   background: #ECF4EE;
@@ -199,6 +217,14 @@ section#hex-dump
     background: #117719;
   }
   .sound.playing .sound-status
+  {
+    background: #1B8F1D;
+  }
+  .sound.playing .sound-info
+  {
+    background: #22a924;
+  }
+  .sound.playing label
   {
     background: #1B8F1D;
   }
@@ -218,7 +244,8 @@ section#hex-dump
 }
 .sound label
 {
-  background: #CDF4FD;
+  background: #555;
+  color: #fff;
   clear: none;
   float: left;
   padding: 5px;
