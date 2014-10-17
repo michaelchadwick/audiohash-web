@@ -105,11 +105,15 @@ section#soundPlayers
 }
 section#hex-dump
 {
-  background: #fff;
   clear: both;
   display: none;
-  padding: 2px;
+  padding: 5px;
 }
+  section#hex-dump #hex-dump-contents
+  {
+    height: 300px;
+    width: 600px;
+  }
 
 /* Classes */
 .sound

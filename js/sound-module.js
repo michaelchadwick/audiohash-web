@@ -84,7 +84,7 @@ var Admixt = (function () {
   function _updateSoundPlayerCount() {
     document.getElementById("lblSoundPlayersCount").innerText = getSoundPlayerArrayLength();
   }
-  function _displayHexDrump(bufferString) {
+  function _displayHexDump(bufferString) {
     document.getElementById("hex-dump").style.display = "block";
     document.getElementById("hex-dump-contents").innerHTML = _hexDump(bufferString);
   }
@@ -156,22 +156,22 @@ var Admixt = (function () {
     
     return view;
   }
-  function _hexDump(buffer) {
+  function _hexDump(view) {
     var lines = [];
     
-    for (var i = 0; i < buffer.length; i += 16) {
+    for (var i = 0; i < view.length; i += 16) {
       var hex = [];
       var ascii = [];           
         
       for (var x = 0; x < 16; x++) {
-        var b = buffer.charCodeAt(i + x).toString(16).toUpperCase();
+        var b = view.charCodeAt(i + x).toString(16).toUpperCase();
         b = b.length == 1 ? '0' + b : b;
         hex.push(b + " ");
         
-        if (buffer.charCodeAt(i + x) > 126 || buffer.charCodeAt(i + x) < 32) {
+        if (view.charCodeAt(i + x) > 126 || view.charCodeAt(i + x) < 32) {
             ascii.push('.');
         } else {
-            ascii.push(buffer.charAt(i + x));
+            ascii.push(view.charAt(i + x));
         }
         
         if ((x + 1) % 8 == 0) {
@@ -245,12 +245,14 @@ var Admixt = (function () {
     // encode our newly made audio blob into a wav file
     var dataView = _encodeWavFile(samplerBuffer, samplerBuffer.sampleRate);
     var audioBlob = new Blob([dataView], { type : 'audio/wav' });
-    
+        
     // post new wav file to download link
     _enableDownload(audioBlob);
     
     // post hex dump
-    //_displayHexDump(audioBlob.toString());
+    var decoder = new TextDecoder("utf-8");
+    var decodedString = decoder.decode(dataView);
+    _displayHexDump(decodedString);
   }
   
   // public functions
@@ -525,7 +527,7 @@ function initPageUI() {
     }
   });
   createSampler.addEventListener("click", function() {
-    if (Admixt.getSoundPlayerArrayLength < 2) {
+    if (Admixt.getSoundPlayerArrayLength < 1) {
       alert("You need at least two sounds to make a sampler.");
     }
     else if (Admixt.isSPArrayEmpty()) {
