@@ -7,7 +7,9 @@ var SND_STATUS_PLAYING = "playing";
 var SND_STATUS_STOPPED = "stopped/finished";
 var SND_STATUS_PAUSED = "paused";
 var SND_STATUS_UNLOADED = "unloaded";
+var SND_STATUS_LOADING = "loading...";
 var SND_STATUS_LOADED = "loaded and ready";
+var SND_STATUS_ERROR = "error decoding file";
 
 //// Useful Date function for generating filenames
 Date.prototype.curDateTime = function() {
@@ -345,17 +347,29 @@ var SoundPlayer = function() {
     }
   };
   
+  // clear sound info (whilst loading, etc.)
+  var clearSoundInfo = function(sId) {
+    var sndInfo = document.getElementById("soundInfo" + sId);
+    sndInfo.innerHTML = "";
+  }
+  
   // displays info about the sound
-  var updateSoundInfo = function(sId) {
+  var updateSoundInfo = function(sId, msg) {
+    console.log("updating sound info for sound#", sId);
+    var sndInfo = document.getElementById("soundInfo" + sId);
     var snd = Admixt.getSoundPlayer(sId);
-    var sndStats = document.getElementById("soundInfo" + sId);
-    var sndDuration = snd.audioBuffer.duration;
-    sndDuration = sndDuration > 60 ? (sndDuration / 60).round(2) + "m, " : sndDuration.round(2) + "s, ";
-    var sndSampleRate = snd.audioBuffer.sampleRate / 1000;
-    var sndChannels = snd.audioBuffer.numberOfChannels;
-    sndStats.style.display = "block";
-    sndStats.innerHTML = sndDuration + sndChannels + "ch, " + sndSampleRate.round(1) + "KHz";
-    console.log(snd);
+    console.log("updateSoundInfo snd", snd);
+    if (msg) {
+      sndInfo.style.display = "block";
+      sndInfo.innerHTML = msg;
+    } else {
+      var sndDuration = snd.audioBuffer.duration;
+      sndDuration = sndDuration > 60 ? (sndDuration / 60).round(2) + "m, " : sndDuration.round(2) + "s, ";
+      var sndSampleRate = snd.audioBuffer.sampleRate / 1000;
+      var sndChannels = snd.audioBuffer.numberOfChannels;
+      sndInfo.style.display = "block";
+      sndInfo.innerHTML = sndDuration + sndChannels + "ch, " + sndSampleRate.round(1) + "KHz";
+    }
   }
 
   // load the sound into a buffer
@@ -369,13 +383,14 @@ var SoundPlayer = function() {
       updateSoundStatus(sId, SND_STATUS_LOADED);
       updateSoundInfo(sId);
     }, function(e) {
-      console.warn('Error decoding file', e);
+      console.warn(SND_STATUS_ERROR, e);
     });
   };
   
   // set audioBuffer to null and turn off play/pause/stop controls
   var disableSound = function(sId) {
     document.getElementById("sound" + sId).classList.remove("loaded");
+    
     Admixt.getSoundPlayer(sId).audioBuffer = null;
     document.getElementById("btnPlay" + sId).disabled = true;
     document.getElementById("btnStop" + sId).disabled = true;
@@ -487,15 +502,30 @@ var SoundPlayer = function() {
   this.fileUpload.addEventListener('change', function(e) {
     var reader = new FileReader();
     var sId = curSoundPlayer.soundId;
-    reader.onload = function(e) {
-      initSound(this.result, curSoundPlayer, sId);
+    clearSoundInfo(sId);
+    reader.onloadstart = function(e) {
+      console.log("onloadstart", this);
+      updateSoundInfo(sId, SND_STATUS_LOADING);
     };
-    if (e.srcElement.value != "")
-    {
+    reader.onload = function(e) {
+      console.log("onload", this);
+      console.log("this.result.byteLength", this.result.byteLength);
+      // while testing and not actually doing any sampling, we need to keep this small
+      // or else the sampler function will crash the website
+      if (this.result.byteLength > 10000000) {
+        alert("Sound is too long and can't be used.");
+        disableSound(sId);
+        this.abort();
+      } else {
+        initSound(this.result, curSoundPlayer, sId);
+      }
+    };
+    reader.onabort = function(e) {
+      console.log("onabort");
+    };
+    if (e.srcElement.value != ""){
       reader.readAsArrayBuffer(this.files[0]);
-    }
-    else
-    {
+    } else {
       disableSound(sId);
     }
   }, false);
