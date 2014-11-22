@@ -1,12 +1,23 @@
+.color-primary-1 { color: #081C4B }
+.color-primary-2 { color: #2E4373 }
+.color-primary-3 { color: #6E7C9C }
+.color-primary-4 { color: #D1D1D1 }
+
 /* Basic HTML elements */
 body
 {
-  background: #fed;
+  background: #F0F1FF;
   font-family: Consolas, fixed-width;
   font-size: 1em;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
+}
+a {
+  color: #F2C980;
+}
+a:hover {
+  color: #FFD280;
 }
 h1, h2, h3
 {
@@ -22,28 +33,35 @@ div#admixt-app {
 
 }
 header {
-  background: #f88;
+  background: #081C4B;
   border-bottom: 1px solid #000;
+  color: #D1D1D1;
+  display: block;
+  height: 36px;
   margin: 0;
-  padding: 5px 10px;
+  padding: 10px 10px 5px;
 }
+  header h1, div {
+    float: left;
+  }
+  header div {
+    font-size: 1.2em;
+    padding: 1px 8px 10px;
+  }
 div#sub-header {
-  background: #fcb;
+  background: #273C6E;
   border-bottom: 1px solid #777;
+  clear: left;
+  color: #D1D1D1;
   margin: 0;
   padding: 5px 10px;
 }
-footer {
-  background: #fdc;
-  clear: left;
-  padding: 10px;
-}
-
-/* Sections */
 section#dashboard {
-  background: #f4d244;
-  border-bottom: 1px solid #aaa;
-  padding: 5px 10px;
+  background: #BEC7DD;
+  border-bottom: 1px solid #868686;
+  border-top: 1px solid #868686;
+  clear: left;
+  padding: 8px 10px 5px;
 }
   section#dashboard-inner {
     clear: both;
@@ -58,7 +76,7 @@ section#dashboard {
     margin: 0;
   }
     section#buttons button {
-      background: #faa;
+      background: #88A7EC;
       border: 1px solid #000;
       -webkit-box-shadow: 1px 1px 1px 1px #000000;
       box-shadow: 1px 1px 1px 1px #000000;
@@ -69,12 +87,20 @@ section#dashboard {
       padding: 4px;
     }
     section#buttons button:hover {
-      background: #fbb;
+      background: #82A8FF;
     }
   section#soundPlayersCount {
     float: left;
     padding: 5px 10px;
   }
+footer {
+  background: #2E4373;
+  clear: left;
+  color: #D1D1D1;
+  padding: 10px;
+}
+
+/* Main Sections */
 section#soundSamplerControls
 {
   clear: left;
