@@ -159,12 +159,7 @@ var Admixt = (function () {
     // data chunk length
     view.setUint32(40, samples.length * 2, true);
     // write the PCM samples
-    //_writePCMSamples(view, 44, samples);
-    var offset = 44;
-    for (var i = 0; i < view.length; i++, offset+=2){
-      var s = Math.max(-1, Math.min(1, view[i]));
-      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-    }
+    _writePCMSamples(view, 44, samples);
     
     return view;
   }
@@ -173,7 +168,7 @@ var Admixt = (function () {
     
     for (var i = 0; i < view.length; i += 16) {
       var hex = [];
-      var ascii = [];           
+      var ascii = [];
         
       for (var x = 0; x < 16; x++) {
         var b = view.charCodeAt(i + x).toString(16).toUpperCase();
@@ -244,16 +239,7 @@ var Admixt = (function () {
          channel.set(sndArr[j].audioBuffer.getChannelData(i), sndArr[j-1].audioBuffer.length);
       }
     }
-    
-    console.log("new samplerBuffer", samplerBuffer);
-    
-    //makes a temp audio buffer source to play the sampler
-    var audioSource = getAudioContext().createBufferSource();
-    audioSource.buffer = samplerBuffer;
-    audioSource.connect(getAudioContext().destination);
-    audioSource.playbackRate.value = 1;
-    audioSource.start();
-    
+        
     // encode our newly made audio blob into a wav file
     var dataView = _encodeWavFile(samplerBuffer, samplerBuffer.sampleRate);
     var audioBlob = new Blob([dataView], { type : 'audio/wav' });
@@ -261,10 +247,25 @@ var Admixt = (function () {
     // post new wav file to download link
     _enableDownload(audioBlob);
     
+    // makes a temp audio buffer source and plays the new sampler mix
+    var mixDemo = document.getElementById("chkMixDemo");
+    if (mixDemo.checked)
+    {
+      var audioSource = getAudioContext().createBufferSource();
+      audioSource.buffer = samplerBuffer;
+      audioSource.connect(getAudioContext().destination);
+      audioSource.playbackRate.value = 1;
+      audioSource.start();  
+    }
+
     // post hex dump
-    var decoder = new TextDecoder("utf-8");
-    var decodedString = decoder.decode(dataView);
-    _displayHexDump(decodedString);
+    var dumpHex = document.getElementById("chkDumpHex");
+    if (dumpHex.checked)
+    {
+      var decoder = new TextDecoder("utf-8");
+      var decodedString = decoder.decode(dataView);
+      _displayHexDump(decodedString);  
+    }
   }
   
   // public functions

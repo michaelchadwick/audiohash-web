@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Admixt | make sampler platters of your sounds</title>
+  <title>Admixt | mix multiple sounds into one</title>
   <meta name="description" content="Single page application that loads sound files and then makes a sampler track out of them.">
   <meta name="title" content="Admixt">
   <meta name="viewport" content="width=device-width">
@@ -18,7 +18,7 @@
 
     <header>
       <h1>Admixt</h1>
-      <div><strong>&rArr; Make sampler platters of your sounds.</strong></div>
+      <span><strong>&rArr; Mix multiple sounds into one.</strong></span>
     </header>
 
     <div id="sub-header">
@@ -32,7 +32,7 @@
           <button id="btnCreateSoundPlayer">Create SoundPlayer</button>
         </section>
         <section id="soundPlayersCount">
-          <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sound players created.
+          <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sound players
         </section>
       </section>
     </section>
@@ -41,8 +41,15 @@
     <section id="soundSamplerControls">
       <label for="rngSampleSize">How big should the sample size be?</label>
       <input id="rngSampleSize" type="range" min="1" max="30" value="1" />
-      <input type="text" id="txtSampleSize" value="" /> second(s)
-      <input type="button" id="btnCreateSampler" value="Make Sampler!" />
+      <input type="text" id="txtSampleSize" value="" /> second(s)<br />
+
+      <label for"chkDumpHex">Dump the hex when sampler is created?</label>
+      <input id="chkDumpHex" type="checkbox" /><br />
+
+      <label for"chkMixDemo">Listen to the mix before download?</label>
+      <input id="chkMixDemo" type="checkbox" /><br />
+
+      <button id="btnCreateSampler">Make Sampler!</button>
       <a href="#" id="linkDownloadSampler">Download Sampler</a>
     </section>
 

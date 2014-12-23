@@ -14,10 +14,10 @@ body
   -webkit-font-smoothing: antialiased;
 }
 a {
-  color: #F2C980;
+  color: #BD7F13;
 }
 a:hover {
-  color: #FFD280;
+  color: #CA5B16;
 }
 h1, h2, h3
 {
@@ -37,16 +37,20 @@ header {
   border-bottom: 1px solid #000;
   color: #D1D1D1;
   display: block;
-  height: 36px;
   margin: 0;
+  max-height: 56px;
+  min-height: 36px;
   padding: 10px 10px 5px;
 }
-  header h1, div {
+  header h1 {
     float: left;
+    margin-right: 7px;
   }
-  header div {
-    font-size: 1.2em;
-    padding: 1px 8px 10px;
+  header span {
+    display: block;
+    font-size: 1.1em;
+    line-height: 1.1em;
+    padding: 9px 1px 10px 13px;
   }
 div#sub-header {
   background: #273C6E;
@@ -75,7 +79,8 @@ section#dashboard {
     float: left;
     margin: 0;
   }
-    section#buttons button {
+    section#buttons button, 
+    section#soundSamplerControls button {
       background: #88A7EC;
       border: 1px solid #000;
       -webkit-box-shadow: 1px 1px 1px 1px #000000;
@@ -83,15 +88,15 @@ section#dashboard {
       color: #111;
       cursor: pointer;
       font-weight: bold;
-      margin-top: 2px;
       padding: 4px;
     }
-    section#buttons button:hover {
-      background: #82A8FF;
+    section#buttons button:hover, 
+    section#soundSamplerControls button:hover {
+      background: #C3D4FD;
     }
   section#soundPlayersCount {
     float: left;
-    padding: 5px 10px;
+    padding: 3px 10px;
   }
 footer {
   background: #2E4373;
@@ -108,6 +113,10 @@ section#soundSamplerControls
   margin: 2px;
   padding: 4px 8px;
 }
+  section#soundSamplerControls label
+  {
+    font-size: 0.9em;
+  }
   section#soundSamplerControls input#rngSampleSize
   {
     position: relative;
