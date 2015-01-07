@@ -1,9 +1,0 @@
-adapter: ftp
-host: ftp.nebyoolae.com
-username: nebyoola
-password: l4Zn.d.a.PAHK
-path: www/audiohash.codana.me
-
-exclude:
-    - .gitignore
-    - dandelion.yml
