@@ -27,6 +27,18 @@ Number.prototype.round = function(decimals) {
   return Number(Math.round(this+'e'+decimals)+'e-'+decimals);
 }
 
+// help-square
+var helpLink = document.getElementById("help-link");
+var helpSquare = document.getElementById("help-square");
+helpLink.addEventListener('click', function(e) {
+  e.preventDefault();
+  if (helpSquare.style.display !== "block") {
+    helpSquare.style.display = "block";
+  } else {
+    helpSquare.style.display = "none";
+  }
+});
+
 //// AudioHash web application "class" module implementation
 var AudioHash = (function () { 
   //// Variables

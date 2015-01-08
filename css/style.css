@@ -30,7 +30,7 @@ p {
 
 /* Main Structure */
 div#admixt-app {
-
+  width: 100%;
 }
 header {
   background: #081C4B;
@@ -40,7 +40,7 @@ header {
   margin: 0;
   max-height: 56px;
   min-height: 36px;
-  padding: 10px 10px 5px;
+  padding: 2px 10px;
 }
   header h1 {
     float: left;
@@ -51,6 +51,34 @@ header {
     font-size: 1.1em;
     line-height: 1.1em;
     padding: 9px 1px 10px 13px;
+  }
+  header div#help-square {
+    background: #fff;
+    border: 1px solid #163B5E;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 15px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 4px 4px 15px 0px rgba(0,0,0,0.75);
+    box-shadow: 4px 4px 15px 0px rgba(0,0,0,0.75);
+    color: #000;
+    display: none;
+    font-size: 0.9em;
+    padding: 2px 10px;
+    position: fixed;
+    right: 5px;
+    text-align: left;
+    width: 300px;
+    z-index: 3000;
+  }
+  header a#help-link {
+    display: block;
+    float: right;
+    font-size: 1.5em;
+    font-weight: bold;
+    height: 10px;
+    position: relative;
+    top: -30px;
+    width: 30px;
+    text-decoration: none;
   }
 div#sub-header {
   background: #273C6E;
@@ -74,8 +102,12 @@ section#dashboard {
     min-height: 30px;
     padding: 0;
   }
-  section#buttons {
+  section#soundPlayersCount {
     clear: left;
+    float: left;
+    padding: 3px 10px 3px 0;
+  }
+  section#buttons {
     float: left;
     margin: 0;
   }
@@ -94,10 +126,10 @@ section#dashboard {
     section#soundSamplerControls button:hover {
       background: #C3D4FD;
     }
-  section#soundPlayersCount {
-    float: left;
-    padding: 3px 10px;
-  }
+    section#buttons a#linkDownloadSampler
+    {
+      display: none;
+    }
 footer {
   background: #2E4373;
   clear: left;
@@ -108,17 +140,26 @@ footer {
 /* Main Sections */
 section#soundSamplerControls
 {
+  background: #F1F1F1;
   clear: left;
-  float: left;
-  margin: 2px;
-  padding: 4px 8px;
+  margin: 0;
+  padding: 8px;
+  width: auto;
 }
   section#soundSamplerControls label
   {
     font-size: 0.9em;
+    line-height: 1.9em;
+  }
+  section#soundSamplerControls input[type=checkbox] {
+    height: 20px;
+    width: 20px;
+    position: relative;
+    top: 5px;
   }
   section#soundSamplerControls input#rngSampleSize
   {
+    height: 20px;
     position: relative;
     top: 5px;
     width: 80px;
@@ -126,10 +167,6 @@ section#soundSamplerControls
   section#soundSamplerControls input#txtSampleSize
   {
     width: 20px;
-  }
-  section#soundSamplerControls a#linkDownloadSampler
-  {
-    display: none;
   }
 section#soundPlayers
 {

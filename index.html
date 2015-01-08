@@ -19,20 +19,27 @@
     <header>
       <h1>Audio Hash</h1>
       <span><strong>&rArr; Mix multiple sounds into one.</strong></span>
+      <a id="help-link" href="#">?</a>
+      <div id="help-square">
+        <ol>
+          <li>Create some SoundPlayers</li>
+          <li>Load up files</li>
+          <li>Choose how much of each you want sampled</li>
+          <li>Click "Make Sampler!" and a link to your new sampler will be created for you to download.</li>
+        </ol>
+      </div>
     </header>
-
-    <div id="sub-header">
-      <p>1) Create some SoundPlayers, 2) Load up files, 3) Choose how much of each you want sampled, 4) Click "Make Sampler!" and a link to your new sampler will be created for you to download.</p>
-    </div>
 
     <!-- Dashboard, of sorts -->
     <section id="dashboard">
       <section id="dashboard-inner">
-        <section id="buttons">
-          <button id="btnCreateSoundPlayer">Create SoundPlayer</button>
-        </section>
         <section id="soundPlayersCount">
           <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sound players
+        </section>
+        <section id="buttons">
+          <button id="btnCreateSoundPlayer">Create SoundPlayer</button>
+          <button id="btnCreateSampler">Make Sampler!</button>
+          <a href="#" id="linkDownloadSampler">Download Sampler</a>
         </section>
       </section>
     </section>
@@ -48,9 +55,6 @@
 
       <label for"chkMixDemo">Listen to the mix before download?</label>
       <input id="chkMixDemo" type="checkbox" /><br />
-
-      <button id="btnCreateSampler">Make Sampler!</button>
-      <a href="#" id="linkDownloadSampler">Download Sampler</a>
     </section>
 
     <!-- SoundPlayers will go here -->
