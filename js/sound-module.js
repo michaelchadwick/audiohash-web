@@ -495,7 +495,7 @@ var SoundPlayer = function() {
   this.soundDiv.classList.add('sound');
   this.soundDiv.id = "sound" + this.soundId;
   this.soundHeader.classList.add("sound-header");
-  this.soundHeader.innerText = "Sound " + this.soundId;
+  this.soundHeader.innerText = "SoundPlayer " + this.soundId;
   this.soundDestroyer.id = "sound-destroyer" + this.soundId;
   this.soundDestroyer.classList.add("sound-destroyer");
   this.soundDestroyer.innerHTML = "<a href='#'>X</a>";

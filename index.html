@@ -6,7 +6,7 @@
   <title>Audio Hash | mix multiple sounds into one</title>
   <meta name="description" content="Single page application that loads sound files and then makes a sampler track out of them.">
   <meta name="title" content="Admixt">
-  <meta name="viewport" content="width=device-width">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="favicon.ico" rel="favicon" />
   <link href="favicon.ico" rel="icon" type="image/x-icon" />
   <link href="css/style.css" rel="stylesheet" media="screen" />
@@ -18,9 +18,9 @@
 
     <header>
       <h1>Audio Hash</h1>
-      <span><strong>&rArr; Mix multiple sounds into one.</strong></span>
       <a id="help-link" href="#">?</a>
       <div id="help-square">
+        <p>Mix multiple sounds into one.</p>
         <ol>
           <li>Create some SoundPlayers</li>
           <li>Load up files</li>
@@ -34,10 +34,10 @@
     <section id="dashboard">
       <section id="dashboard-inner">
         <section id="soundPlayersCount">
-          <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sound players
+          <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sounds
         </section>
         <section id="buttons">
-          <button id="btnCreateSoundPlayer">Create SoundPlayer</button>
+          <button id="btnCreateSoundPlayer">Create SP</button>
           <button id="btnCreateSampler">Make Sampler!</button>
           <a href="#" id="linkDownloadSampler">Download Sampler</a>
         </section>
@@ -46,14 +46,14 @@
     
     <!-- Tools for making the Sampler -->
     <section id="soundSamplerControls">
-      <label for="rngSampleSize">How big should the sample size be?</label>
+      <label for="rngSampleSize">Sample size</label>
       <input id="rngSampleSize" type="range" min="1" max="30" value="1" />
-      <input type="text" id="txtSampleSize" value="" /> second(s)<br />
+      <input type="text" id="txtSampleSize" value="" /> s<br />
 
-      <label for"chkDumpHex">Dump the hex when sampler is created?</label>
+      <label for"chkDumpHex">Dump hex for sampler</label>
       <input id="chkDumpHex" type="checkbox" /><br />
 
-      <label for"chkMixDemo">Listen to the mix before download?</label>
+      <label for"chkMixDemo">Play mix on download</label>
       <input id="chkMixDemo" type="checkbox" /><br />
     </section>
 
