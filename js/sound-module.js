@@ -1,5 +1,5 @@
 /**********************************************************
-** Admixt - combine sounds for one sound sampler platter **
+** AudioHash - combine sounds for one sound sampler platter **
 ***********************************************************/
 
 //// Global Constants
@@ -27,8 +27,8 @@ Number.prototype.round = function(decimals) {
   return Number(Math.round(this+'e'+decimals)+'e-'+decimals);
 }
 
-//// Admixt web application "class" module implementation
-var Admixt = (function () { 
+//// AudioHash web application "class" module implementation
+var AudioHash = (function () { 
   //// Variables
   // private
   var _soundNumber = 0; // used to give each SP a unique ID
@@ -287,8 +287,8 @@ var Admixt = (function () {
 var SoundPlayer = function() {
   //// Variables
   var curSoundPlayer = this;
-  this.soundId = Admixt.getSoundNumber();
-  this.audioContext = Admixt.getAudioContext();
+  this.soundId = AudioHash.getSoundNumber();
+  this.audioContext = AudioHash.getAudioContext();
   this.audioBuffer = null;
   this.gainNode = this.audioContext.createGain();
   this.source = null;
@@ -306,7 +306,7 @@ var SoundPlayer = function() {
     var volumeMax = element.srcElement.max;
     var fraction = parseInt(volume) / parseInt(volumeMax);
     var sId = element.srcElement.id.split("rngVolume")[1];
-    var snd = Admixt.getSoundPlayer(sId);
+    var snd = AudioHash.getSoundPlayer(sId);
     snd.gainNode.gain.value = fraction * fraction;
   };
 
@@ -316,7 +316,7 @@ var SoundPlayer = function() {
     var volumeMax = element.max;
     var fraction = parseInt(volume) / parseInt(volumeMax);
     var sId = element.id.split("rngVolume")[1];
-    var snd = Admixt.getSoundPlayer(sId);
+    var snd = AudioHash.getSoundPlayer(sId);
     snd.gainNode.gain.value = fraction * fraction;
   }
 
@@ -358,7 +358,7 @@ var SoundPlayer = function() {
   var updateSoundInfo = function(sId, msg) {
     console.log("updating sound info for sound#", sId);
     var sndInfo = document.getElementById("soundInfo" + sId);
-    var snd = Admixt.getSoundPlayer(sId);
+    var snd = AudioHash.getSoundPlayer(sId);
     console.log("updateSoundInfo snd", snd);
     if (msg) {
       sndInfo.style.display = "block";
@@ -392,7 +392,7 @@ var SoundPlayer = function() {
   var disableSound = function(sId) {
     document.getElementById("sound" + sId).classList.remove("loaded");
     
-    Admixt.getSoundPlayer(sId).audioBuffer = null;
+    AudioHash.getSoundPlayer(sId).audioBuffer = null;
     document.getElementById("btnPlay" + sId).disabled = true;
     document.getElementById("btnStop" + sId).disabled = true;
   }
@@ -446,7 +446,7 @@ var SoundPlayer = function() {
   // stop playing the sound
   var stopSound = function() {
     var sId = this.id.split("btnStop")[1];
-    var snd = Admixt.getSoundPlayer(sId);
+    var snd = AudioHash.getSoundPlayer(sId);
     snd.startOffset = 0;
     snd.source.stop();
     snd.isPlaying = false;
@@ -459,7 +459,7 @@ var SoundPlayer = function() {
   // when the play/pause button is pressed, toggle the current sound's status
   var togglePlayState = function() {
     var sId = this.id.split("btnPlay")[1];
-    var snd = Admixt.getSoundPlayer(sId);
+    var snd = AudioHash.getSoundPlayer(sId);
     // if playing, pause and capture currentTime; if not, then play from startOffset
     snd.isPlaying ? pauseSound(snd) : playSound(snd);
     // flip playing mode status
@@ -488,7 +488,7 @@ var SoundPlayer = function() {
   this.soundDestroyer.classList.add("sound-destroyer");
   this.soundDestroyer.innerHTML = "<a href='#'>X</a>";
   this.soundDestroyer.addEventListener('click', function(e) {
-    Admixt.destroySoundPlayer(curSoundPlayer.soundId);
+    AudioHash.destroySoundPlayer(curSoundPlayer.soundId);
   });
   this.soundStatus.id = "soundStatus" + this.soundId;
   this.soundStatus.classList.add('sound-status');
@@ -577,24 +577,24 @@ function initPageUI() {
   var sampleSizeVal = document.getElementById("rngSampleSize");
   var sampleSizeTxt = document.getElementById("txtSampleSize");
   
-  spCountMax.innerText = Admixt.getSoundPlayerMax();
-  spCount.innerText = Admixt.getSoundNumber();
+  spCountMax.innerText = AudioHash.getSoundPlayerMax();
+  spCount.innerText = AudioHash.getSoundNumber();
   createSP.addEventListener("click", function() {
-    if (Admixt.getSoundPlayerArrayLength() < Admixt.getSoundPlayerMax()) {
-      Admixt.createSoundPlayer();
+    if (AudioHash.getSoundPlayerArrayLength() < AudioHash.getSoundPlayerMax()) {
+      AudioHash.createSoundPlayer();
     } else {
       alert("Can't create new SoundPlayer as the maximum number has been reached.");
     }
   });
   createSampler.addEventListener("click", function() {
-    if (Admixt.getSoundPlayerArrayLength < 2) {
+    if (AudioHash.getSoundPlayerArrayLength < 2) {
       alert("You need at least two sounds to make a sampler.");
     }
-    else if (Admixt.isSPArrayEmpty()) {
+    else if (AudioHash.isSPArrayEmpty()) {
       alert("You haven't loaded sounds into all of the existing SoundPlayers yet!");
     }
     else {
-      Admixt.createSampler(Admixt.getSoundPlayerArray());
+      AudioHash.createSampler(AudioHash.getSoundPlayerArray());
     }
   });
   sampleSizeVal.addEventListener("change", function(e) {
@@ -606,5 +606,5 @@ function initPageUI() {
 window.onload = function() {
   initPageUI();
   
-  Admixt.createSoundPlayer(2);
+  AudioHash.createSoundPlayer(2);
 };
