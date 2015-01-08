@@ -587,7 +587,8 @@ function initPageUI() {
     }
   });
   createSampler.addEventListener("click", function() {
-    if (AudioHash.getSoundPlayerArrayLength < 2) {
+    if (AudioHash.getSoundPlayerArrayLength() < 2) {
+      console.log("not enough");
       alert("You need at least two sounds to make a sampler.");
     }
     else if (AudioHash.isSPArrayEmpty()) {
