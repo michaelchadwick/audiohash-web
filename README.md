@@ -1,4 +1,4 @@
-# Audio Hash
+# Audio Hash (Web)
 
 A web app that allows you to load multiple audio files and mix them together into one file.
 
