@@ -56,8 +56,8 @@ var AudioHash = (function () {
     return function() {
       return ac;
     };
-  }(); 
-  
+  }();
+
   // public
   var isSPArrayEmpty = function() {
     var isEmpty = false;
@@ -97,10 +97,8 @@ var AudioHash = (function () {
     }
     return arrIds;
   }
-  function _incSoundNumber() {
-    _soundNumber++;
-  }
   function _updateSoundPlayerCount() {
+    _soundNumber++;
     document.getElementById("lblSoundPlayersCount").innerText = getSoundPlayerArrayLength();
   }
   function _displayHexDump(bufferString) {
@@ -210,7 +208,6 @@ var AudioHash = (function () {
     if (playerCount <= 0) playerCount = 1;
     for (var i = 0; i < playerCount; i++) {
       _soundPlayerArray.push(new SoundPlayer());
-      _incSoundNumber();
       _updateSoundPlayerCount();
     }
 
@@ -263,10 +260,12 @@ var AudioHash = (function () {
     var mixDemo = document.getElementById("chkMixDemo");
     if (mixDemo.checked)
     {
+      var mixSpeed = document.getElementById("numPlaybackPerc").value;
+      if (mixSpeed !== "") mixSpeed = mixSpeed / 100;
       var audioSource = getAudioContext().createBufferSource();
       audioSource.buffer = samplerBuffer;
       audioSource.connect(getAudioContext().destination);
-      audioSource.playbackRate.value = 1;
+      audioSource.playbackRate.value = mixSpeed;
       audioSource.start();  
     }
 
@@ -582,6 +581,9 @@ var SoundPlayer = function() {
 
 //// Set up the initial web application user interface
 function initPageUI() {
+  var optionsLink = document.getElementById("options-link");
+  var optionsChoices = document.getElementById("options-main");
+  var playbackPercentage
   var spCountMax = document.getElementById("lblSoundPlayersCountMax");
   var spCount = document.getElementById("lblSoundPlayersCount");
   var createSP = document.getElementById("btnCreateSoundPlayer");
@@ -589,6 +591,15 @@ function initPageUI() {
   var sampleSizeVal = document.getElementById("rngSampleSize");
   var sampleSizeTxt = document.getElementById("txtSampleSize");
   
+  optionsLink.addEventListener("click", function() {
+    var disp = optionsChoices.style.display;
+    if (disp === "none" || disp === "") {
+      optionsChoices.style.display = "block";
+    }
+    else {
+      optionsChoices.style.display = "none";
+    }
+  })
   spCountMax.innerText = AudioHash.getSoundPlayerMax();
   spCount.innerText = AudioHash.getSoundNumber();
   createSP.addEventListener("click", function() {
