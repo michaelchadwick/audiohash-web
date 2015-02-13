@@ -27,6 +27,31 @@ h1, h2, h3
 p {
   margin: 0;
 }
+button {
+  background: #88A7EC;
+  border: 1px solid #000;
+  -webkit-box-shadow: 1px 1px 1px 1px #555;
+  box-shadow: 1px 1px 1px 1px #555;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  color: #111;
+  cursor: pointer;
+  font-size: 0.8em;
+  font-weight: bold;
+  padding: 5px 4px 4px;
+}
+button:hover {
+  background: #C3D4FD;
+}
+button:disabled {
+  background: #ccc;
+  background: linear-gradient(358deg, #ccc, #eee);
+  border: 2px solid #d6d6d6;
+  -webkit-box-shadow: 3px 3px 2px 1px #eee;
+  box-shadow: 2px 2px 1px 1px #eee;
+  color: #aaa;
+  cursor: auto;
+}
 
 /* Main Structure */
 div#audiohash-app {
@@ -44,7 +69,84 @@ header {
 }
   header h1 {
     float: left;
-    margin-right: 7px;
+    margin-right: 4px;
+  }
+  nav {
+    color: #fff;
+    float: left;
+    font-size: 1.3em;
+    left: 10px;
+    padding: 5px 0 0 0;
+    position: relative;
+    width: 165px;
+  }
+  nav button {
+    float: left;
+    padding: 2px 2px 1px;
+    text-transform: uppercase;
+  }
+  nav button:hover {
+    text-decoration: none;
+  }
+  nav button::selection {
+    background: auto;
+  }
+  nav fieldset {
+    background: #fff;
+    border: 2px solid #ddd;
+    border-top: none;
+    clear: left;
+    color: #000;
+    display: none;
+    float: left;
+    font-size: 0.7em;
+    padding: 5px;
+    position: absolute;
+    top: 30px;
+    width: 185px;
+    z-index: 10000;
+  }
+  nav fieldset#options-main {
+    left: -120px;
+  }
+  nav label {
+    clear: left;
+    float: left;
+  }
+  nav input,
+  nav span {
+    float: left;
+    position: relative;
+  }
+  nav input[type=checkbox] {
+    height: 18px;
+    margin-left: 4px;
+    margin-right: 3px;
+    top: -5px;
+    width: 18px;
+  }
+  nav input#rngSampleSize
+  {
+    height: 20px;
+    margin-left: 4px;
+    margin-right: 4px;
+    position: relative;
+    top: -4px;
+    width: 45px;
+  }
+  nav input#txtSampleSize
+  {
+    width: 20px;
+  }
+  nav input#txtSampleSize:after {
+    content: " s";
+    float: left;
+  }
+  nav input[type=text],
+  nav input[type=number] {
+    margin-left: 4px;
+    top: -3px;
+    width: 40px;
   }
   header span {
     display: block;
@@ -113,21 +215,6 @@ section#dashboard {
     float: left;
     margin: 0;
   }
-    section#buttons button, 
-    section#soundSamplerControls button {
-      background: #88A7EC;
-      border: 1px solid #000;
-      -webkit-box-shadow: 1px 1px 1px 1px #000000;
-      box-shadow: 1px 1px 1px 1px #000000;
-      color: #111;
-      cursor: pointer;
-      font-weight: bold;
-      padding: 4px;
-    }
-    section#buttons button:hover, 
-    section#soundSamplerControls button:hover {
-      background: #C3D4FD;
-    }
     section#buttons a#linkDownloadSampler
     {
       display: none;
@@ -140,36 +227,6 @@ footer {
 }
 
 /* Main Sections */
-section#soundSamplerControls
-{
-  background: #F1F1F1;
-  clear: left;
-  margin: 0;
-  padding: 8px;
-  width: auto;
-}
-  section#soundSamplerControls label
-  {
-    font-size: 0.9em;
-    line-height: 1.9em;
-  }
-  section#soundSamplerControls input[type=checkbox] {
-    height: 20px;
-    width: 20px;
-    position: relative;
-    top: 5px;
-  }
-  section#soundSamplerControls input#rngSampleSize
-  {
-    height: 20px;
-    position: relative;
-    top: 5px;
-    width: 80px;
-  }
-  section#soundSamplerControls input#txtSampleSize
-  {
-    width: 20px;
-  }
 section#soundPlayers
 {
   clear: left;
@@ -226,6 +283,7 @@ section#hex-dump
   }
   .sound-destroyer:hover {
     background: #555;
+    cursor: pointer;
   }
   .sound-destroyer:hover a {
     color: #f00;
