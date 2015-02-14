@@ -217,13 +217,24 @@ section#dashboard {
   }
     section#buttons a#linkDownloadSampler
     {
+      background: #82C5F2;
+      border: 1px solid #000;
+      -webkit-box-shadow: 1px 1px 1px 1px #555;
+      box-shadow: 1px 1px 1px 1px #555;
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+      color: #111;
+      cursor: pointer;
       display: none;
+      font-family: Arial;
+      font-size: 0.8em;
+      font-weight: bold;
+      padding: 5px 4px 4px;
+      text-decoration: none;
     }
-footer {
-  background: #2E4373;
-  clear: left;
-  color: #D1D1D1;
-  padding: 10px;
+    section#buttons a#linkDownloadSampler:hover {
+      background: #BCE0F8;
+    }
 }
 
 /* Main Sections */
@@ -408,4 +419,10 @@ section#hex-dump
   padding: 4px;
   height: 20px;
   width: 240px;
+}
+footer {
+  background: #2E4373;
+  clear: left;
+  color: #D1D1D1;
+  padding: 10px;
 }
