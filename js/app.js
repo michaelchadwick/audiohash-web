@@ -56,6 +56,7 @@ if (!!window.Worker) {
     console.log("Message received from worker", e.data);
     
     var workerCommand = e.data.command;
+
     
     switch (workerCommand) {
       case "testFunc":
@@ -182,7 +183,7 @@ var AudioHash = (function () {
     // RIFF identifier
     _writeString(view, 0, 'RIFF');
     // file length
-    view.setUint32(4, 36 + samples.length * 2, true);
+    view.setUint32(4, 32 + samples.length * 2, true);
     // RIFF type
     _writeString(view, 8, 'WAVE');
     // format chunk identifier
@@ -239,27 +240,31 @@ var AudioHash = (function () {
     var sndLengthSum = (function() {
       var lng = 0;
       for (var i = 0; i < sndArr.length; i++) {
+        console.log("sndArr[i].audioBuffer.length", sndArr[i].audioBuffer.length);
         lng += sndArr[i].audioBuffer.length;
       }
       return lng;
     })();
-
-    var samplerBuffer = getAudioContext().createBuffer(
+    console.log("sndLengthSum", sndLengthSum);
+    
+    // create new buffer to hold all the SoundPlayer audio data
+    var newSamplerBuffer = getAudioContext().createBuffer(
       numberOfChannels,
       sndLengthSum,
       sndArr[0].audioBuffer.sampleRate
     );
-
-    for (var i = 0; i < numberOfChannels; i++) {
-      var channel = samplerBuffer.getChannelData(i);
-      channel.set(sndArr[0].audioBuffer.getChannelData(i), 0);
+    
+    // fill new buffer with SoundPlayer audio data
+    for (var channel = 0; channel < numberOfChannels; channel++) {
+      var newSampler = newSamplerBuffer.getChannelData(channel);
+      newSampler.set(sndArr[0].audioBuffer.getChannelData(channel), 0);
       for (var j = 1; j < sndArr.length; j++) {
-         channel.set(sndArr[j].audioBuffer.getChannelData(i), sndArr[j-1].audioBuffer.length);
+        newSampler.set(sndArr[j].audioBuffer.getChannelData(channel), sndArr[j-1].audioBuffer.length);
       }
     }
-        
-    // encode our newly made audio blob into a wav file
-    var dataView = _encodeWavFile(samplerBuffer, samplerBuffer.sampleRate);
+    
+    // encode our newly-made audio buffer into a wav file
+    var dataView = _encodeWavFile(newSampler, newSamplerBuffer.sampleRate);
     var audioBlob = new Blob([dataView], { type : 'audio/wav' });
         
     // post new wav file to download link
@@ -272,7 +277,7 @@ var AudioHash = (function () {
       var mixSpeed = document.getElementById("numPlaybackPerc").value;
       if (mixSpeed !== "") mixSpeed = mixSpeed / 100;
       var audioSource = getAudioContext().createBufferSource();
-      audioSource.buffer = samplerBuffer;
+      audioSource.buffer = newSamplerBuffer;
       audioSource.connect(getAudioContext().destination);
       audioSource.playbackRate.value = mixSpeed;
       audioSource.start();  
