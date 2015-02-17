@@ -46,6 +46,29 @@ helpLink.addEventListener('click', function(e) {
   }
 });
 
+/************
+  JS Worker
+*************/
+if (!!window.Worker) {
+  var myWorker = new Worker("js/worker.js");
+  
+  myWorker.onmessage = function(e) {
+    console.log("Message received from worker", e.data);
+    
+    var workerCommand = e.data.command;
+    
+    switch (workerCommand) {
+      case "testFunc":
+        console.log(e.data.text);
+        break;
+      case "hexDump":
+        console.log(e.data.ascii);
+        document.getElementById("hex-dump-contents").innerHTML = e.data.ascii;
+        break;
+    }
+  }
+}
+
 /**********************************************************
   AudioHash web application "class" module implementation
 **********************************************************/
@@ -111,8 +134,13 @@ var AudioHash = (function () {
     document.getElementById("lblSoundPlayersCount").innerText = getSoundPlayerArrayLength();
   }
   function _displayHexDump(bufferString) {
+    console.log("dumping hex...");
     document.getElementById("hex-dump").style.display = "block";
-    document.getElementById("hex-dump-contents").innerHTML = _hexDump(bufferString);
+    document.getElementById("hex-dump-contents").innerHTML = "dumping hex...";
+    myWorker.postMessage({
+      command: "hexDump",
+      buffer: bufferString
+    });
   }
   function _getSoundChannelsMin(sndArr) {
     var sndChannelsArr = [];
@@ -181,34 +209,6 @@ var AudioHash = (function () {
     _writePCMSamples(view, 44, samples);
     
     return view;
-  }
-  function _hexDump(view) {
-    var lines = [];
-    
-    for (var i = 0; i < view.length; i += 16) {
-      var hex = [];
-      var ascii = [];
-        
-      for (var x = 0; x < 16; x++) {
-        var b = view.charCodeAt(i + x).toString(16).toUpperCase();
-        b = b.length == 1 ? '0' + b : b;
-        hex.push(b + " ");
-        
-        if (view.charCodeAt(i + x) > 126 || view.charCodeAt(i + x) < 32) {
-            ascii.push('.');
-        } else {
-            ascii.push(view.charAt(i + x));
-        }
-        
-        if ((x + 1) % 8 == 0) {
-            hex.push(" ");
-        }
-      }
-        
-      lines.push([hex.join(''), ascii.join('')].join(''));
-    }
-    
-    return lines.join('\n');
   }
   
   // public
@@ -378,10 +378,10 @@ var SoundPlayer = function() {
   
   // displays info about the sound
   var updateSoundInfo = function(sId, msg) {
-    console.log("updating sound info for sound#", sId);
+    //console.log("updating sound info for sound#", sId);
     var sndInfo = document.getElementById("soundInfo" + sId);
     var snd = AudioHash.getSoundPlayer(sId);
-    console.log("updateSoundInfo snd", snd);
+    //console.log("updateSoundInfo snd", snd);
     if (msg) {
       sndInfo.style.display = "block";
       sndInfo.innerHTML = msg;
@@ -527,12 +527,11 @@ var SoundPlayer = function() {
     var sId = curSoundPlayer.soundId;
     clearSoundInfo(sId);
     reader.onloadstart = function(e) {
-      console.log("onloadstart", this);
+      //console.log("onloadstart", this);
       updateSoundInfo(sId, SND_STATUS_LOADING);
     };
     reader.onload = function(e) {
-      console.log("onload", this);
-      console.log("this.result.byteLength", this.result.byteLength);
+      //console.log("onload", this);
       // while testing and not actually doing any sampling, we need to keep this small
       // or else the sampler function will crash the website
       if (this.result.byteLength > 10000000) {
@@ -544,7 +543,7 @@ var SoundPlayer = function() {
       }
     };
     reader.onabort = function(e) {
-      console.log("onabort");
+      //console.log("onabort");
     };
     if (e.srcElement.value != ""){
       reader.readAsArrayBuffer(this.files[0]);
@@ -596,14 +595,26 @@ var SoundPlayer = function() {
 function initPageUI() {
   var optionsLink = document.getElementById("options-link");
   var optionsChoices = document.getElementById("options-main");
-  var playbackPercentage
   var spCountMax = document.getElementById("lblSoundPlayersCountMax");
   var spCount = document.getElementById("lblSoundPlayersCount");
   var createSP = document.getElementById("btnCreateSoundPlayer");
+  var testFunc = document.getElementById("btnTestFunc");
   var createSampler = document.getElementById("btnCreateSampler");
   var sampleSizeVal = document.getElementById("rngSampleSize");
   var sampleSizeTxt = document.getElementById("txtSampleSize");
-  
+
+  spCountMax.innerText = AudioHash.getSoundPlayerMax();
+  spCount.innerText = AudioHash.getSoundNumber();
+  sampleSizeTxt.value=sampleSizeVal.value;
+
+  // event listeners
+  testFunc.addEventListener("click", function() {
+    myWorker.postMessage({
+      command: "testFunc", 
+      text: "hello world"
+    });
+    console.log("Message posted to worker");
+  });
   optionsLink.addEventListener("click", function() {
     var disp = optionsChoices.style.display;
     if (disp === "none" || disp === "") {
@@ -612,9 +623,7 @@ function initPageUI() {
     else {
       optionsChoices.style.display = "none";
     }
-  })
-  spCountMax.innerText = AudioHash.getSoundPlayerMax();
-  spCount.innerText = AudioHash.getSoundNumber();
+  });
   createSP.addEventListener("click", function() {
     if (AudioHash.getSoundPlayerArrayLength() < AudioHash.getSoundPlayerMax()) {
       AudioHash.createSoundPlayer();
@@ -624,7 +633,6 @@ function initPageUI() {
   });
   createSampler.addEventListener("click", function() {
     if (AudioHash.getSoundPlayerArrayLength() < 2) {
-      console.log("not enough");
       alert("You need at least two sounds to make a sampler.");
     }
     else if (AudioHash.isSPArrayEmpty()) {
@@ -637,7 +645,7 @@ function initPageUI() {
   sampleSizeVal.addEventListener("change", function(e) {
     sampleSizeTxt.value=e.srcElement.value;
   });
-  sampleSizeTxt.value=sampleSizeVal.value;
+  
 }
 
 /********************
