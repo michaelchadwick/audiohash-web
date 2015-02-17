@@ -1,8 +1,10 @@
-/**********************************************************
+/*************************************************************
 ** AudioHash - combine sounds for one sound sampler platter **
-***********************************************************/
+**************************************************************/
 
-//// Global Constants
+/*******************
+  Global Constants
+********************/
 var SND_STATUS_PLAYING = "playing";
 var SND_STATUS_STOPPED = "stopped/finished";
 var SND_STATUS_PAUSED = "paused";
@@ -10,8 +12,11 @@ var SND_STATUS_UNLOADED = "unloaded";
 var SND_STATUS_LOADING = "loading...";
 var SND_STATUS_LOADED = "loaded and ready";
 var SND_STATUS_ERROR = "error decoding file";
+var DEFAULT_INIT_SOUNDPLAYERS = 2;
 
-//// Useful Date function for generating filenames
+/************************************************
+  Useful Date function for generating filenames
+*************************************************/
 Date.prototype.curDateTime = function() {
   var year = this.getFullYear().toString();
   var month = (this.getMonth()+1).toString();
@@ -21,8 +26,10 @@ Date.prototype.curDateTime = function() {
   var ss = this.getSeconds().toString();
   return year + (month[1] ? month : "0" + month[0]) + (day[1] ? day : "0" + day[0]) + "-" + (hh[1] ? hh : "0" + hh[0]) + (mm[1] ? mm : "0" + mm[0]) + (ss[1] ? ss : "0" + ss[0]);
 }
-//// Number extension that will allow rounding to a specific decimal place
-//// cribbed from http://www.jacklmoore.com/notes/rounding-in-javascript/
+/*************************************************************************
+  Number extension that will allow rounding to a specific decimal place
+  (cribbed from http://www.jacklmoore.com/notes/rounding-in-javascript/)
+**************************************************************************/
 Number.prototype.round = function(decimals) {
   return Number(Math.round(this+'e'+decimals)+'e-'+decimals);
 }
@@ -39,7 +46,9 @@ helpLink.addEventListener('click', function(e) {
   }
 });
 
-//// AudioHash web application "class" module implementation
+/**********************************************************
+  AudioHash web application "class" module implementation
+**********************************************************/
 var AudioHash = (function () { 
   //// Variables
   // private
@@ -294,7 +303,9 @@ var AudioHash = (function () {
   }
 })();
 
-//// SoundPlayer "class" module implementation
+/********************************************
+  SoundPlayer "class" module implementation
+*********************************************/
 var SoundPlayer = function() {
   //// Variables
   var curSoundPlayer = this;
@@ -579,7 +590,9 @@ var SoundPlayer = function() {
   this.soundDiv.appendChild(this.btnStop);
 };
 
-//// Set up the initial web application user interface
+/****************************************************
+  Set up the initial web application user interface
+*****************************************************/
 function initPageUI() {
   var optionsLink = document.getElementById("options-link");
   var optionsChoices = document.getElementById("options-main");
@@ -627,8 +640,11 @@ function initPageUI() {
   sampleSizeTxt.value=sampleSizeVal.value;
 }
 
+/********************
+  Basic Window Init
+*********************/
 window.onload = function() {
   initPageUI();
-  
-  AudioHash.createSoundPlayer(2);
+
+  AudioHash.createSoundPlayer(DEFAULT_INIT_SOUNDPLAYERS);
 };
