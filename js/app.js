@@ -63,7 +63,6 @@ if (!!window.Worker) {
         console.log(e.data.text);
         break;
       case "hexDump":
-        console.log(e.data.ascii);
         document.getElementById("hex-dump-contents").innerHTML = e.data.ascii;
         break;
     }
@@ -240,12 +239,10 @@ var AudioHash = (function () {
     var sndLengthSum = (function() {
       var lng = 0;
       for (var i = 0; i < sndArr.length; i++) {
-        console.log("sndArr[i].audioBuffer.length", sndArr[i].audioBuffer.length);
         lng += sndArr[i].audioBuffer.length;
       }
       return lng;
     })();
-    console.log("sndLengthSum", sndLengthSum);
     
     // create new buffer to hold all the SoundPlayer audio data
     var newSamplerBuffer = getAudioContext().createBuffer(
