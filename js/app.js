@@ -59,9 +59,6 @@ if (!!window.Worker) {
 
     
     switch (workerCommand) {
-      case "testFunc":
-        console.log(e.data.text);
-        break;
       case "hexDump":
         document.getElementById("hex-dump-contents").innerHTML = e.data.ascii;
         break;
@@ -600,7 +597,6 @@ function initPageUI() {
   var spCountMax = document.getElementById("lblSoundPlayersCountMax");
   var spCount = document.getElementById("lblSoundPlayersCount");
   var createSP = document.getElementById("btnCreateSoundPlayer");
-  var testFunc = document.getElementById("btnTestFunc");
   var createSampler = document.getElementById("btnCreateSampler");
   var sampleSizeVal = document.getElementById("rngSampleSize");
   var sampleSizeTxt = document.getElementById("txtSampleSize");
@@ -610,13 +606,6 @@ function initPageUI() {
   sampleSizeTxt.value=sampleSizeVal.value;
 
   // event listeners
-  testFunc.addEventListener("click", function() {
-    myWorker.postMessage({
-      command: "testFunc", 
-      text: "hello world"
-    });
-    console.log("Message posted to worker");
-  });
   optionsLink.addEventListener("click", function() {
     var disp = optionsChoices.style.display;
     if (disp === "none" || disp === "") {

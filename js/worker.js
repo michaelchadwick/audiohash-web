@@ -10,9 +10,6 @@ this.onmessage = function(e) {
   var workerResult;
   
   switch (e.data.command) {
-    case "testFunc":
-      workerResult = testFunc(e.data.text);
-      break;
     case "hexDump":
       workerResult = hexDump(e.data.buffer);
       break;
@@ -22,16 +19,6 @@ this.onmessage = function(e) {
 /**********
   Methods
 ***********/
-
-// testFunc
-// input: string
-// output: "testFunc:" + string
-function testFunc(str) {
-  postMessage({
-    command: "testFunc", 
-    text: "test function returned: " + str
-  });
-}
 
 // hexDump
 // input: DataView
