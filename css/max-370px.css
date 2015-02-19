@@ -1,0 +1,13 @@
+div#problems, 
+div#answers {
+  float: none;
+}
+div#problems {
+  padding-top: 0;
+}
+section#math-problems {
+  font-size: 2.5em;
+}
+.desc:after {
+  content: " < 370px wide.";
+}
