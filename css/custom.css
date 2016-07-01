@@ -29,8 +29,6 @@ p {
 button {
   background: #88A7EC;
   border: 1px solid #000;
-  -webkit-box-shadow: 1px 1px 1px 1px #555;
-  box-shadow: 1px 1px 1px 1px #555;
   -webkit-border-radius: 5px;
   border-radius: 5px;
   color: #111;
@@ -38,6 +36,7 @@ button {
   font-size: 0.8em;
   font-weight: bold;
   padding: 5px 4px 4px;
+  text-transform: uppercase;
 }
 button:hover {
   background: #C3D4FD;
@@ -54,7 +53,6 @@ button:disabled {
 
 /* Main Structure */
 div#audiohash-app {
-  min-width: 600px;
   width: 100%;
 }
 header {
@@ -74,15 +72,12 @@ header {
   nav {
     color: #fff;
     float: left;
-    font-size: 1.3em;
     left: 10px;
     padding: 5px 0 0 0;
     position: relative;
   }
   nav button {
     float: left;
-    padding: 4px 2px 1px;
-    text-transform: uppercase;
   }
   nav button:hover {
     text-decoration: none;
@@ -163,13 +158,16 @@ header {
     color: #000;
     display: none;
     font-size: 0.9em;
-    padding: 5px 10px 2px;
+    padding: 5px 10px 0;
     position: fixed;
     right: 5px;
     text-align: left;
     top: 35px;
     width: 300px;
     z-index: 3000;
+  }
+  header div#help-square ol {
+    margin-bottom: 2px;
   }
   header a#help-link {
     display: block;
@@ -264,15 +262,13 @@ section#hex-dump
 .sound
 {
   background: #fefefe;
-  border: 2px solid #777;
-  border-bottom: 2px solid #444;
-  border-right: 2px solid #444;
   box-sizing: border-box;
   clear: left;
   float: left;
   margin: 0;
   min-width: 100px;
   padding: 0;
+  text-transform: uppercase;
   width: 100%;
 }
 .sound > *
@@ -280,7 +276,7 @@ section#hex-dump
   clear: left;
   float: left;
 }
-.sound .sound-header, 
+.sound .sound-header,
 .sound .sound-status,
 .sound .sound-info {
   box-sizing: border-box;
@@ -288,17 +284,16 @@ section#hex-dump
 .sound .sound-header {
   background: #444;
   color: #fff;
+  font-size: 1.4em;
   left: -5px;
   margin: 0;
   max-width: 100%;
-  padding: 0;
-  padding-left: 5px;
+  padding: 5px;
   width: 100%;
 }
   .sound-destroyer {
-    background: #222;
-    border: 2px solid #222;
     float: right;
+    font-family: Consolas, fixed-width;
     font-size: 1.2em;
     font-weight: bold;
     height: 24px;
@@ -322,10 +317,11 @@ section#hex-dump
     padding: 0;
     position: absolute;
     text-decoration: none;
-    top: -1px;
+    top: 2px;
   }
   .sound-destroyer a:hover {
     color: #f00;
+    cursor: pointer;
   }
 .sound .sound-status {
   background: #555;
