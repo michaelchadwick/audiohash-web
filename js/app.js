@@ -51,13 +51,13 @@ helpLink.addEventListener('click', function(e) {
 *************/
 if (!!window.Worker) {
   var myWorker = new Worker("js/worker.js");
-  
+
   myWorker.onmessage = function(e) {
     console.log("Message received from worker", e.data);
-    
+
     var workerCommand = e.data.command;
 
-    
+
     switch (workerCommand) {
       case "hexDump":
         document.getElementById("hex-dump-contents").innerHTML = e.data.ascii;
@@ -69,7 +69,7 @@ if (!!window.Worker) {
 /**********************************************************
   AudioHash web application "class" module implementation
 **********************************************************/
-var AudioHash = (function () { 
+var AudioHash = (function () {
   //// Variables
   // private
   var _soundNumber = 0; // used to give each SP a unique ID
@@ -171,11 +171,11 @@ var AudioHash = (function () {
     for (var i = 0; i < string.length; i++){
       view.setUint8(offset + i, string.charCodeAt(i));
     }
-  } 
+  }
   function _encodeWavFile(samples, sampleRate) {
     var buffer = new ArrayBuffer(44 + samples.length * 2);
     var view = new DataView(buffer);
-    
+
     // RIFF identifier
     _writeString(view, 0, 'RIFF');
     // file length
@@ -204,10 +204,10 @@ var AudioHash = (function () {
     view.setUint32(40, samples.length * 2, true);
     // write the PCM samples
     _writePCMSamples(view, 44, samples);
-    
+
     return view;
   }
-  
+
   // public
   function createSoundPlayer(numOfPlayers) {
     var playerCount = (numOfPlayers || 1);
@@ -226,7 +226,7 @@ var AudioHash = (function () {
     } else {
       _soundPlayerArray = [];
     }
-    
+
     var divSoundPlayers = document.getElementById("soundPlayers");
     divSoundPlayers.removeChild(document.getElementById("sound" + sId));
     _updateSoundPlayerCount();
@@ -240,14 +240,14 @@ var AudioHash = (function () {
       }
       return lng;
     })();
-    
+
     // create new buffer to hold all the SoundPlayer audio data
     var newSamplerBuffer = getAudioContext().createBuffer(
       numberOfChannels,
       sndLengthSum,
       sndArr[0].audioBuffer.sampleRate
     );
-    
+
     // fill new buffer with SoundPlayer audio data
     for (var channel = 0; channel < numberOfChannels; channel++) {
       var newSampler = newSamplerBuffer.getChannelData(channel);
@@ -256,14 +256,14 @@ var AudioHash = (function () {
         newSampler.set(sndArr[j].audioBuffer.getChannelData(channel), sndArr[j-1].audioBuffer.length);
       }
     }
-    
+
     // encode our newly-made audio buffer into a wav file
     var dataView = _encodeWavFile(newSampler, newSamplerBuffer.sampleRate);
     var audioBlob = new Blob([dataView], { type : 'audio/wav' });
-        
+
     // post new wav file to download link
     _enableDownload(audioBlob);
-    
+
     // makes a temp audio buffer source and plays the new sampler mix
     var mixDemo = document.getElementById("chkMixDemo");
     if (mixDemo.checked)
@@ -274,7 +274,7 @@ var AudioHash = (function () {
       audioSource.buffer = newSamplerBuffer;
       audioSource.connect(getAudioContext().destination);
       audioSource.playbackRate.value = mixSpeed;
-      audioSource.start();  
+      audioSource.start();
     }
 
     // post hex dump
@@ -283,10 +283,10 @@ var AudioHash = (function () {
     {
       var decoder = new TextDecoder("utf-8");
       var decodedString = decoder.decode(dataView);
-      _displayHexDump(decodedString);  
+      _displayHexDump(decodedString);
     }
   }
-  
+
   // public functions
   return {
     isSPArrayEmpty:             isSPArrayEmpty,
@@ -318,9 +318,9 @@ var SoundPlayer = function() {
   this.isPaused = false;
   this.isStopped = true;
   this.isPlaying = false;
-  
+
   //// Methods
-  
+
   // change the internal gain node value
   var changeVolume = function(element) {
     var volume = element.srcElement.value;
@@ -368,13 +368,13 @@ var SoundPlayer = function() {
       document.getElementById("sound" + sId).classList.add("loaded");
     }
   };
-  
+
   // clear sound info (whilst loading, etc.)
   var clearSoundInfo = function(sId) {
     var sndInfo = document.getElementById("soundInfo" + sId);
     sndInfo.innerHTML = "";
   }
-  
+
   // displays info about the sound
   var updateSoundInfo = function(sId, msg) {
     //console.log("updating sound info for sound#", sId);
@@ -408,11 +408,11 @@ var SoundPlayer = function() {
       console.warn(SND_STATUS_ERROR, e);
     });
   };
-  
+
   // set audioBuffer to null and turn off play/pause/stop controls
   var disableSound = function(sId) {
     document.getElementById("sound" + sId).classList.remove("loaded");
-    
+
     AudioHash.getSoundPlayer(sId).audioBuffer = null;
     document.getElementById("btnPlay" + sId).disabled = true;
     document.getElementById("btnStop" + sId).disabled = true;
@@ -460,7 +460,7 @@ var SoundPlayer = function() {
     snd.source.stop();
     snd.isPaused = true;
     snd.startOffset += snd.audioContext.currentTime - snd.startTime;
-    
+
     updateSoundStatus(snd.soundId, SND_STATUS_PAUSED);
   };
 
@@ -473,7 +473,7 @@ var SoundPlayer = function() {
     snd.isPlaying = false;
     snd.isPaused = false;
     snd.isStopped = true;
-    
+
     updateSoundStatus(snd.soundId, SND_STATUS_STOPPED);
   };
 
@@ -486,7 +486,7 @@ var SoundPlayer = function() {
     // flip playing mode status
     snd.isPlaying = !snd.isPlaying;
   };
-  
+
   /*******************
   ** User Interface **
   *******************/
@@ -555,7 +555,7 @@ var SoundPlayer = function() {
   this.rngVolume.type = "range";
   this.rngVolume.min = 0;
   this.rngVolume.max = 100;
-  this.rngVolume.value = Math.floor((Math.random() * 80) + 20); // set volume to random value from 0 to 100
+  this.rngVolume.value = 75;
   this.rngVolume.addEventListener('input', changeVolume);
   this.rngVolume.addEventListener('change', updateVolumeLabel);
 
@@ -636,7 +636,7 @@ function initPageUI() {
   sampleSizeVal.addEventListener("change", function(e) {
     sampleSizeTxt.value=e.srcElement.value;
   });
-  
+
 }
 
 /********************
