@@ -641,7 +641,6 @@ function initPageUI() {
   sampleSizeVal.addEventListener("change", function(e) {
     sampleSizeTxt.value=e.srcElement.value;
   });
-
 }
 
 /********************
