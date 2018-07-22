@@ -1,28 +1,21 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<html lang="en">"
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>Audio Hash | mix multiple sounds into one</title>
+
   <meta name="description" content="Single page application that loads sound files and then makes a sampler track out of them.">
   <meta name="title" content="Audio Hash">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  
-  <link href="favicon.ico" rel="favicon" />
-  <link href="favicon.ico" rel="icon" type="image/x-icon" />
-  
-  <link rel="stylesheet" href="css/normalize.min.css">
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/custom.css" media="screen" />
-  <link rel="stylesheet" media="(max-width: 370px)" href="css/max-370px.css">
-  <link rel="stylesheet" media="(min-width: 370px)" href="css/min-370px.css">
-  <link rel="stylesheet" media="(orientation: portrait)" href="css/portrait.css">
-  <link rel="stylesheet" media="(orientation: landscape)" href="css/landscape.css">
-  
-  <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+
+  <link href="/assets/images/favicon.ico" rel="favicon" />
+  <link href="/assets/images/favicon.ico" rel="icon" type="image/x-icon" />
+
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/assets/css/custom.css" media="screen" />
 </head>
 
 <body>
@@ -33,7 +26,7 @@
       <h1>Audio Hash</h1>
       <nav>
         <div id="options">
-          <button id="options-link">Options</button>
+          <button class="btn btn-secondary" id="options-link">Options</button>
           <fieldset id="options-main">
             <label for="chkDumpHex">Dump hex on make?</label>
             <input id="chkDumpHex" type="checkbox" />
@@ -66,13 +59,13 @@
           <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sounds
         </section>
         <section id="buttons">
-          <button id="btnCreateSoundPlayer">Create SP</button>
-          <button id="btnCreateSampler">Make Sampler!</button>
-          <a href="#" id="linkDownloadSampler">Download Sampler</a>
+          <button class="btn btn-primary" id="btnCreateSoundPlayer">Create SP</button>
+          <button class="btn btn-primary" id="btnCreateSampler">Make Sampler!</button>
+          <button class="btn btn-primary" id="linkDownloadSampler">Download Sampler</button>
         </section>
       </section>
     </section>
-    
+
     <!-- SoundPlayers will go here -->
     <section id="soundPlayers"></section>
 
@@ -81,15 +74,17 @@
       <h3>Hex Dump</h3>
       <textarea id="hex-dump-contents"></textarea>
     </section>
-    
+
     <footer>
-      by <a href="http://codana.me">codana.me</a> -- <a href="https://github.com/michaelchadwick/audiohash-web">source</a>
+      by <a href="https://codana.me">codana.me</a> -- <a href="https://github.com/michaelchadwick/audiohash-web">source</a>
     </footer>
 
     <!-- JS -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
-    <script type="text/javascript" src="js/app.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/assets/js/app.js"></script>
 
   </div>
 

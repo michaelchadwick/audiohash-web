@@ -4,10 +4,15 @@
 .color-primary-4 { color: #D1D1D1 }
 
 /* Basic HTML elements */
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
 body
 {
   background: #F0F1FF;
-  font-family: Consolas, fixed-width;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
@@ -26,30 +31,6 @@ h1, h2, h3
 p {
   margin: 0;
 }
-button {
-  background: #88A7EC;
-  border: 1px solid #000;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  color: #111;
-  cursor: pointer;
-  font-size: 0.8em;
-  font-weight: bold;
-  padding: 5px 4px 4px;
-  text-transform: uppercase;
-}
-button:hover {
-  background: #C3D4FD;
-}
-button:disabled {
-  background: #ccc;
-  background: linear-gradient(358deg, #ccc, #eee);
-  border: 2px solid #d6d6d6;
-  -webkit-box-shadow: 3px 3px 2px 1px #eee;
-  box-shadow: 2px 2px 1px 1px #eee;
-  color: #aaa;
-  cursor: auto;
-}
 
 /* Main Structure */
 div#audiohash-app {
@@ -60,14 +41,14 @@ header {
   border-bottom: 1px solid #000;
   color: #D1D1D1;
   display: block;
+  height: auto;
   margin: 0;
-  max-height: 56px;
-  min-height: 36px;
+  min-height: 53px;
   padding: 2px 10px;
 }
   header h1 {
     float: left;
-    margin: 6px 2px 2px 0;
+    margin: 0 2px 2px 0;
   }
   nav {
     color: #fff;
@@ -101,7 +82,8 @@ header {
     z-index: 10000;
   }
   nav fieldset#options-main {
-    left: -120px;
+    left: -102px;
+    top: 42px;
   }
   nav label {
     clear: left;
@@ -199,8 +181,7 @@ section#dashboard {
   section#dashboard-inner {
     clear: both;
     margin: 0;
-    max-height: 100px;
-    min-height: 30px;
+    min-height: 35px;
     padding: 0;
   }
   section#soundPlayersCount {
@@ -210,40 +191,20 @@ section#dashboard {
   }
   section#buttons {
     float: left;
-    margin: 0;
+    margin: -3px 0 0;
   }
-    section#buttons a#linkDownloadSampler
-    {
-      background: #82C5F2;
-      border: 1px solid #000;
-      -webkit-box-shadow: 1px 1px 1px 1px #555;
-      box-shadow: 1px 1px 1px 1px #555;
-      -webkit-border-radius: 5px;
-      border-radius: 5px;
-      color: #111;
-      cursor: pointer;
-      display: none;
-      font-family: Arial;
-      font-size: 0.8em;
-      font-weight: bold;
-      padding: 5px 4px 4px;
-      text-decoration: none;
-    }
-    section#buttons a#linkDownloadSampler:hover {
-      background: #BCE0F8;
-    }
-}
+  section#buttons #linkDownloadSampler {
+    display: none;
+  }
 
 /* Main Sections */
 section#soundPlayers
 {
-  background: red;
   clear: both;
   float: none;
   min-height: 200px;
   margin: 0;
-  min-width: 500px;
-  padding: 5px;
+  padding: 0;
   width: 100%;
 }
 section#hex-dump
@@ -293,15 +254,11 @@ section#hex-dump
 }
   .sound-destroyer {
     float: right;
-    font-family: Consolas, fixed-width;
-    font-size: 1.2em;
-    font-weight: bold;
-    height: 24px;
-    left: 0;
     margin: 0;
     padding: 0;
     position: relative;
-    width: 24px;
+    right: 30px;
+    top: -5px;
   }
   .sound-destroyer:hover {
     background: #555;

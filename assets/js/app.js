@@ -25,14 +25,14 @@ Date.prototype.curDateTime = function() {
   var mm = this.getMinutes().toString();
   var ss = this.getSeconds().toString();
   return year + (month[1] ? month : "0" + month[0]) + (day[1] ? day : "0" + day[0]) + "-" + (hh[1] ? hh : "0" + hh[0]) + (mm[1] ? mm : "0" + mm[0]) + (ss[1] ? ss : "0" + ss[0]);
-}
+};
 /*************************************************************************
   Number extension that will allow rounding to a specific decimal place
   (cribbed from http://www.jacklmoore.com/notes/rounding-in-javascript/)
 **************************************************************************/
 Number.prototype.round = function(decimals) {
   return Number(Math.round(this+'e'+decimals)+'e-'+decimals);
-}
+};
 
 // help-square
 var helpLink = document.getElementById("help-link");
@@ -50,7 +50,7 @@ helpLink.addEventListener('click', function(e) {
   JS Worker
 *************/
 if (!!window.Worker) {
-  var myWorker = new Worker("js/worker.js");
+  var myWorker = new Worker("/assets/js/worker.js");
 
   myWorker.onmessage = function(e) {
     console.log("Message received from worker", e.data);
@@ -63,7 +63,7 @@ if (!!window.Worker) {
         document.getElementById("hex-dump-contents").innerHTML = e.data.ascii;
         break;
     }
-  }
+  };
 }
 
 /**********************************************************
@@ -96,33 +96,33 @@ var AudioHash = (function () {
       }
     });
     return isEmpty;
-  }
+  };
   var getSoundNumber = function() {
     return _soundNumber;
-  }
+  };
   var getAudioContext = function() {
     return _audioContext();
-  }
+  };
   var getSoundPlayer = function(sId) {
     var position = _listSoundPlayerIds().indexOf(parseInt(sId));
     return _soundPlayerArray[position];
-  }
+  };
   var getSoundPlayerArray = function() {
     return _soundPlayerArray;
-  }
+  };
   var getSoundPlayerArrayLength = function() {
     return _soundPlayerArray.length;
-  }
+  };
   var getSoundPlayerMax = function() {
     return _soundPlayerMax;
-  }
+  };
 
   //// Functions
   // private
   function _listSoundPlayerIds() {
     var arrIds = [];
     for (var i = 0; i < _soundPlayerArray.length; i++) {
-      arrIds.push(_soundPlayerArray[i].soundId)
+      arrIds.push(_soundPlayerArray[i].soundId);
     }
     return arrIds;
   }
@@ -232,6 +232,7 @@ var AudioHash = (function () {
     _updateSoundPlayerCount();
   }
   function createSampler(sndArr) {
+    var newSampler;
     var numberOfChannels = _getSoundChannelsMin(sndArr);
     var sndLengthSum = (function() {
       var lng = 0;
@@ -250,7 +251,7 @@ var AudioHash = (function () {
 
     // fill new buffer with SoundPlayer audio data
     for (var channel = 0; channel < numberOfChannels; channel++) {
-      var newSampler = newSamplerBuffer.getChannelData(channel);
+      newSampler = newSamplerBuffer.getChannelData(channel);
       newSampler.set(sndArr[0].audioBuffer.getChannelData(channel), 0);
       for (var j = 1; j < sndArr.length; j++) {
         newSampler.set(sndArr[j].audioBuffer.getChannelData(channel), sndArr[j-1].audioBuffer.length);
@@ -299,7 +300,7 @@ var AudioHash = (function () {
     createSoundPlayer:          createSoundPlayer,
     destroySoundPlayer:         destroySoundPlayer,
     createSampler:              createSampler
-  }
+  };
 })();
 
 /********************************************
@@ -339,7 +340,7 @@ var SoundPlayer = function() {
     var sId = element.id.split("rngVolume")[1];
     var snd = AudioHash.getSoundPlayer(sId);
     snd.gainNode.gain.value = fraction * fraction;
-  }
+  };
 
   // update the volume label
   var updateVolumeLabel = function(e) {
@@ -373,7 +374,7 @@ var SoundPlayer = function() {
   var clearSoundInfo = function(sId) {
     var sndInfo = document.getElementById("soundInfo" + sId);
     sndInfo.innerHTML = "";
-  }
+  };
 
   // displays info about the sound
   var updateSoundInfo = function(sId, msg) {
@@ -392,7 +393,7 @@ var SoundPlayer = function() {
       sndInfo.style.display = "block";
       sndInfo.innerHTML = sndDuration + sndChannels + "ch, " + sndSampleRate.round(1) + "KHz";
     }
-  }
+  };
 
   // load the sound into a buffer
   var initSound = function(arrayBuffer, soundPlayer, sId) {
@@ -416,7 +417,7 @@ var SoundPlayer = function() {
     AudioHash.getSoundPlayer(sId).audioBuffer = null;
     document.getElementById("btnPlay" + sId).disabled = true;
     document.getElementById("btnStop" + sId).disabled = true;
-  }
+  };
 
   // play the sound from a specific startOffset
   var playSound = function(snd) {
@@ -482,7 +483,11 @@ var SoundPlayer = function() {
     var sId = this.id.split("btnPlay")[1];
     var snd = AudioHash.getSoundPlayer(sId);
     // if playing, pause and capture currentTime; if not, then play from startOffset
-    snd.isPlaying ? pauseSound(snd) : playSound(snd);
+    if (snd.isPlaying) {
+      pauseSound(snd);
+    } else {
+      playSound(snd);
+    }
     // flip playing mode status
     snd.isPlaying = !snd.isPlaying;
   };
@@ -507,7 +512,7 @@ var SoundPlayer = function() {
   this.soundHeader.innerText = "SoundPlayer " + this.soundId;
   this.soundDestroyer.id = "sound-destroyer" + this.soundId;
   this.soundDestroyer.classList.add("sound-destroyer");
-  this.soundDestroyer.innerHTML = "<a href='#'>X</a>";
+  this.soundDestroyer.innerHTML = "<a href='#'><i class='fas fa-times'></i></a>";
   this.soundDestroyer.addEventListener('click', function(e) {
     AudioHash.destroySoundPlayer(curSoundPlayer.soundId);
   });
@@ -566,12 +571,12 @@ var SoundPlayer = function() {
   this.lblVolume.innerText = initVol;
 
   this.btnPlay.id = "btnPlay" + this.soundId;
-  this.btnPlay.innerText = "Play/Pause";
+  this.btnPlay.innerHTML = "<i class='fas fa-play'></i> <i class='fas fa-pause'></i>";
   this.btnPlay.addEventListener('click', togglePlayState);
   this.btnPlay.disabled = true;
 
   this.btnStop.id = "btnStop" + this.soundId;
-  this.btnStop.innerText = "Stop";
+  this.btnStop.innerHTML = "<i class='fas fa-stop'></i>";
   this.btnStop.addEventListener('click', stopSound);
   this.btnStop.disabled = true;
 
