@@ -5,26 +5,28 @@
 /*******************
   Global Constants
 ********************/
-var SND_STATUS_PLAYING = "playing";
-var SND_STATUS_STOPPED = "stopped/finished";
-var SND_STATUS_PAUSED = "paused";
-var SND_STATUS_UNLOADED = "unloaded";
-var SND_STATUS_LOADING = "loading...";
-var SND_STATUS_LOADED = "loaded and ready";
-var SND_STATUS_ERROR = "error decoding file";
-var DEFAULT_INIT_SOUNDPLAYERS = 2;
+const AH_PLAYING = 'playing';
+const AH_STOPPED = 'stopped/finished';
+const AH_PAUSED = 'paused';
+const AH_UNLOADED = 'unloaded';
+const AH_LOADING = 'loading...';
+const AH_LOADED = 'loaded and ready';
+const AH_ERROR_DECODING = 'error decoding file';
+const AH_ERROR_LENGTH = 'Sound is too long and cannot be used.'
+const AH_INIT_SP_COUNT = 2;
+const AH_FILE_MAX_LENGTH = 100000000;
 
 /************************************************
   Useful Date function for generating filenames
 *************************************************/
 Date.prototype.curDateTime = function() {
-  var year = this.getFullYear().toString();
-  var month = (this.getMonth()+1).toString();
-  var day = this.getDate().toString();
-  var hh = this.getHours().toString();
-  var mm = this.getMinutes().toString();
-  var ss = this.getSeconds().toString();
-  return year + (month[1] ? month : "0" + month[0]) + (day[1] ? day : "0" + day[0]) + "-" + (hh[1] ? hh : "0" + hh[0]) + (mm[1] ? mm : "0" + mm[0]) + (ss[1] ? ss : "0" + ss[0]);
+  const year = this.getFullYear().toString();
+  const month = (this.getMonth()+1).toString();
+  const day = this.getDate().toString();
+  const hh = this.getHours().toString();
+  const mm = this.getMinutes().toString();
+  const ss = this.getSeconds().toString();
+  return year + (month[1] ? month : '0' + month[0]) + (day[1] ? day : '0' + day[0]) + '-' + (hh[1] ? hh : '0' + hh[0]) + (mm[1] ? mm : '0' + mm[0]) + (ss[1] ? ss : '0' + ss[0]);
 };
 /*************************************************************************
   Number extension that will allow rounding to a specific decimal place
@@ -35,14 +37,14 @@ Number.prototype.round = function(decimals) {
 };
 
 // help-square
-var helpLink = document.getElementById("help-link");
-var helpSquare = document.getElementById("help-square");
+var helpLink = document.getElementById('help-link');
+var helpSquare = document.getElementById('help-square');
 helpLink.addEventListener('click', function(e) {
   e.preventDefault();
-  if (helpSquare.style.display !== "block") {
-    helpSquare.style.display = "block";
+  if (helpSquare.style.display !== 'block') {
+    helpSquare.style.display = 'block';
   } else {
-    helpSquare.style.display = "none";
+    helpSquare.style.display = 'none';
   }
 });
 
@@ -50,24 +52,24 @@ helpLink.addEventListener('click', function(e) {
   JS Worker
 *************/
 if (!!window.Worker) {
-  var myWorker = new Worker("/assets/js/worker.js");
+  var myWorker = new Worker('/assets/js/worker.js');
 
   myWorker.onmessage = function(e) {
-    console.log("Message received from worker", e.data);
+    console.log('Message received from worker', e.data);
 
     var workerCommand = e.data.command;
 
 
     switch (workerCommand) {
-      case "hexDump":
-        document.getElementById("hex-dump-contents").innerHTML = e.data.ascii;
+      case 'hexDump':
+        document.getElementById('hex-dump-contents').innerHTML = e.data.ascii;
         break;
     }
   };
 }
 
 /**********************************************************
-  AudioHash web application "class" module implementation
+  AudioHash web application 'class' module implementation
 **********************************************************/
 var AudioHash = (function () {
   //// Variables
@@ -128,14 +130,14 @@ var AudioHash = (function () {
   }
   function _updateSoundPlayerCount() {
     _soundNumber++;
-    document.getElementById("lblSoundPlayersCount").innerText = getSoundPlayerArrayLength();
+    document.getElementById('lblSoundPlayersCount').innerText = getSoundPlayerArrayLength();
   }
   function _displayHexDump(bufferString) {
-    console.log("dumping hex...");
-    document.getElementById("hex-dump").style.display = "block";
-    document.getElementById("hex-dump-contents").innerHTML = "dumping hex...";
+    console.log('dumping hex...');
+    document.getElementById('hex-dump').style.display = 'block';
+    document.getElementById('hex-dump-contents').innerHTML = 'dumping hex...';
     myWorker.postMessage({
-      command: "hexDump",
+      command: 'hexDump',
       buffer: bufferString
     });
   }
@@ -147,17 +149,17 @@ var AudioHash = (function () {
     return Math.min.apply(Math, sndChannelsArr);
   }
   function _getSoundSlice(audioBuffer) {
-    var sliceNumber = document.getElementById("txtSampleSize");
+    var sliceNumber = document.getElementById('txtSampleSize');
     var randBegin = Math.Random() * (audioBuffer.length - sliceNumber);
     var randEnd = randBegin + sliceNumber;
     return audioBuffer.slice(randBegin, randEnd);
   }
   function _enableDownload(blob, givenFilename) {
     var url = (window.URL || window.webkitURL).createObjectURL(blob);
-    var link = document.getElementById("linkDownloadSampler");
+    var link = document.getElementById('linkDownloadSampler');
     var d = new Date();
-    var defaultFilename = "sampler" + d.curDateTime() + ".wav";
-    link.style.display = "inline";
+    var defaultFilename = 'sampler' + d.curDateTime() + '.wav';
+    link.style.display = 'inline';
     link.href = url;
     link.download = givenFilename || defaultFilename;
   }
@@ -227,8 +229,8 @@ var AudioHash = (function () {
       _soundPlayerArray = [];
     }
 
-    var divSoundPlayers = document.getElementById("soundPlayers");
-    divSoundPlayers.removeChild(document.getElementById("sound" + sId));
+    var divSoundPlayers = document.getElementById('soundPlayers');
+    divSoundPlayers.removeChild(document.getElementById('sound' + sId));
     _updateSoundPlayerCount();
   }
   function createSampler(sndArr) {
@@ -266,11 +268,11 @@ var AudioHash = (function () {
     _enableDownload(audioBlob);
 
     // makes a temp audio buffer source and plays the new sampler mix
-    var mixDemo = document.getElementById("chkMixDemo");
+    var mixDemo = document.getElementById('chkMixDemo');
     if (mixDemo.checked)
     {
-      var mixSpeed = document.getElementById("numPlaybackPerc").value;
-      if (mixSpeed !== "") mixSpeed = mixSpeed / 100;
+      var mixSpeed = document.getElementById('numPlaybackPerc').value;
+      if (mixSpeed !== '') mixSpeed = mixSpeed / 100;
       var audioSource = getAudioContext().createBufferSource();
       audioSource.buffer = newSamplerBuffer;
       audioSource.connect(getAudioContext().destination);
@@ -279,10 +281,10 @@ var AudioHash = (function () {
     }
 
     // post hex dump
-    var dumpHex = document.getElementById("chkDumpHex");
+    var dumpHex = document.getElementById('chkDumpHex');
     if (dumpHex.checked)
     {
-      var decoder = new TextDecoder("utf-8");
+      var decoder = new TextDecoder('utf-8');
       var decodedString = decoder.decode(dataView);
       _displayHexDump(decodedString);
     }
@@ -304,7 +306,7 @@ var AudioHash = (function () {
 })();
 
 /********************************************
-  SoundPlayer "class" module implementation
+  SoundPlayer 'class' module implementation
 *********************************************/
 var SoundPlayer = function() {
   //// Variables
@@ -327,7 +329,7 @@ var SoundPlayer = function() {
     var volume = element.srcElement.value;
     var volumeMax = element.srcElement.max;
     var fraction = parseInt(volume) / parseInt(volumeMax);
-    var sId = element.srcElement.id.split("rngVolume")[1];
+    var sId = element.srcElement.id.split('rngVolume')[1];
     var snd = AudioHash.getSoundPlayer(sId);
     snd.gainNode.gain.value = fraction * fraction;
   };
@@ -337,7 +339,7 @@ var SoundPlayer = function() {
     var volume = element.value;
     var volumeMax = element.max;
     var fraction = parseInt(volume) / parseInt(volumeMax);
-    var sId = element.id.split("rngVolume")[1];
+    var sId = element.id.split('rngVolume')[1];
     var snd = AudioHash.getSoundPlayer(sId);
     snd.gainNode.gain.value = fraction * fraction;
   };
@@ -345,53 +347,53 @@ var SoundPlayer = function() {
   // update the volume label
   var updateVolumeLabel = function(e) {
     var rangeVolN = e.srcElement;
-    var sId = this.id.split("rngVolume")[1];
-    var lblVolumeId = "lblVolume".concat(sId);
+    var sId = this.id.split('rngVolume')[1];
+    var lblVolumeId = 'lblVolume'.concat(sId);
     var lblVolumeN = document.getElementById(lblVolumeId);
     var newVol = rangeVolN.value;
-    if (newVol < 100) newVol = "0" + newVol;
-    if (newVol < 10) newVol = "0" + newVol;
+    if (newVol < 100) newVol = '0' + newVol;
+    if (newVol < 10) newVol = '0' + newVol;
     lblVolumeN.innerText = newVol;
   };
 
   // update the current sound status label
   var updateSoundStatus = function(sId, status) {
-    var curSoundStatusId = "soundStatus".concat(sId);
+    var curSoundStatusId = 'soundStatus'.concat(sId);
     var curSoundStatusN = document.getElementById(curSoundStatusId);
     curSoundStatusN.innerText = status;
-    if (status == SND_STATUS_PAUSED || status == SND_STATUS_STOPPED) {
-      document.getElementById("sound" + sId).classList.remove("playing");
-      document.getElementById("sound" + sId).classList.add("loaded");
-    } else if (status == SND_STATUS_PLAYING) {
-      document.getElementById("sound" + sId).classList.remove("loaded");
-      document.getElementById("sound" + sId).classList.add("playing");
-    } else if (status == SND_STATUS_LOADED) {
-      document.getElementById("sound" + sId).classList.add("loaded");
+    if (status == AH_PAUSED || status == AH_STOPPED) {
+      document.getElementById('sound' + sId).classList.remove('playing');
+      document.getElementById('sound' + sId).classList.add('loaded');
+    } else if (status == AH_PLAYING) {
+      document.getElementById('sound' + sId).classList.remove('loaded');
+      document.getElementById('sound' + sId).classList.add('playing');
+    } else if (status == AH_LOADED) {
+      document.getElementById('sound' + sId).classList.add('loaded');
     }
   };
 
   // clear sound info (whilst loading, etc.)
   var clearSoundInfo = function(sId) {
-    var sndInfo = document.getElementById("soundInfo" + sId);
-    sndInfo.innerHTML = "";
+    var sndInfo = document.getElementById('soundInfo' + sId);
+    sndInfo.innerHTML = '';
   };
 
   // displays info about the sound
   var updateSoundInfo = function(sId, msg) {
-    //console.log("updating sound info for sound#", sId);
-    var sndInfo = document.getElementById("soundInfo" + sId);
+    //console.log('updating sound info for sound#', sId);
+    var sndInfo = document.getElementById('soundInfo' + sId);
     var snd = AudioHash.getSoundPlayer(sId);
-    //console.log("updateSoundInfo snd", snd);
+    //console.log('updateSoundInfo snd', snd);
     if (msg) {
-      sndInfo.style.display = "block";
+      sndInfo.style.display = 'block';
       sndInfo.innerHTML = msg;
     } else {
       var sndDuration = snd.audioBuffer.duration;
-      sndDuration = sndDuration > 60 ? (sndDuration / 60).round(2) + "m, " : sndDuration.round(2) + "s, ";
+      sndDuration = sndDuration > 60 ? (sndDuration / 60).round(2) + 'm, ' : sndDuration.round(2) + 's, ';
       var sndSampleRate = snd.audioBuffer.sampleRate / 1000;
       var sndChannels = snd.audioBuffer.numberOfChannels;
-      sndInfo.style.display = "block";
-      sndInfo.innerHTML = sndDuration + sndChannels + "ch, " + sndSampleRate.round(1) + "KHz";
+      sndInfo.style.display = 'block';
+      sndInfo.innerHTML = sndDuration + sndChannels + 'ch, ' + sndSampleRate.round(1) + 'KHz';
     }
   };
 
@@ -399,24 +401,24 @@ var SoundPlayer = function() {
   var initSound = function(arrayBuffer, soundPlayer, sId) {
     soundPlayer.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
       soundPlayer.audioBuffer = buffer;
-      var btnP = document.getElementById("btnPlay" + sId);
-      var btnS = document.getElementById("btnStop" + sId);
+      var btnP = document.getElementById('btnPlay' + sId);
+      var btnS = document.getElementById('btnStop' + sId);
       btnP.disabled = false;
       btnS.disabled = false;
-      updateSoundStatus(sId, SND_STATUS_LOADED);
+      updateSoundStatus(sId, AH_LOADED);
       updateSoundInfo(sId);
     }, function(e) {
-      console.warn(SND_STATUS_ERROR, e);
+      console.warn(AH_ERROR_DECODING, e);
     });
   };
 
   // set audioBuffer to null and turn off play/pause/stop controls
   var disableSound = function(sId) {
-    document.getElementById("sound" + sId).classList.remove("loaded");
+    document.getElementById('sound' + sId).classList.remove('loaded');
 
     AudioHash.getSoundPlayer(sId).audioBuffer = null;
-    document.getElementById("btnPlay" + sId).disabled = true;
-    document.getElementById("btnStop" + sId).disabled = true;
+    document.getElementById('btnPlay' + sId).disabled = true;
+    document.getElementById('btnStop' + sId).disabled = true;
   };
 
   // play the sound from a specific startOffset
@@ -434,8 +436,8 @@ var SoundPlayer = function() {
 
     var soundPlayerN = snd;
     snd.source.onended = function() {
-      var pauseOrStopStatus = soundPlayerN.isPaused ? SND_STATUS_PAUSED : SND_STATUS_STOPPED;
-      if (pauseOrStopStatus == SND_STATUS_STOPPED) {
+      var pauseOrStopStatus = soundPlayerN.isPaused ? AH_PAUSED : AH_STOPPED;
+      if (pauseOrStopStatus == AH_STOPPED) {
         soundPlayerN.isStopped = true;
         soundPlayerN.isPaused = false;
         soundPlayerN.isPlaying = false;
@@ -453,7 +455,7 @@ var SoundPlayer = function() {
     snd.isStopped = false;
     snd.isPaused = false;
 
-    updateSoundStatus(snd.soundId, SND_STATUS_PLAYING);
+    updateSoundStatus(snd.soundId, AH_PLAYING);
   };
 
   // pause the sound and record its currentTime
@@ -462,12 +464,12 @@ var SoundPlayer = function() {
     snd.isPaused = true;
     snd.startOffset += snd.audioContext.currentTime - snd.startTime;
 
-    updateSoundStatus(snd.soundId, SND_STATUS_PAUSED);
+    updateSoundStatus(snd.soundId, AH_PAUSED);
   };
 
   // stop playing the sound
   var stopSound = function() {
-    var sId = this.id.split("btnStop")[1];
+    var sId = this.id.split('btnStop')[1];
     var snd = AudioHash.getSoundPlayer(sId);
     snd.startOffset = 0;
     snd.source.stop();
@@ -475,12 +477,12 @@ var SoundPlayer = function() {
     snd.isPaused = false;
     snd.isStopped = true;
 
-    updateSoundStatus(snd.soundId, SND_STATUS_STOPPED);
+    updateSoundStatus(snd.soundId, AH_STOPPED);
   };
 
   // when the play/pause button is pressed, toggle the current sound's status
   var togglePlayState = function() {
-    var sId = this.id.split("btnPlay")[1];
+    var sId = this.id.split('btnPlay')[1];
     var snd = AudioHash.getSoundPlayer(sId);
     // if playing, pause and capture currentTime; if not, then play from startOffset
     if (snd.isPlaying) {
@@ -507,39 +509,39 @@ var SoundPlayer = function() {
   this.btnStop = document.createElement('button');
 
   this.soundDiv.classList.add('sound');
-  this.soundDiv.id = "sound" + this.soundId;
-  this.soundHeader.classList.add("sound-header");
-  this.soundHeader.innerText = "SoundPlayer " + this.soundId;
-  this.soundDestroyer.id = "sound-destroyer" + this.soundId;
-  this.soundDestroyer.classList.add("sound-destroyer");
-  this.soundDestroyer.innerHTML = "<a href='#'><i class='fas fa-times'></i></a>";
+  this.soundDiv.id = 'sound' + this.soundId;
+  this.soundHeader.classList.add('sound-header');
+  this.soundHeader.innerText = 'SoundPlayer ' + this.soundId;
+  this.soundDestroyer.id = 'sound-destroyer' + this.soundId;
+  this.soundDestroyer.classList.add('sound-destroyer');
+  this.soundDestroyer.innerHTML = `<a href='#'><i class='fas fa-times'></i></a>`;
   this.soundDestroyer.addEventListener('click', function(e) {
     AudioHash.destroySoundPlayer(curSoundPlayer.soundId);
   });
-  this.soundStatus.id = "soundStatus" + this.soundId;
+  this.soundStatus.id = 'soundStatus' + this.soundId;
   this.soundStatus.classList.add('sound-status');
-  this.soundStatus.innerText = SND_STATUS_UNLOADED;
-  this.soundInfo.id = "soundInfo" + this.soundId;
+  this.soundStatus.innerText = AH_UNLOADED;
+  this.soundInfo.id = 'soundInfo' + this.soundId;
   this.soundInfo.classList.add('sound-info');
-  this.soundInfo.style.display = "none";
+  this.soundInfo.style.display = 'none';
 
-  this.fileUpload.id = "fileUpload" + this.soundId;
-  this.fileUpload.type = "file";
-  this.fileUpload.accept = "audio/*";
+  this.fileUpload.id = 'fileUpload' + this.soundId;
+  this.fileUpload.type = 'file';
+  this.fileUpload.accept = 'audio/*';
   this.fileUpload.addEventListener('change', function(e) {
     var reader = new FileReader();
     var sId = curSoundPlayer.soundId;
     clearSoundInfo(sId);
     reader.onloadstart = function(e) {
-      //console.log("onloadstart", this);
-      updateSoundInfo(sId, SND_STATUS_LOADING);
+      //console.log('onloadstart', this);
+      updateSoundInfo(sId, AH_LOADING);
     };
     reader.onload = function(e) {
-      //console.log("onload", this);
+      //console.log('onload', this);
       // while testing and not actually doing any sampling, we need to keep this small
       // or else the sampler function will crash the website
-      if (this.result.byteLength > 10000000) {
-        alert("Sound is too long and can't be used.");
+      if (this.result.byteLength > AH_FILE_MAX_LENGTH) {
+        alert(AH_ERROR_LENGTH);
         disableSound(sId);
         this.abort();
       } else {
@@ -547,40 +549,40 @@ var SoundPlayer = function() {
       }
     };
     reader.onabort = function(e) {
-      //console.log("onabort");
+      //console.log('onabort');
     };
-    if (e.srcElement.value != ""){
+    if (e.srcElement.value != ''){
       reader.readAsArrayBuffer(this.files[0]);
     } else {
       disableSound(sId);
     }
   }, false);
 
-  this.rngVolume.id = "rngVolume" + this.soundId;
-  this.rngVolume.type = "range";
+  this.rngVolume.id = 'rngVolume' + this.soundId;
+  this.rngVolume.type = 'range';
   this.rngVolume.min = 0;
   this.rngVolume.max = 100;
   this.rngVolume.value = 75;
   this.rngVolume.addEventListener('input', changeVolume);
   this.rngVolume.addEventListener('change', updateVolumeLabel);
 
-  this.lblVolume.id = "lblVolume" + this.soundId;
+  this.lblVolume.id = 'lblVolume' + this.soundId;
   var initVol = this.rngVolume.value;
-  if (initVol < 100) initVol = "0" + initVol;
-  if (initVol < 10) initVol = "0" + initVol;
+  if (initVol < 100) initVol = '0' + initVol;
+  if (initVol < 10) initVol = '0' + initVol;
   this.lblVolume.innerText = initVol;
 
-  this.btnPlay.id = "btnPlay" + this.soundId;
-  this.btnPlay.innerHTML = "<i class='fas fa-play'></i> <i class='fas fa-pause'></i>";
+  this.btnPlay.id = 'btnPlay' + this.soundId;
+  this.btnPlay.innerHTML = `<i class='fas fa-play'></i> <i class='fas fa-pause'></i>`;
   this.btnPlay.addEventListener('click', togglePlayState);
   this.btnPlay.disabled = true;
 
-  this.btnStop.id = "btnStop" + this.soundId;
-  this.btnStop.innerHTML = "<i class='fas fa-stop'></i>";
+  this.btnStop.id = 'btnStop' + this.soundId;
+  this.btnStop.innerHTML = `<i class='fas fa-stop'></i>`;
   this.btnStop.addEventListener('click', stopSound);
   this.btnStop.disabled = true;
 
-  var divSoundPlayers = document.getElementById("soundPlayers");
+  var divSoundPlayers = document.getElementById('soundPlayers');
   divSoundPlayers.appendChild(this.soundDiv);
   this.soundDiv.appendChild(this.soundHeader);
   this.soundHeader.appendChild(this.soundDestroyer);
@@ -597,48 +599,48 @@ var SoundPlayer = function() {
   Set up the initial web application user interface
 *****************************************************/
 function initPageUI() {
-  var optionsLink = document.getElementById("options-link");
-  var optionsChoices = document.getElementById("options-main");
-  var spCountMax = document.getElementById("lblSoundPlayersCountMax");
-  var spCount = document.getElementById("lblSoundPlayersCount");
-  var createSP = document.getElementById("btnCreateSoundPlayer");
-  var createSampler = document.getElementById("btnCreateSampler");
-  var sampleSizeVal = document.getElementById("rngSampleSize");
-  var sampleSizeTxt = document.getElementById("txtSampleSize");
+  var optionsLink = document.getElementById('options-link');
+  var optionsChoices = document.getElementById('options-main');
+  var spCountMax = document.getElementById('lblSoundPlayersCountMax');
+  var spCount = document.getElementById('lblSoundPlayersCount');
+  var createSP = document.getElementById('btnCreateSoundPlayer');
+  var createSampler = document.getElementById('btnCreateSampler');
+  var sampleSizeVal = document.getElementById('rngSampleSize');
+  var sampleSizeTxt = document.getElementById('txtSampleSize');
 
   spCountMax.innerText = AudioHash.getSoundPlayerMax();
   spCount.innerText = AudioHash.getSoundNumber();
   sampleSizeTxt.value=sampleSizeVal.value;
 
   // event listeners
-  optionsLink.addEventListener("click", function() {
+  optionsLink.addEventListener('click', function() {
     var disp = optionsChoices.style.display;
-    if (disp === "none" || disp === "") {
-      optionsChoices.style.display = "block";
+    if (disp === 'none' || disp === '') {
+      optionsChoices.style.display = 'block';
     }
     else {
-      optionsChoices.style.display = "none";
+      optionsChoices.style.display = 'none';
     }
   });
-  createSP.addEventListener("click", function() {
+  createSP.addEventListener('click', function() {
     if (AudioHash.getSoundPlayerArrayLength() < AudioHash.getSoundPlayerMax()) {
       AudioHash.createSoundPlayer();
     } else {
-      alert("Can't create new SoundPlayer as the maximum number has been reached.");
+      alert('Cannot create new SoundPlayer as the maximum number has been reached.');
     }
   });
-  createSampler.addEventListener("click", function() {
+  createSampler.addEventListener('click', function() {
     if (AudioHash.getSoundPlayerArrayLength() < 2) {
-      alert("You need at least two sounds to make a sampler.");
+      alert('You need at least two sounds to make a sampler.');
     }
     else if (AudioHash.isSPArrayEmpty()) {
-      alert("You haven't loaded sounds into all of the existing SoundPlayers yet!");
+      alert('You have not loaded sounds into all of the existing SoundPlayers yet!');
     }
     else {
       AudioHash.createSampler(AudioHash.getSoundPlayerArray());
     }
   });
-  sampleSizeVal.addEventListener("change", function(e) {
+  sampleSizeVal.addEventListener('change', function(e) {
     sampleSizeTxt.value=e.srcElement.value;
   });
 }
@@ -649,5 +651,5 @@ function initPageUI() {
 window.onload = function() {
   initPageUI();
 
-  AudioHash.createSoundPlayer(DEFAULT_INIT_SOUNDPLAYERS);
+  AudioHash.createSoundPlayer(AH_INIT_SP_COUNT);
 };

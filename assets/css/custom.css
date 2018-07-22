@@ -66,24 +66,20 @@ header {
   nav button::selection {
     background: auto;
   }
-  nav fieldset {
-    background: #fff;
-    border: 2px solid #ddd;
+  nav .card {
     border-top: none;
     clear: left;
     color: #000;
     display: none;
     float: left;
-    font-size: 0.7em;
     padding: 5px;
     position: absolute;
-    top: 32px;
-    width: 185px;
+    top: 42px;
+    width: 215px;
     z-index: 10000;
   }
-  nav fieldset#options-main {
-    left: -102px;
-    top: 42px;
+  nav .card input {
+    min-width: 50px;
   }
   nav label {
     clear: left;
@@ -244,7 +240,7 @@ section#hex-dump
 }
 .sound .sound-header {
   background: #444;
-  color: #fff;
+  color: #888;
   font-size: 1.4em;
   left: -5px;
   margin: 0;
@@ -282,7 +278,7 @@ section#hex-dump
   }
 .sound .sound-status {
   background: #555;
-  color: #fff;
+  color: #888;
   font-size: 0.75em;
   margin: 0;
   padding-left: 5px;
@@ -302,6 +298,11 @@ section#hex-dump
 {
   background: #f3f4ec;
   border: 2px solid #b4a72c;
+}
+.sound.loaded .sound-header,
+.sound.loaded .sound-status,
+.sound.loaded .sound-info {
+  color: #fff;
 }
   .sound.loaded .sound-header
   {
@@ -323,6 +324,11 @@ section#hex-dump
 {
   background: #ECF4EE;
   border: 2px solid #2CB43C;
+}
+.sound.playing .sound-header,
+.sound.playing .sound-status,
+.sound.playing .sound-info {
+  color: #fff;
 }
   .sound.playing .sound-header
   {
@@ -352,6 +358,8 @@ section#hex-dump
   float: left;
   margin: 5px 8px;
   padding: 0;
+  position: relative;
+  top: 2px;
   width: 90px;
 }
 .sound label
@@ -361,7 +369,7 @@ section#hex-dump
   clear: none;
   float: left;
   left: -2px;
-  padding: 0 1px;
+  padding: 0 4px;
   position: relative;
   top: 3px;
 }

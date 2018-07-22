@@ -26,18 +26,20 @@
       <h1>Audio Hash</h1>
       <nav>
         <div id="options">
-          <button class="btn btn-secondary" id="options-link">Options</button>
-          <fieldset id="options-main">
-            <label for="chkDumpHex">Dump hex on make?</label>
-            <input id="chkDumpHex" type="checkbox" />
-            <label for="chkMixDemo">Play mix on make?</label>
-            <input id="chkMixDemo" type="checkbox" />
-            <label for="numPlaybackPerc">Play mix rate (%)</label>
-            <input id="numPlaybackPerc" type="number" min="1" max="500" value="100" pattern="[0-9]+" />
-            <label for="rngSampleSize">Sample size</label>
-            <input id="rngSampleSize" type="range" min="1" max="30" value="5" />
-            <input id="txtSampleSize" type="text" />
-          </fieldset>
+          <button class="btn btn-info" id="options-link">Options</button>
+          <div class="card" id="options-main">
+            <fieldset>
+              <label for="chkDumpHex">Dump hex on make?</label>
+              <input id="chkDumpHex" type="checkbox" />
+              <label for="chkMixDemo">Play mix on make?</label>
+              <input id="chkMixDemo" type="checkbox" />
+              <label for="numPlaybackPerc">Play mix rate (%)</label>
+              <input id="numPlaybackPerc" type="number" min="1" max="500" value="100" pattern="[0-9]+" />
+              <label for="rngSampleSize">Sample size</label>
+              <input id="rngSampleSize" type="range" min="1" max="30" value="5" />
+              <input id="txtSampleSize" type="text" />
+            </fieldset>
+          </div>
         </div>
       </nav>
       <a id="help-link" href="#">?</a>
@@ -60,8 +62,8 @@
         </section>
         <section id="buttons">
           <button class="btn btn-primary" id="btnCreateSoundPlayer">Create SP</button>
-          <button class="btn btn-primary" id="btnCreateSampler">Make Sampler!</button>
-          <button class="btn btn-primary" id="linkDownloadSampler">Download Sampler</button>
+          <button class="btn btn-secondary" id="btnCreateSampler">Make Sampler!</button>
+          <a class="btn btn-success" id="linkDownloadSampler">Download Sampler</a>
         </section>
       </section>
     </section>
