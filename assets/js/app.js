@@ -11,8 +11,11 @@ const AH_PAUSED = 'paused';
 const AH_UNLOADED = 'unloaded';
 const AH_LOADING = 'loading...';
 const AH_LOADED = 'loaded and ready';
-const AH_ERROR_DECODING = 'error decoding file';
-const AH_ERROR_LENGTH = 'Sound is too long and cannot be used.'
+const AH_ERROR_DECODING = 'Error: cannot decode sound file';
+const AH_ERROR_LENGTH = 'Error: sound file too long';
+const AH_ERROR_SP_INCOMPLETE = 'Error: existing SoundPlayers need sounds';
+const AH_ERROR_SP_COUNT_MAX_REACHED = 'Error: SoundPlayer max reached';
+const AH_ERROR_SP_COUNT_MIN_NOT_MET = 'Error: SoundPlayer min (2) not met';
 const AH_INIT_SP_COUNT = 2;
 const AH_FILE_MAX_LENGTH = 100000000;
 
@@ -248,7 +251,7 @@ var AudioHash = (function () {
     var newSamplerBuffer = getAudioContext().createBuffer(
       numberOfChannels,
       sndLengthSum,
-      sndArr[0].audioBuffer.sampleRate
+      sndArr[0].audioBuffer.sampleRate * 2
     );
 
     // fill new buffer with SoundPlayer audio data
@@ -626,15 +629,15 @@ function initPageUI() {
     if (AudioHash.getSoundPlayerArrayLength() < AudioHash.getSoundPlayerMax()) {
       AudioHash.createSoundPlayer();
     } else {
-      alert('Cannot create new SoundPlayer as the maximum number has been reached.');
+      alert(AH_ERROR_SP_COUNT_MAX_REACHED);
     }
   });
   createSampler.addEventListener('click', function() {
     if (AudioHash.getSoundPlayerArrayLength() < 2) {
-      alert('You need at least two sounds to make a sampler.');
+      alert(AH_ERROR_SP_COUNT_MIN_NOT_MET);
     }
     else if (AudioHash.isSPArrayEmpty()) {
-      alert('You have not loaded sounds into all of the existing SoundPlayers yet!');
+      alert(AH_ERROR_SP_INCOMPLETE);
     }
     else {
       AudioHash.createSampler(AudioHash.getSoundPlayerArray());
