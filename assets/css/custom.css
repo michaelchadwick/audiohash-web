@@ -187,9 +187,9 @@ section#dashboard {
   }
   section#buttons {
     float: left;
-    margin: -3px 0 0;
+    margin: 0;
   }
-  section#buttons #linkDownloadSampler {
+  section#buttons #linkDownloadAH {
     display: none;
   }
 
@@ -349,7 +349,7 @@ section#hex-dump
 .sound input[type="file"]
 {
   font-size: 0.9em;
-  margin: 0;
+  margin: 5px 0;
   padding: 8px;
 }
 .sound input[type='range']
@@ -411,3 +411,6 @@ footer {
   color: #D1D1D1;
   padding: 10px;
 }
+  footer a:hover {
+    color: #ffc107;
+  }

@@ -1,27 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">"
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Audio Hash | mix multiple sounds into one</title>
+  <title>AH</title>
 
   <meta name="description" content="Single page application that loads sound files and then makes a sampler track out of them.">
   <meta name="title" content="Audio Hash">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-  <link href="/assets/images/favicon.ico" rel="favicon" />
-  <link href="/assets/images/favicon.ico" rel="icon" type="image/x-icon" />
+  <link href="favicon.ico" rel="favicon" />
+  <link href="favicon.ico" rel="icon" type="image/x-icon" />
 
   <!-- bootstrap -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 
   <link rel="stylesheet" href="/assets/css/custom.css" media="screen" />
+
+  <script data-main="/assets/js/app" src="/assets/js/lib/require.js"></script>
 </head>
-
 <body>
-
   <div id="audiohash-app">
-
     <header>
       <h1>Audio Hash</h1>
       <nav>
@@ -61,9 +60,9 @@
           <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sounds
         </section>
         <section id="buttons">
-          <button class="btn btn-primary" id="btnCreateSoundPlayer">Create SP</button>
-          <button class="btn btn-secondary" id="btnCreateSampler">Make Sampler!</button>
-          <a class="btn btn-success" id="linkDownloadSampler">Download Sampler</a>
+          <button class="btn btn-primary btn-sm" id="btnCreateSP">Create SP</button>
+          <button class="btn btn-secondary btn-sm" id="btnCreateAH">Make Audio Hash!</button>
+          <a class="btn btn-success" id="linkDownloadAH">Download</a>
         </section>
       </section>
     </section>
@@ -78,17 +77,12 @@
     </section>
 
     <footer>
-      by <a href="https://codana.me">codana.me</a> -- <a href="https://github.com/michaelchadwick/audiohash-web">source</a>
+      <div>
+        a <a href="https://codana.me">codana.me</a> project -- <a href="https://github.com/michaelchadwick/audiohash-web">source</a>
+      </div>
     </footer>
-
-    <!-- JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
-    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="/assets/js/app.js"></script>
-
   </div>
 
+  <script defer src="https://use.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy" crossorigin="anonymous"></script>
 </body>
 </html>
