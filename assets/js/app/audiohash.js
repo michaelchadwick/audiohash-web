@@ -168,6 +168,8 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
     createAH: function(sndArr) {
       var newSampler
       var numberOfChannels = this._getSoundChannelsMin(sndArr)
+
+      // get sum of all sound lengths
       var sndLengthSum = (function() {
         var lng = 0
         for (var i = 0; i < sndArr.length; i++) {
@@ -177,23 +179,30 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
       })()
 
       // create new buffer to hold all the SoundPlayer audio data
-      var newSamplerBuffer = this.getAudioContext().createBuffer(
-        numberOfChannels,
-        sndLengthSum,
-        sndArr[0].audioBuffer.sampleRate * 2
-      )
+      var sndSampleRate = sndArr[0].audioBuffer.sampleRate
+
+      var newSamplerBuffer = this.getAudioContext()
+        .createBuffer(
+          numberOfChannels,
+          sndLengthSum,
+          sndSampleRate
+        )
 
       // fill new buffer with SoundPlayer audio data
       for (var channel = 0; channel < numberOfChannels; channel++) {
         newSampler = newSamplerBuffer.getChannelData(channel)
         newSampler.set(sndArr[0].audioBuffer.getChannelData(channel), 0)
+
         for (var j = 1; j < sndArr.length; j++) {
-          newSampler.set(sndArr[j].audioBuffer.getChannelData(channel), sndArr[j-1].audioBuffer.length)
+          newSampler.set(
+            sndArr[j].audioBuffer.getChannelData(channel),
+            sndArr[j-1].audioBuffer.length
+          )
         }
       }
 
       // encode our newly-made audio buffer into a wav file
-      var dataView = this._encodeWavFile(newSampler, newSamplerBuffer.sampleRate)
+      var dataView = this._encodeWavFile(newSampler, newSamplerBuffer.sampleRate / 2)
       var audioBlob = new Blob([dataView], { type : 'audio/wav' })
 
       // post new wav file to download link
