@@ -60,7 +60,6 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
       document.getElementById('lblSoundPlayersCount').innerText = this.getSPArrayLength()
     },
     _displayHexDump: function(bufferString) {
-      console.log('dumping hex...')
       document.getElementById('hex-dump').style.display = 'block'
       document.getElementById('hex-dump-contents').innerHTML = 'dumping hex...'
       myWorker.postMessage({
@@ -160,7 +159,7 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
 
       var divSoundPlayers = document.querySelector('#soundPlayers')
       var soundToRemove = document.querySelector(`#sound${sId}`)
-      console.log('soundToRemove', soundToRemove)
+
       divSoundPlayers.removeChild(soundToRemove)
 
       this._updateSPCount()

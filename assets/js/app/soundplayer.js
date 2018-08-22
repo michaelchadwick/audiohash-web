@@ -200,10 +200,6 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
       this.isPlaying = !this.isPlaying
     },
 
-    fooDo: function() {
-      console.log('fooDo this', this)
-    },
-
     // CREATE UI
     createSPUI: function() {
       var divSP = document.querySelector('#soundPlayers')
@@ -219,7 +215,6 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
       this.createBtnStop()
       this.createInitVol()
       this.createLblVolume()
-      // this.createFooThing()
 
       divSP.appendChild(this.soundDiv)
       this.soundDiv.appendChild(this.soundHeader)
@@ -231,7 +226,6 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
       this.soundDiv.appendChild(this.lblVolume)
       this.soundDiv.appendChild(this.btnPlay)
       this.soundDiv.appendChild(this.btnStop)
-      // this.soundDiv.appendChild(this.fooThing)
     },
 
     createSoundDiv: function() {
@@ -302,7 +296,7 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
           }
         }
         reader.onabort = function() {
-          //console.log('onabort')
+          console.error('sound upload aborted')
         }
         if (e.srcElement.value != ''){
           reader.readAsArrayBuffer(this.files[0])
@@ -374,20 +368,6 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
       elem.innerText = this.initVol
 
       this.lblVolume = elem
-    },
-    createFooThing: function() {
-      var elem = document.createElement('span')
-      elem.id = 'fooThing' + this.soundId
-      elem.innerText = 'foo'
-
-      var that = this
-
-      // elem.addEventListener('click', that.fooDo)
-      elem.addEventListener('click', function() {
-        that.fooDo()
-      })
-
-      this.fooThing = elem
     }
   }
 
