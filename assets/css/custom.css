@@ -34,6 +34,7 @@ p {
 
 /* Main Structure */
 div#audiohash-app {
+  margin-bottom: 45px;
   width: 100%;
 }
 header {
@@ -54,7 +55,7 @@ header {
     color: #fff;
     float: left;
     left: 10px;
-    padding: 5px 0 0 0;
+    padding: 10px 0 0 0;
     position: relative;
   }
   nav button {
@@ -172,7 +173,8 @@ section#dashboard {
   border-bottom: 1px solid #868686;
   border-top: 1px solid #868686;
   clear: left;
-  padding: 8px 10px 5px;
+  height: 44px;
+  padding: 5px 10px 3px;
 }
   section#dashboard-inner {
     clear: both;
@@ -199,7 +201,8 @@ section#soundPlayers
   clear: both;
   float: none;
   min-height: 200px;
-  margin: 0;
+  margin: 0 0 15px;
+  overflow-y: scroll;
   padding: 0;
   width: 100%;
 }
@@ -214,6 +217,18 @@ section#hex-dump
     height: 300px;
     width: 600px;
   }
+footer {
+  background: #2E4373;
+  bottom: 0;
+  clear: left;
+  color: #D1D1D1;
+  padding: 10px;
+  position: fixed;
+  width: 100%;
+}
+  footer a:hover {
+    color: #ffc107;
+  }
 
 /* Classes */
 .sound
@@ -223,10 +238,29 @@ section#hex-dump
   clear: left;
   float: left;
   margin: 0;
+  min-height: 150px;
   min-width: 100px;
   padding: 0;
   text-transform: uppercase;
   width: 100%;
+}
+@media (min-width: 768px) {
+  .sound {
+    border-bottom: 1px solid #333;
+    border-right: 1px solid #333;
+    clear: none;
+    width: 50%;
+  }
+}
+@media (min-width: 992px) {
+  .sound {
+    width: 33.3%;
+  }
+}
+@media (min-width: 1200px) {
+  .sound {
+    width: 25%;
+  }
 }
 .sound > *
 {
@@ -245,7 +279,7 @@ section#hex-dump
   left: -5px;
   margin: 0;
   max-width: 100%;
-  padding: 5px;
+  padding: 0 5px;
   width: 100%;
 }
   .sound-destroyer {
@@ -254,7 +288,7 @@ section#hex-dump
     padding: 0;
     position: relative;
     right: 30px;
-    top: -5px;
+    top: -6px;
   }
   .sound-destroyer:hover {
     background: #555;
@@ -350,7 +384,7 @@ section#hex-dump
 {
   font-size: 0.9em;
   margin: 5px 0;
-  padding: 8px;
+  padding: 0 8px;
 }
 .sound input[type='range']
 {
@@ -405,12 +439,3 @@ section#hex-dump
   height: 20px;
   width: 240px;
 }
-footer {
-  background: #2E4373;
-  clear: left;
-  color: #D1D1D1;
-  padding: 10px;
-}
-  footer a:hover {
-    color: #ffc107;
-  }

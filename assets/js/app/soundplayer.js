@@ -64,10 +64,6 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
 
     // updates info about the loaded sound (duration, channels, sample rate)
     updateSoundInfo: function(msg) {
-      // var sndInfo = document.getElementById(`soundInfo${this.soundId}`)
-      // var snd = AudioHash.getSP(sId)
-      // var snd = document.getElementById(`sound${this.soundId}`)
-
       this.soundInfo.style.display = 'block'
 
       if (msg) {
@@ -122,7 +118,6 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
     disableSound: function(sId) {
       document.getElementById('sound' + sId).classList.remove('loaded')
 
-      // AudioHash.getSP(sId).audioBuffer = null
       this.audioBuffer = null
       document.getElementById('btnPlay' + sId).disabled = true
       document.getElementById('btnStop' + sId).disabled = true
@@ -245,12 +240,16 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
     createSoundDestroyer: function() {
       var elem = document.createElement('div')
       var sId = this.soundId
-      elem.id = `sound-destroyer${sId}`
+      var elemId = `sound-destroyer${sId}`
+      elem.id = elemId
+      elem.title = `Destroy sound${sId}`
       elem.classList.add('sound-destroyer')
       elem.innerHTML = '<a href="#"><i class="fas fa-times"></i></a>'
 
+      var sp = this
+
       elem.addEventListener('click', function() {
-        AudioHash.removeSP(sId)
+        AudioHash.removeSP(sp, AudioHash._soundPlayerArray)
       })
 
       this.soundDestroyer = elem

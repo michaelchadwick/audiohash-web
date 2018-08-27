@@ -46,35 +46,30 @@ function initPageUI() {
 
     var optionsLink = document.getElementById('options-link')
     var optionsChoices = document.getElementById('options-main')
-    var spCountMax = document.getElementById('lblSoundPlayersCountMax')
-    var spCount = document.getElementById('lblSoundPlayersCount')
-    var createSP = document.getElementById('btnCreateSP')
-    var createAH = document.getElementById('btnCreateAH')
+    var lblSPCount = document.getElementById('lblSoundPlayersCount')
+    var lblSPCountMax = document.getElementById('lblSoundPlayersCountMax')
+    var btnCreateSP = document.getElementById('btnCreateSP')
+    var btnCreateAH = document.getElementById('btnCreateAH')
     var sampleSizeVal = document.getElementById('rngSampleSize')
     var sampleSizeTxt = document.getElementById('txtSampleSize')
 
-    spCountMax.innerText = AudioHash.getSPMax()
-    spCount.innerText = AudioHash.getSPId()
+    lblSPCount.innerText = AudioHash.getSPNextId()
+    lblSPCountMax.innerText = AudioHash.getSPCountMax()
     sampleSizeTxt.value = sampleSizeVal.value
 
     // event listeners
     optionsLink.addEventListener('click', function() {
       var disp = optionsChoices.style.display
-      if (disp === 'none' || disp === '') {
-        optionsChoices.style.display = 'block'
-      }
-      else {
-        optionsChoices.style.display = 'none'
-      }
+      optionsChoices.style.display = (disp === 'none' || disp === '') ? 'block' : 'none'
     })
-    createSP.addEventListener('click', function() {
-      if (AudioHash.getSPArrayLength() < AudioHash.getSPMax()) {
+    btnCreateSP.addEventListener('click', function() {
+      if (AudioHash.getSPArrayLength() < AudioHash.getSPCountMax()) {
         AudioHash.createSP()
       } else {
         alert(constants.AH_ERROR_SP_COUNT_MAX_REACHED)
       }
     })
-    createAH.addEventListener('click', function() {
+    btnCreateAH.addEventListener('click', function() {
       if (AudioHash.getSPArrayLength() < 2) {
         alert(constants.AH_ERROR_SP_COUNT_MIN_NOT_MET)
       }
@@ -86,7 +81,7 @@ function initPageUI() {
       }
     })
     sampleSizeVal.addEventListener('change', function(e) {
-      sampleSizeTxt.value=e.srcElement.value
+      sampleSizeTxt.value = e.srcElement.value
     })
   })
 }

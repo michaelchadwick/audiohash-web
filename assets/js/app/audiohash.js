@@ -6,8 +6,8 @@
 
 define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
   return {
-    _soundPlayerId: 0, // used to give each SP a unique ID
-    _soundPlayerMax: 10, // arbitrary, may change or go away
+    _soundPlayerNextId: 0, // used to give each SP a unique ID
+    _soundPlayerCountMax: 10, // arbitrary, may change or go away
     _soundPlayerArray: [], // holds all the existing SPs
     _audioContext: function() {
       if ( !window.AudioContext && !window.webkitAudioContext ) {
@@ -17,47 +17,23 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
       }
     },
 
-    areSPBuffersEmpty: function() {
-      var empty = false
-
-      this.getSPArray().forEach(function(sound) {
-        if (!sound.audioBuffer) {
-          empty = true
-        }
-      })
-
-      return empty
-    },
-    getSPId: function() {
-      return this._soundPlayerId
-    },
-    getAudioContext: function() {
+    _getAudioContext: function() {
       return this._audioContext()
     },
-    getSP: function(sId) {
-      var position = this._listSPIds().indexOf(parseInt(sId))
+    _getSP: function(sId) {
+      var position = this.listSPIds().indexOf(parseInt(sId))
       return this._soundPlayerArray[position]
     },
-    getSPArray: function() {
-      return this._soundPlayerArray
-    },
-    getSPArrayLength: function() {
-      return this._soundPlayerArray.length
-    },
-    getSPMax: function() {
-      return this._soundPlayerMax
-    },
-
-    _listSPIds: function() {
-      var arrIds = []
-      for (var i = 0; i < this._soundPlayerArray.length; i++) {
-        arrIds.push(this._soundPlayerArray[i].soundId)
-      }
-      return arrIds
+    _setSPArray: function(arr) {
+      this._soundPlayerArray = arr
     },
     _updateSPCount: function() {
-      this._soundPlayerId += 1
       document.getElementById('lblSoundPlayersCount').innerText = this.getSPArrayLength()
+      // console.log('audiohash.js this.getSPNextId()', this.getSPNextId())
+    },
+    _resetSPCount: function() {
+      this._soundPlayerArray = []
+      this._soundPlayerNextId = 0
     },
     _displayHexDump: function(bufferString) {
       document.getElementById('hex-dump').style.display = 'block'
@@ -67,12 +43,28 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
         buffer: bufferString
       })
     },
+    _shuffleArray: function(array) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1))
+        var temp = array[i]
+        array[i] = array[j]
+        array[j] = temp
+      }
+      return array
+    },
     _getSoundChannelsMin: function(sndArr) {
       var sndChannelsArr = []
       sndArr.forEach(function(snd) {
         sndChannelsArr.push(snd.audioBuffer.numberOfChannels)
       })
       return Math.min.apply(Math, sndChannelsArr)
+    },
+    _getSoundLengthSum: function(sndArr) {
+      var lng = 0
+      for (var i = 0; i < sndArr.length; i++) {
+        lng += sndArr[i].audioBuffer.length
+      }
+      return lng
     },
     _getSoundSlice: function(audioBuffer) {
       var sliceNumber = document.getElementById('txtSampleSize')
@@ -136,68 +128,136 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
       return view
     },
 
-    // add a new Sound Player to the array
+    areSPBuffersEmpty: function() {
+      var empty = false
+
+      this.getSPArray().forEach(function(sound) {
+        if (!sound.audioBuffer) {
+          empty = true
+        }
+      })
+
+      return empty
+    },
+    getSPNextId: function() {
+      return this._soundPlayerNextId
+    },
+    incSPNextId: function() {
+      this._soundPlayerNextId += 1
+    },
+    getSPArray: function() {
+      return this._soundPlayerArray
+    },
+    getSPArrayLength: function() {
+      return this._soundPlayerArray.length
+    },
+    getSPCountMax: function() {
+      return this._soundPlayerCountMax
+    },
+    listSPIds: function() {
+      var arrIds = []
+
+      this._soundPlayerArray.forEach(sp => { arrIds.push(sp.soundId) })
+
+      return arrIds
+    },
+
+    // add new Sound Player to the array
     createSP: function(quantity) {
       var playerCount = (quantity || 1)
       if (playerCount <= 0) playerCount = 1
 
       for (var i = 0; i < playerCount; i++) {
-        this._soundPlayerArray.push(new SoundPlayer(this.getSPId(), this.getAudioContext()))
+        const newSP = new SoundPlayer(this.getSPNextId(), this._getAudioContext())
+        this.getSPArray().push(newSP)
         this._updateSPCount()
+        this.incSPNextId()
       }
 
-      return this._soundPlayerArray[this._soundPlayerArray.length - 1]
+      console.log('createSP this.listSPIds', this.listSPIds())
     },
-    // remove a Sound Player from the array
-    removeSP: function(sId) {
-      if (this._soundPlayerArray.length > 1) {
-        var position = this._listSPIds().indexOf(sId)
-        this._soundPlayerArray.splice(position, 1)
+    // remove Sound Player from the array
+    removeSP: function(sp, spArray) {
+      const sId = sp.soundId
+
+      console.log('sp', sp)
+      console.log('sId', sId)
+      console.log('spArray', spArray)
+
+      if (spArray.length > 1) {
+        var position = spArray.indexOf(sId)
+        console.log('position', position)
+        this.spArray.splice(position, 1)
+        this._updateSPCount()
       } else {
-        this._soundPlayerArray = []
+        this._resetSPCount()
       }
 
       var divSoundPlayers = document.querySelector('#soundPlayers')
       var soundToRemove = document.querySelector(`#sound${sId}`)
 
       divSoundPlayers.removeChild(soundToRemove)
-
-      this._updateSPCount()
     },
     // make a new sampler of 2 or more sounds
     createAH: function(sndArr) {
-      var newSampler
-      var numberOfChannels = this._getSoundChannelsMin(sndArr)
-
-      // get sum of all sound lengths
-      var sndLengthSum = (function() {
-        var lng = 0
-        for (var i = 0; i < sndArr.length; i++) {
-          lng += sndArr[i].audioBuffer.length
-        }
-        return lng
-      })()
+      let newSampler = [] // Float32Array
+      const numberOfChannels = this._getSoundChannelsMin(sndArr)
+      const sndLengthSum = this._getSoundLengthSum(sndArr)
+      // const sampleSize = document.getElementById('rngSampleSize').value
 
       // create new buffer to hold all the SoundPlayer audio data
-      var sndSampleRate = sndArr[0].audioBuffer.sampleRate
+      const sndSampleRate = sndArr[0].audioBuffer.sampleRate
 
-      var newSamplerBuffer = this.getAudioContext()
+      const newSamplerBuffer = this._getAudioContext()
         .createBuffer(
           numberOfChannels,
           sndLengthSum,
           sndSampleRate
         )
 
-      // fill new buffer with SoundPlayer audio data
-      for (var channel = 0; channel < numberOfChannels; channel++) {
-        newSampler = newSamplerBuffer.getChannelData(channel)
-        newSampler.set(sndArr[0].audioBuffer.getChannelData(channel), 0)
+      // create array of indices to choose from
+      // and then mix up order
+      let indices = []
 
-        for (var j = 1; j < sndArr.length; j++) {
+      for (var i = 0; i < sndArr.length; i++) {
+        indices.push(i)
+      }
+      const indicesShuffled = this._shuffleArray(indices)
+
+      // fill new audio buffer with SoundPlayer audio data
+      for (var channel = 0; channel < numberOfChannels; channel++) {
+        // initialize newSampler's array with 0s
+        newSampler = newSamplerBuffer.getChannelData(channel)
+
+        // while we still have indices, choose random index to add next
+        let count = 0
+        let offset = 0
+        let index = 0
+        while (indicesShuffled.length > 0) {
+          console.log('indicesShuffled', indicesShuffled)
+          console.log('indicesShuffled.length', indicesShuffled.length)
+          console.log('count', count)
+
+          if (count > 0) {
+            offset = sndArr[count - 1].audioBuffer.length
+          }
+
+          // grab the nth shuffled index for sndArr
+          index = indicesShuffled[0]
+          console.log('index', index)
+          // remove it from the shuffled index
+          indicesShuffled.splice(0, 1)
+          console.log('indicesShuffled', indicesShuffled)
+
+          // write sndArr[index] to new Audio Hash
+          // offset by the last sndArr[index]
+          // or start at 0 if just begun
           newSampler.set(
-            sndArr[j].audioBuffer.getChannelData(channel),
-            sndArr[j-1].audioBuffer.length
+            sndArr[index].audioBuffer.getChannelData(channel),
+            offset
           )
+
+          count += 1
         }
       }
 
@@ -214,9 +274,9 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
       {
         var mixSpeed = document.getElementById('numPlaybackPerc').value
         if (mixSpeed !== '') mixSpeed = mixSpeed / 100
-        var audioSource = this.getAudioContext().createBufferSource()
+        var audioSource = this._getAudioContext().createBufferSource()
         audioSource.buffer = newSamplerBuffer
-        audioSource.connect(this.getAudioContext().destination)
+        audioSource.connect(this._getAudioContext().destination)
         audioSource.playbackRate.value = mixSpeed
         audioSource.start()
       }
