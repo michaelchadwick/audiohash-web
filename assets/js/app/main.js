@@ -94,7 +94,7 @@ window.onload = function() {
   initPageUI()
 
   // create initial number of SPs
-  require(['app/constants', 'app/AudioHash'], function (constants, AudioHash) {
+  require(['app/constants', 'app/audiohash'], function (constants, AudioHash) {
     AudioHash.createSP(constants.AH_INIT_SP_COUNT)
   })
 }
