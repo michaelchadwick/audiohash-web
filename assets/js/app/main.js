@@ -41,7 +41,7 @@ if (window.Worker) {
  */
 
 function initPageUI() {
-  require(['app/constants', 'app/AudioHash'], function (constants, AudioHash) {
+  require(['app/constants', 'app/audiohash'], function (constants, AudioHash) {
     document.title = `${constants.AH_APP_TITLE || 'AH'} | ${constants.AH_APP_TAGLINE || 'audio hash'}`
 
     var optionsLink = document.getElementById('options-link')
