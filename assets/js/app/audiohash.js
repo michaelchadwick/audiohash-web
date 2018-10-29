@@ -174,19 +174,19 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
         this.incSPNextId()
       }
 
-      console.log('createSP this.listSPIds', this.listSPIds())
+      // console.log('createSP this.listSPIds', this.listSPIds())
     },
     // remove Sound Player from the array
     removeSP: function(sp, spArray) {
       const sId = sp.soundId
 
-      console.log('sp', sp)
-      console.log('sId', sId)
-      console.log('spArray', spArray)
+      // console.log('sp', sp)
+      // console.log('sId', sId)
+      // console.log('spArray', spArray)
 
       if (spArray.length > 1) {
         var position = spArray.indexOf(sId)
-        console.log('position', position)
+        // console.log('position', position)
         this.spArray.splice(position, 1)
         this._updateSPCount()
       } else {
@@ -234,9 +234,9 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
         let offset = 0
         let index = 0
         while (indicesShuffled.length > 0) {
-          console.log('indicesShuffled', indicesShuffled)
-          console.log('indicesShuffled.length', indicesShuffled.length)
-          console.log('count', count)
+          // console.log('indicesShuffled', indicesShuffled)
+          // console.log('indicesShuffled.length', indicesShuffled.length)
+          // console.log('count', count)
 
           if (count > 0) {
             offset = sndArr[count - 1].audioBuffer.length
@@ -244,10 +244,10 @@ define(['./constants', './soundplayer'], function (constants, SoundPlayer) {
 
           // grab the nth shuffled index for sndArr
           index = indicesShuffled[0]
-          console.log('index', index)
+          // console.log('index', index)
           // remove it from the shuffled index
           indicesShuffled.splice(0, 1)
-          console.log('indicesShuffled', indicesShuffled)
+          // console.log('indicesShuffled', indicesShuffled)
 
           // write sndArr[index] to new Audio Hash
           // offset by the last sndArr[index]
