@@ -21,7 +21,7 @@ helpLink.addEventListener('click', function(e) {
  */
 
 if (window.Worker) {
-  var myWorker = new Worker('worker.js')
+  var myWorker = new Worker('../assets/js/app/worker.js')
 
   myWorker.onmessage = function(e) {
     console.log('Message received from worker', e.data)
