@@ -7,7 +7,7 @@ requirejs.config({
     popper: 'popper',
     bootstrap: 'bootstrap.min',
     fontawesome: 'fontawesome',
-    app: 'app',
+    app: '../app',
   }
 })
 
