@@ -1,10 +1,10 @@
 /* global requirejs */
 
 requirejs.config({
-  baseUrl: 'lib',
+  baseUrl: 'vendor',
   paths: {
-    jquery: 'jquery',
-    popper: 'popper',
+    jquery: 'jquery.min',
+    popper: 'popper.min',
     bootstrap: 'bootstrap.min',
     fontawesome: 'fontawesome',
     app: '../assets/js/app',
