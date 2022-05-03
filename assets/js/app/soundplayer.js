@@ -33,8 +33,9 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
       var volume = el.value
       var volumeMax = el.max
       var fraction = parseInt(volume) / parseInt(volumeMax)
+      var gainVal = fraction * fraction
 
-      this.gainNode.gain.value = fraction * fraction
+      this.gainNode.gain.value = gainVal
     },
 
     // change the internal gain node value
@@ -42,8 +43,9 @@ define(['./audiohash', './constants'], function (AudioHash, constants) {
       var volume = event.srcElement.value
       var volumeMax = event.srcElement.max
       var fraction = parseInt(volume) / parseInt(volumeMax)
+      var gainVal = fraction * fraction
 
-      this.gainNode.gain.value = fraction * fraction
+      this.gainNode.gain.value = gainVal
     },
 
     updateVolumeLabel: function(event) {
