@@ -1,88 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- BASIC
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>AH</title>
+  <meta http-equiv="cache-control" content="Public">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <title>Audio Hash</title>
 
-  <meta name="description" content="Single page application that loads sound files and then makes a sampler track out of them.">
+  <!-- META
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="description" content="Mix multiple sounds into one sampler track.">
+  <meta name="author" content="Michael Chadwick">
+  <meta name="application-name" content="Audio Hash">
   <meta name="title" content="Audio Hash">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta property="og:title" content="Audio Hash - Sound sampler maker">
+  <meta property="og:url" content="https://ah.neb.host">
+  <meta property="og:description" content="Mix multiple sounds into one sampler track.">
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:domain" content="ah.neb.host">
 
+  <!-- FAVICONS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link href="favicon.ico" rel="favicon" />
   <link href="favicon.ico" rel="icon" type="image/x-icon" />
 
+  <!-- FONTAWESOME
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="./assets/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="./assets/fontawesome/css/solid.min.css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <!-- bootstrap css -->
-  <link rel="stylesheet" href="./assets/css/vendor/bootstrap.min.css" rel="stylesheet" >
-
-  <!-- custom css -->
-  <link rel="stylesheet" href="./assets/css/custom.css" media="screen" />
-
-  <script data-main="./assets/js/app" src="./assets/js/vendor/require.js"></script>
+  <link rel="stylesheet" href="./assets/css/app.css" />
+  <link rel="stylesheet" href="./assets/css/modal.css">
 </head>
 <body>
-  <div id="audiohash-app">
-    <header>
-      <h1>Audio Hash</h1>
-      <nav>
-        <div id="options">
-          <button class="btn btn-info btn-sm" id="options-link">Options</button>
-          <div class="card" id="options-main">
-            <fieldset>
-              <label for="chkDumpHex">Dump hex on make?</label>
-              <input id="chkDumpHex" type="checkbox" />
-              <label for="chkMixDemo">Play mix on make?</label>
-              <input id="chkMixDemo" type="checkbox" />
-              <label for="numPlaybackPerc">Play mix rate (%)</label>
-              <input id="numPlaybackPerc" type="number" min="1" max="500" value="100" pattern="[0-9]+" />
-              <label for="rngSampleSize">Sample size</label>
-              <input id="rngSampleSize" type="range" min="1" max="30" value="5" />
-              <input id="txtSampleSize" type="text" />
-            </fieldset>
+
+  <header>
+
+    <div class="menu-left">
+
+      <div id="nav-links">
+        <button id="button-nav" class="icon" aria-label="Click for links to more apps by neb.host" tabindex="-1">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div id="nav-overlay">
+          <div id="nav-content">
+            <div class="container">
+
+              <div class="nav-header">More Apps By Neb</div>
+
+              <div class="nav-list">
+                <a href="https://bogdle.fun">Bogdle</a>
+                <a href="https://gw.neb.host">Gem Warrior</a>
+                <a href="https://raffler.neb.host">Raffler</a>
+                <a href="https://sketchage.neb.host">Sketchage</a>
+              </div>
+
+              <div class="nav-footer">
+                <!-- vvv neb.host subsite footer -->
+                <footer id="footer-neb-host">site by <a style="color: #ffffff; font-family: 'Consolas', sans-serif; font-size: 12px;" href="https://neb.host">neb.host</a>
+                </footer>
+                <!-- ^^^ neb.host subsite footer -->
+              </div>
+            </div>
+
+            <div id="button-nav-close">
+              <a href="#">X</a>
+            </div>
+
           </div>
         </div>
-      </nav>
-      <a id="help-link" href="#">?</a>
-      <div id="help-square">
-        <p>Mix multiple sounds into one.</p>
-        <ol>
-          <li>Create some SoundPlayers</li>
-          <li>Load up files</li>
-          <li>Choose how much of each you want sampled</li>
-          <li>Click "Make Sampler!" and a link to your new sampler will be created for you to download.</li>
-        </ol>
       </div>
-    </header>
 
-    <!-- Dashboard, of sorts -->
-    <section id="dashboard">
-      <section id="dashboard-inner">
-        <section id="soundPlayersCount">
-          <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sounds
-        </section>
-        <section id="buttons">
-          <button class="btn btn-primary btn-sm" id="btnCreateSP">&plus; Sound Player</button>
-          <button class="btn btn-secondary btn-sm" id="btnCreateAH">Make Audio Hash!</button>
-          <a class="btn btn-success" id="linkDownloadAH">Download</a>
-        </section>
-      </section>
+      <button id="button-help" class="icon" aria-label="Help" tabindex="-1">
+        <i class="fa-solid fa-question"></i>
+      </button>
+    </div>
+
+    <div class="title">
+      <h1>Audio Hash</h1>
+    </div>
+
+    <div class="menu-right">
+      <button id="button-settings" class="icon" aria-label="Settings" tabindex="-1">
+        <i class="fa-solid fa-gear"></i>
+      </button>
+    </div>
+
+  </header>
+
+  <!-- Dashboard, of sorts -->
+  <section id="dashboard">
+    <section id="soundPlayersCount">
+      <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sounds
     </section>
+    <button id="btnCreateSP" class="icon" title="Add sound">
+      <i class="fa-solid fa-circle-plus"></i>
+    </button>
+    <button id="btnCreateAH" class="icon" title="Make hash">
+      <i class="fa-solid fa-hashtag"></i>
+    </button>
+    <button id="linkDownloadAH" class="icon" title="Download hash">
+      <i class="fa-solid fa-download"></i>
+    </button>
+  </section>
 
-    <!-- SoundPlayers will go here -->
-    <section id="soundPlayers"></section>
+  <!-- SoundPlayers will go here -->
+  <section id="soundPlayers"></section>
 
-    <!-- Hex dump -->
-    <section id="hex-dump">
-      <h3>Hex Dump</h3>
-      <textarea id="hex-dump-contents"></textarea>
-    </section>
+  <!-- Hex dump -->
+  <section id="hex-dump">
+    <h3>Hex Dump</h3>
+    <textarea id="hex-dump-contents"></textarea>
+  </section>
 
-    <!-- vvv neb.host subsite footer -->
-    <footer id="footer-neb-host" style="background: #484848; border-top: 2px solid #000000; bottom: 0; color: #aaaaaa; display: table; font-family: 'Consolas', sans-serif; font-size: 12px; height: 18px; letter-spacing: initial; margin-top: 20px; padding: 5px 10px; position: fixed; width: 100%; text-align: left; z-index: 2">site by <a style="color: #ffffff; font-family: 'Consolas', sans-serif; font-size: 12px;" href="https://neb.host">neb.host</a>
-    </footer>
-    <!-- ^^^ neb.host subsite footer -->
-  </div>
-
-  <script defer src="https://use.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy" crossorigin="anonymous"></script>
+  <script data-main="./assets/js/app" src="./assets/js/vendor/require.js"></script>
 </body>
 </html>
