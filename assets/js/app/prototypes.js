@@ -1,6 +1,6 @@
 /* global define */
 
-define(function () {
+define(() => {
   return {
     prototypes: function() {
       /************************************************

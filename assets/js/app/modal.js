@@ -1,4 +1,6 @@
-define(function () {
+/* global define */
+
+define(() => {
   return class Modal {
     constructor(modalType, modalTitle, modalText, acceptText, cancelText) {
       this.modalDelay = 1500

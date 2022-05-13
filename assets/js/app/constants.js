@@ -1,6 +1,6 @@
 /* global define */
 
-define(function () {
+define(() => {
   return {
     AH_APP_TITLE: 'Audio Hash',
     AH_APP_TAGLINE: 'mix multiple sounds into one',
