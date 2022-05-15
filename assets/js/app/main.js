@@ -192,7 +192,7 @@ function initEventListeners() {
     if (getSPArrayLength() < getSPCountMax()) {
       createSP()
     } else {
-      alert(constants.AH_ERROR_SP_COUNT_MAX_REACHED)
+      require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_COUNT_MAX_REACHED))
     }
   })
   this.AudioHash.dom.btnCreateAH.addEventListener('click', () => {
@@ -307,13 +307,13 @@ function createSP(quantity) {
   })
 }
 // remove Sound Player from the array
-function removeSP(sp, spArray) {
+function removeSP(sp) {
   const sId = sp.soundId
 
-  if (spArray.length > 1) {
-    var position = spArray.indexOf(sId)
+  if (this.AudioHash.state._soundPlayerArray.length > 1) {
+    var position = this.AudioHash.state._soundPlayerArray.indexOf(sId)
 
-    this.spArray.splice(position, 1)
+    this.AudioHash.state._soundPlayerArray.splice(position, 1)
     this._updateSPCount()
   } else {
     this._resetSPCount()

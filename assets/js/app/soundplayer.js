@@ -4,7 +4,7 @@
 
 /* global define */
 
-define(['./constants', './main'],
+define(['./constants'],
   (constants) => {
     // Constructor
     function SoundPlayer(id, ac) {
@@ -253,8 +253,7 @@ define(['./constants', './main'],
         var sp = this
 
         elem.addEventListener('click', function() {
-          console.log('soundDestroyer X click', elem)
-          removeSP(sp, _soundPlayerArray)
+          removeSP(sp)
         })
 
         this.soundDestroyer = elem
