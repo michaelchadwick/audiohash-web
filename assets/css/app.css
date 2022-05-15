@@ -32,6 +32,10 @@ h1, h2, h3 {
   padding: 0;
 }
 
+ol {
+  padding: 20px;
+}
+
 p {
   margin: 0;
 }

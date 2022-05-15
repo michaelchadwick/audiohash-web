@@ -50,10 +50,10 @@ async function modalOpen(type) {
               <p>Mix multiple sounds into one.</p>
 
               <ol class="help">
-                <li>Create some SoundPlayers</li?
+                <li>Create some SoundPlayers</li>
                 <li>Load up files</li>
                 <li>Choose how much of each you want sampled</li>
-                <li>Click "Hash it!" and a link to your new sampler will be created for you to download.</li>
+                <li>Click/tap '#' and a link to your new sampler will be created for you to download</li>
               </ol>
             `,
             null,
