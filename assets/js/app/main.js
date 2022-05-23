@@ -297,7 +297,7 @@ function changeSetting(setting, event = null) {
   }
 }
 function saveSetting(setting, value) {
-  console.log('saving setting to code/LS...', setting, value)
+  // console.log('saving setting to code/LS...', setting, value)
 
   require(['app/constants'], (constants) => {
     var settings = JSON.parse(localStorage.getItem(constants.LS_SETTINGS_KEY))
@@ -314,7 +314,7 @@ function saveSetting(setting, value) {
     }
   })
 
-  console.log('!setting saved!', AudioHash.settings)
+  // console.log('!setting saved!', AudioHash.settings)
 }
 
 function attachEventListeners() {
