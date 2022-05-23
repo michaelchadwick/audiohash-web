@@ -59,13 +59,15 @@ async function modalOpen(type) {
                 <div class="setting-row">
                   <div class="text">
                     <div class="title">Dump hex on make?</div>
-                    <div class="description">Dump the raw hex of the hash when it is created</div>
+                    <div class="description">Dump the raw hex of the hash when it is created (experimental TODO)</div>
                   </div>
                   <div class="control">
                     <div class="container">
+                      <!--
                       <div id="button-setting-dump-hex" data-status="" class="switch" onclick="changeSetting('dumpHex')">
                         <span class="knob"></span>
                       </div>
+                      -->
                     </div>
                   </div>
                 </div>
@@ -74,13 +76,15 @@ async function modalOpen(type) {
                 <div class="setting-row">
                   <div class="text">
                     <div class="title">Play hash on make?</div>
-                    <div class="description">Play audio hash when created</div>
+                    <div class="description">Play audio hash when created (experimental TODO)</div>
                   </div>
                   <div class="control">
                     <div class="container">
+                      <!--
                       <div id="button-setting-mix-demo" data-status="" class="switch" onclick="changeSetting('mixDemo')">
                         <span class="knob"></span>
                       </div>
+                      -->
                     </div>
                   </div>
                 </div>
@@ -161,18 +165,19 @@ function initApp() {
 // create web worker
 function initWebWorker() {
   if (window.Worker) {
-    var myWorker = new Worker('./assets/js/app/worker.js')
+    AudioHash.myWorker = new Worker('./assets/js/app/worker.js')
 
-    myWorker.onmessage = function(e) {
+    AudioHash.myWorker.onmessage = function(e) {
       console.log('Message received from worker', e.data)
 
       var workerCommand = e.data.command
 
       switch (workerCommand) {
-      case 'hexDump':
-        document.getElementById('hex-dump-contents').innerHTML = e.data.ascii
-        break
-      }
+        case 'hexDump':
+          document.getElementById('hex-dump-contents').innerHTML = e.data.ascii
+
+          break
+        }
     }
   }
 }
@@ -463,6 +468,7 @@ function createAudioHash(sndArr) {
   for (var i = 0; i < sndArr.length; i++) {
     indices.push(i)
   }
+
   const indicesShuffled = this._shuffleArray(indices)
 
   // fill new audio buffer with SoundPlayer audio data
@@ -474,6 +480,7 @@ function createAudioHash(sndArr) {
     let count = 0
     let offset = 0
     let index = 0
+
     while (indicesShuffled.length > 0) {
       // console.log('indicesShuffled', indicesShuffled)
       // console.log('indicesShuffled.length', indicesShuffled.length)
@@ -485,9 +492,12 @@ function createAudioHash(sndArr) {
 
       // grab the nth shuffled index for sndArr
       index = indicesShuffled[0]
+
       // console.log('index', index)
+
       // remove it from the shuffled index
       indicesShuffled.splice(0, 1)
+
       // console.log('indicesShuffled', indicesShuffled)
 
       // write sndArr[index] to new Audio Hash
@@ -511,12 +521,17 @@ function createAudioHash(sndArr) {
 
   // makes a temp audio buffer source and plays the new sampler mix
   if (AudioHash.settings.mixDemo) {
-    var mixSpeed = document.getElementById('numPlaybackPerc').value
-    if (mixSpeed !== '') mixSpeed = mixSpeed / 100
+    var mixRate = AudioHash.settings.mixRate
+
+    if (mixRate !== '') {
+      mixRate = mixRate / 100
+    }
+
     var audioSource = this._getAudioContext().createBufferSource()
+
     audioSource.buffer = newSamplerBuffer
     audioSource.connect(this._getAudioContext().destination)
-    audioSource.playbackRate.value = mixSpeed
+    audioSource.playbackRate.value = mixRate
     audioSource.start()
   }
 
@@ -524,6 +539,7 @@ function createAudioHash(sndArr) {
   if (AudioHash.settings.dumpHex) {
     var decoder = new TextDecoder('utf-8')
     var decodedString = decoder.decode(dataView)
+
     this._displayHexDump(decodedString)
   }
 }
@@ -554,7 +570,8 @@ function _resetSPCount() {
 function _displayHexDump(bufferString) {
   document.getElementById('hex-dump').style.display = 'block'
   document.getElementById('hex-dump-contents').innerHTML = 'dumping hex...'
-  myWorker.postMessage({
+
+  AudioHash.myWorker.postMessage({
     command: 'hexDump',
     buffer: bufferString
   })

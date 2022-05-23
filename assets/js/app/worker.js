@@ -12,7 +12,9 @@ this.onmessage = function(e) {
   switch (e.data.command) {
     case 'hexDump':
       workerResult = hexDump(e.data.buffer)
+
       console.log('workerResult', workerResult)
+
       break
     }
 }
