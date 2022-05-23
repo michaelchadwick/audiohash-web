@@ -27,9 +27,14 @@ a {
     color: #CA5B16;
   }
 
-h1, h2, h3 {
-  margin: 0;
-  padding: 0;
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 auto;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+hr {
+  margin: 0.5em 0;
 }
 
 ol {
@@ -306,10 +311,11 @@ header {
   header .menu-right {
     display: flex;
     width: 70px;
-    justify-content: flex-end;
   }
-    header .menu-right button {
-      justify-content: right;
+    header .menu-right button#button-settings {
+      display: flex;
+      justify-content: flex-end;
+      margin-right: 0;
     }
 
 section#dashboard {
