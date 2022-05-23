@@ -2,43 +2,32 @@
  * AudioHash - combine sounds for one sound sampler platter **
  */
 
-ENV_PROD_URL = ['https://audiohash.neb.host', 'https://ah.neb.host']
+// AudioHash object init
+if ((typeof AudioHash) === 'undefined') var AudioHash = {}
 
-this.AudioHash = this.AudioHash || {}
+AudioHash.settings = {
+  "dumpHex": false,
+  "mixDemo": false,
+  "mixRate": 100,
+  "sampleSize": 5
+}
 
-this.AudioHash.dom = {}
-
-this.AudioHash.dom.btnNav = document.getElementById('button-nav')
-this.AudioHash.dom.navOverlay = document.getElementById('nav-overlay')
-this.AudioHash.dom.btnNavClose = document.getElementById('button-nav-close')
-this.AudioHash.dom.navContent = document.getElementById('nav-content')
-
-this.AudioHash.dom.btnHelp = document.getElementById('button-help')
-this.AudioHash.dom.btnSettings = document.getElementById('button-settings')
-
-this.AudioHash.dom.lblSPCount = document.getElementById('lblSoundPlayersCount')
-this.AudioHash.dom.lblSPCountMax = document.getElementById('lblSoundPlayersCountMax')
-
-this.AudioHash.dom.btnCreateSP = document.getElementById('btnCreateSP')
-this.AudioHash.dom.btnCreateAH = document.getElementById('btnCreateAH')
-
-this.AudioHash.settings = {}
-this.AudioHash.settings.dumpHex = false
-this.AudioHash.settings.mixDemo = false
-
-this.AudioHash.state = {}
-this.AudioHash.state._soundPlayerNextId = 0 // used to give each SP a unique ID
-this.AudioHash.state._soundPlayerCountMax = 10 // arbitrary, may change or go away
-this.AudioHash.state._soundPlayerArray = [] // holds all the existing SPs
-this.AudioHash.state._audioContext = function() {
-  if ( !window.AudioContext && !window.webkitAudioContext ) {
-    return console.warn(constants.AH_ERROR_NO_WEB_AUDIO)
-  } else {
-    return new ( window.AudioContext || window.webkitAudioContext )()
+AudioHash.state = {
+  "_soundPlayerNextId": 0, // used to give each SP a unique ID
+  "_soundPlayerCountMax": 10, // arbitrary, may change or go away
+  "_soundPlayerArray": [], // holds all the existing SPs
+  "_audioContext": function() {
+    if ( !window.AudioContext && !window.webkitAudioContext ) {
+      return console.warn(constants.AH_ERROR_NO_WEB_AUDIO)
+    } else {
+      return new ( window.AudioContext || window.webkitAudioContext )()
+    }
   }
 }
 
-// public methods
+/* ******************************** *
+ * public methods                   *
+ * ******************************** */
 
 async function modalOpen(type) {
   require(['app/modal'],
@@ -65,6 +54,8 @@ async function modalOpen(type) {
           this.myModal = new Modal('perm', 'Settings',
             `
               <div id="settings">
+
+                <!-- dumpHex -->
                 <div class="setting-row">
                   <div class="text">
                     <div class="title">Dump hex on make?</div>
@@ -78,6 +69,8 @@ async function modalOpen(type) {
                     </div>
                   </div>
                 </div>
+
+                <!-- mixDemo -->
                 <div class="setting-row">
                   <div class="text">
                     <div class="title">Play hash on make?</div>
@@ -91,6 +84,8 @@ async function modalOpen(type) {
                     </div>
                   </div>
                 </div>
+
+                <!-- mixRate -->
                 <div class="setting-row">
                   <div class="text">
                     <div class="title">Play mix rate</div>
@@ -98,12 +93,12 @@ async function modalOpen(type) {
                   </div>
                   <div class="control">
                     <div class="container">
-                      <div id="button-setting-mix-rate" data-status="" class="number" onchange="changeSetting('mixRate')">
-                        <input id="numPlaybackPerc" type="number" min="1" max="500" value="100" pattern="[0-9]+">
-                      </div>
+                      <input id="input-setting-mix-rate" type="number" min="1" max="500" value="100" pattern="[0-9]+" onchange="changeSetting('mixRate')">
                     </div>
                   </div>
                 </div>
+
+                <!-- sampleSize -->
                 <div class="setting-row">
                   <div class="text">
                     <div class="title">Sample size</div>
@@ -111,19 +106,17 @@ async function modalOpen(type) {
                   </div>
                   <div class="control">
                     <div class="container">
-                      <div id="button-setting-sample-size" data-status="" class="range" onchange="changeSetting('sampleSize', event)">
-                        <input id="rngSampleSize" type="range" min="1" max="30" value="5">
-                        <label id="txtSampleSize" for="rngSampleSize">5</label>
-                      </div>
+                      <input id="range-setting-sample-size" type="range" min="1" max="30" value="5" onchange="changeSetting('sampleSize', event)">
+                      <label id="text-setting-sample-size" for="range-setting-sample-size">5</label>
                     </div>
                   </div>
                 </div>
+
               </div>
             `,
             null,
             null
           )
-
 
           loadGlobalSettings()
 
@@ -131,6 +124,38 @@ async function modalOpen(type) {
       }
     }
   )
+}
+
+function initApp() {
+  require(['app/constants', 'app/dom'], (constants, dom) => {
+    // set env
+    AudioHash.env = constants.ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
+
+    // set <title>
+    document.title = `${constants.AH_APP_TITLE || 'AH'} | ${constants.AH_APP_TAGLINE || 'audio hash'}`
+
+    // adjust <title> for env
+    if (AudioHash.env == 'local') {
+      document.title = '(LH) ' + document.title
+    }
+
+    // update DOM status elements
+    dom.lblSPCount.innerText = getSPNextId()
+    dom.lblSPCountMax.innerText = getSPCountMax()
+
+    // attach event listeners to DOM elements
+    attachEventListeners()
+
+    initWebWorker()
+
+    // create some sample soundplayers
+    createSP(constants.AH_INIT_SP_COUNT)
+
+    // load localStorage settings
+    loadGlobalSettings()
+
+    saveGlobalSettings()
+  })
 }
 
 // create web worker
@@ -152,59 +177,181 @@ function initWebWorker() {
   }
 }
 
-function changeSetting(setting, value) {
-  console.log('TODO: change setting', setting, value)
+function loadGlobalSettings() {
+  require(['app/constants'], (constants) => {
+    if (localStorage.getItem(constants.LS_SETTINGS_KEY)) {
+      var lsConfig = JSON.parse(localStorage.getItem(constants.LS_SETTINGS_KEY))
 
+      if (lsConfig) {
+        if (lsConfig.dumpHex) {
+          AudioHash.settings.dumpHex = lsConfig.dumpHex
+
+          var setting = document.getElementById('button-setting-dump-hex')
+
+          if (setting) {
+            setting.dataset.status = 'true'
+          }
+        }
+
+        if (lsConfig.mixDemo) {
+          AudioHash.settings.mixDemo = lsConfig.mixDemo
+
+          var setting = document.getElementById('button-setting-mix-demo')
+
+          if (setting) {
+            setting.dataset.status = 'true'
+          }
+        }
+
+        if (lsConfig.mixRate) {
+          AudioHash.settings.mixRate = parseInt(lsConfig.mixRate)
+
+          var setting = document.getElementById('input-setting-mix-rate')
+
+          if (setting) {
+            setting.value = AudioHash.settings.mixRate
+          }
+        }
+
+        if (lsConfig.sampleSize) {
+          AudioHash.settings.sampleSize = parseInt(lsConfig.sampleSize)
+
+          var setting_range = document.getElementById('range-setting-sample-size')
+          var setting_text = document.getElementById('text-setting-sample-size')
+
+          if (setting_range) {
+            setting_range.value = AudioHash.settings.sampleSize
+          }
+          if (setting_text) {
+            setting_text.innerText = AudioHash.settings.sampleSize
+          }
+        }
+      }
+    }
+  })
+}
+function saveGlobalSettings() {
+  require(['app/constants'], (constants) => {
+    try {
+      localStorage.setItem(constants.LS_SETTINGS_KEY, JSON.stringify(AudioHash.settings))
+
+      // console.log('!localStorage global settings saved!', JSON.parse(localStorage.getItem(constants.LS_SETTINGS_KEY)))
+    } catch(error) {
+      console.error('localStorage global settings save failed', error)
+    }
+  })
+}
+function changeSetting(setting, event = null) {
   switch (setting) {
+    case 'dumpHex':
+      var st = document.getElementById('button-setting-dump-hex').dataset.status
+
+      if (st == '' || st == 'false') {
+        // update setting DOM
+        document.getElementById('button-setting-dump-hex').dataset.status = 'true'
+
+        // save to code/LS
+        saveSetting('dumpHex', true)
+      } else {
+        // update setting DOM
+        document.getElementById('button-setting-dump-hex').dataset.status = 'false'
+
+        // save to code/LS
+        saveSetting('dumpHex', false)
+      }
+      break
+
+    case 'mixDemo':
+      var st = document.getElementById('button-setting-mix-demo').dataset.status
+
+      if (st == '' || st == 'false') {
+        document.getElementById('button-setting-mix-demo').dataset.status = 'true'
+
+        saveSetting('mixDemo', true)
+      } else {
+        document.getElementById('button-setting-mix-demo').dataset.status = 'false'
+
+        saveSetting('mixDemo', false)
+      }
+      break
+
+    case 'mixRate':
+      var st = document.getElementById('input-setting-mix-rate').value
+
+      if (st !== '') {
+        saveSetting('mixRate', parseInt(st))
+      }
+
+      break
+
     case 'sampleSize':
-      document.getElementById('txtSampleSize').innerText = value.srcElement.value
+      var st = document.getElementById('range-setting-sample-size').value
+
+      if (st !== '') {
+        document.getElementById('text-setting-sample-size').innerText = st
+
+        saveSetting('sampleSize', parseInt(st))
+      }
+
       break
   }
 }
+function saveSetting(setting, value) {
+  console.log('saving setting to code/LS...', setting, value)
 
-function loadGlobalSettings() {
-  console.log('TODO: load global settings')
+  require(['app/constants'], (constants) => {
+    var settings = JSON.parse(localStorage.getItem(constants.LS_SETTINGS_KEY))
 
-  var sampleSizeRange = document.getElementById('rngSampleSize')
-  var sampleSizeText = document.getElementById('txtSampleSize')
+    if (settings) {
+      // set internal code model
+      AudioHash.settings[setting] = value
 
-  sampleSizeText.innerText = sampleSizeRange.value
+      // set temp obj that will go to LS
+      settings[setting] = value
+
+      // save all settings to LS
+      localStorage.setItem(constants.LS_SETTINGS_KEY, JSON.stringify(settings))
+    }
+  })
+
+  console.log('!setting saved!', AudioHash.settings)
 }
 
-// create dom event listeners
-function initEventListeners() {
-  // event listeners
-  this.AudioHash.dom.btnNav.addEventListener('click', () => {
-    navOverlay.classList.toggle('show')
-  })
-  this.AudioHash.dom.btnNavClose.addEventListener('click', () => {
-    navOverlay.classList.toggle('show')
-  })
+function attachEventListeners() {
+  require(['app/dom'], (dom) => {
+    // event listeners
+    dom.interactive.btnNav.addEventListener('click', () => {
+      dom.navOverlay.classList.toggle('show')
+    })
+    dom.interactive.btnNavClose.addEventListener('click', () => {
+      dom.navOverlay.classList.toggle('show')
+    })
 
-  this.AudioHash.dom.btnHelp.addEventListener('click', () => {
-    modalOpen('help')
-  })
-  this.AudioHash.dom.btnSettings.addEventListener('click', () => {
-    modalOpen('settings')
-  })
+    dom.interactive.btnHelp.addEventListener('click', () => {
+      modalOpen('help')
+    })
+    dom.interactive.btnSettings.addEventListener('click', () => {
+      modalOpen('settings')
+    })
 
-  this.AudioHash.dom.btnCreateSP.addEventListener('click', () => {
-    if (getSPArrayLength() < getSPCountMax()) {
-      createSP()
-    } else {
-      require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_COUNT_MAX_REACHED))
-    }
-  })
-  this.AudioHash.dom.btnCreateAH.addEventListener('click', () => {
-    if (getSPArrayLength() < 2) {
-      require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_COUNT_MIN_NOT_MET))
-    }
-    else if (areSPBuffersEmpty()) {
-      require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_INCOMPLETE))
-    }
-    else {
-      createAudioHash(getSPArray())
-    }
+    dom.interactive.btnCreateSP.addEventListener('click', () => {
+      if (getSPArrayLength() < getSPCountMax()) {
+        createSP()
+      } else {
+        require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_COUNT_MAX_REACHED))
+      }
+    })
+    dom.interactive.btnCreateAH.addEventListener('click', () => {
+      if (getSPArrayLength() < 2) {
+        require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_COUNT_MIN_NOT_MET))
+      }
+      else if (areSPBuffersEmpty()) {
+        require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_INCOMPLETE))
+      }
+      else {
+        createAudioHash(getSPArray())
+      }
+    })
   })
 
   // When the user clicks or touches anywhere outside of the modal, close it
@@ -231,39 +378,6 @@ function handleClickTouch(event) {
   }
 }
 
-// engine
-function init() {
-  console.log('initializing page UI...')
-
-  // set env
-  this.env = this.ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
-
-  require(['app/constants'],
-    (constants) => {
-
-      // set <title>
-      document.title = `${constants.AH_APP_TITLE || 'AH'} | ${constants.AH_APP_TAGLINE || 'audio hash'}`
-
-      // adjust <title> for env
-      if (this.env == 'local') {
-        document.title = '(LH) ' + document.title
-      }
-
-      // update DOM status elements
-      this.AudioHash.dom.lblSPCount.innerText = getSPNextId()
-      this.AudioHash.dom.lblSPCountMax.innerText = getSPCountMax()
-
-      // attach event listeners to DOM elements
-      initEventListeners()
-
-      initWebWorker()
-
-      // create some sample soundplayers
-      createSP(constants.AH_INIT_SP_COUNT)
-    }
-  )
-}
-
 function areSPBuffersEmpty() {
   var empty = false
 
@@ -276,11 +390,11 @@ function areSPBuffersEmpty() {
   return empty
 }
 
-function getSPNextId() { return this.AudioHash.state._soundPlayerNextId }
-function incSPNextId() { this.AudioHash.state._soundPlayerNextId += 1 }
-function getSPArray() { return this.AudioHash.state._soundPlayerArray }
-function getSPArrayLength() { return this.AudioHash.state._soundPlayerArray.length }
-function getSPCountMax() { return this.AudioHash.state._soundPlayerCountMax }
+function getSPNextId() { return AudioHash.state._soundPlayerNextId }
+function incSPNextId() { AudioHash.state._soundPlayerNextId += 1 }
+function getSPArray() { return AudioHash.state._soundPlayerArray }
+function getSPArrayLength() { return AudioHash.state._soundPlayerArray.length }
+function getSPCountMax() { return AudioHash.state._soundPlayerCountMax }
 function listSPIds() {
   var arrIds = []
 
@@ -310,10 +424,10 @@ function createSP(quantity) {
 function removeSP(sp) {
   const sId = sp.soundId
 
-  if (this.AudioHash.state._soundPlayerArray.length > 1) {
-    var position = this.AudioHash.state._soundPlayerArray.indexOf(sId)
+  if (AudioHash.state._soundPlayerArray.length > 1) {
+    var position = AudioHash.state._soundPlayerArray.indexOf(sId)
 
-    this.AudioHash.state._soundPlayerArray.splice(position, 1)
+    AudioHash.state._soundPlayerArray.splice(position, 1)
     this._updateSPCount()
   } else {
     this._resetSPCount()
@@ -396,7 +510,7 @@ function createAudioHash(sndArr) {
   this._enableDownload(audioBlob)
 
   // makes a temp audio buffer source and plays the new sampler mix
-  if (this.AudioHash.settings.mixDemo) {
+  if (AudioHash.settings.mixDemo) {
     var mixSpeed = document.getElementById('numPlaybackPerc').value
     if (mixSpeed !== '') mixSpeed = mixSpeed / 100
     var audioSource = this._getAudioContext().createBufferSource()
@@ -407,17 +521,19 @@ function createAudioHash(sndArr) {
   }
 
   // post hex dump
-  if (this.AudioHash.settings.dumpHex) {
+  if (AudioHash.settings.dumpHex) {
     var decoder = new TextDecoder('utf-8')
     var decodedString = decoder.decode(dataView)
     this._displayHexDump(decodedString)
   }
 }
 
-// _private methods
+/* ******************************** *
+ * _private methods                 *
+ * ******************************** */
 
 function _getAudioContext() {
-  return this.AudioHash.state._audioContext()
+  return AudioHash.state._audioContext()
 }
 function _getSP(sId) {
   var position = this.listSPIds().indexOf(parseInt(sId))
@@ -480,9 +596,9 @@ function _getSoundSlice(audioBuffer) {
 function _enableDownload(blob, givenFilename) {
   var url = (window.URL || window.webkitURL).createObjectURL(blob)
   var link = document.getElementById('linkDownloadAH')
-  console.log('download link', link)
   var d = new Date()
   var defaultFilename = 'sampler' + d.toJSON() + '.wav'
+
   link.style.display = 'inline'
   link.href = url
   link.download = givenFilename || defaultFilename
@@ -537,7 +653,8 @@ function _encodeWavFile(samples, sampleRate) {
   return view
 }
 
-/*************************************************/
+/* ******************************** *
+ * START THE ENGINE                 *
+ * ******************************** */
 
-// start the engine
-this.init()
+window.onload = this.initApp()

@@ -2,6 +2,13 @@
 
 define(() => {
   return {
+    ENV_PROD_URL: [
+      'https://audiohash.neb.host',
+      'https://ah.neb.host'
+    ],
+
+    LS_SETTINGS_KEY: 'audiohash-settings',
+
     AH_APP_TITLE: 'Audio Hash',
     AH_APP_TAGLINE: 'mix multiple sounds into one',
 

@@ -37,9 +37,7 @@
   <link rel="stylesheet" href="./assets/css/modal.css">
 </head>
 <body>
-
   <header>
-
     <div class="menu-left">
 
       <div id="nav-links">
@@ -89,18 +87,19 @@
         <i class="fa-solid fa-gear"></i>
       </button>
     </div>
-
   </header>
 
-  <!-- Dashboard, of sorts -->
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
   <section id="dashboard">
     <section id="soundPlayersCount">
       <label id="lblSoundPlayersCount"></label>/<label id="lblSoundPlayersCountMax"></label> sounds
     </section>
-    <button id="btnCreateSP" class="icon" title="Add sound">
+    <button id="button-create-sp" class="icon" title="Add sound">
       <i class="fa-solid fa-circle-plus"></i>
     </button>
-    <button id="btnCreateAH" class="icon" title="Make hash">
+    <button id="button-create-ah" class="icon" title="Make hash">
       <i class="fa-solid fa-hashtag"></i>
     </button>
     <a id="linkDownloadAH" class="icon" title="Download hash">
@@ -108,15 +107,18 @@
     </a>
   </section>
 
-  <!-- SoundPlayers will go here -->
   <section id="soundPlayers"></section>
 
-  <!-- Hex dump -->
   <section id="hex-dump">
     <h3>Hex Dump</h3>
     <textarea id="hex-dump-contents"></textarea>
   </section>
 
+  <!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+  <!-- JAVASCRIPTS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <script data-main="./assets/js/app" src="./assets/js/vendor/require.js"></script>
 </body>
 </html>
