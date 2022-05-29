@@ -1,0 +1,21 @@
+{
+    "name": "AudioHash",
+    "short_name": "AudioHash",
+    "icons": [
+        {
+            "src": "./assets/icons/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "./assets/icons/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "background_color": "#f0f1ff",
+    "description": "Mash up multiple audio files into one",
+    "display": "standalone",
+    "start_url": "https://audiohash.neb.host",
+    "theme_color": "#f0f1ff"
+}
