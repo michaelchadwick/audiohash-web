@@ -1,9 +1,6 @@
-/**
- * AudioHash - combine sounds for one sound sampler platter **
- */
-
-// AudioHash object init
-if ((typeof AudioHash) === 'undefined') var AudioHash = {}
+/* main */
+/* app entry point and main functions */
+/* global AudioHash */
 
 AudioHash.settings = {
   "dumpHex": false,
@@ -18,7 +15,7 @@ AudioHash.state = {
   "_soundPlayerArray": [], // holds all the existing SPs
   "_audioContext": function() {
     if ( !window.AudioContext && !window.webkitAudioContext ) {
-      return console.warn(constants.AH_ERROR_NO_WEB_AUDIO)
+      return console.warn(AH_ERROR_NO_WEB_AUDIO)
     } else {
       return new ( window.AudioContext || window.webkitAudioContext )()
     }
@@ -30,137 +27,133 @@ AudioHash.state = {
  * ******************************** */
 
 async function modalOpen(type) {
-  require(['app/modal'],
-    (Modal) => {
-      switch(type) {
-        case 'help':
-          this.myModal = new Modal('perm', 'How to use Audio Hash',
-            `
-              <p>Mix multiple sounds into one.</p>
+  switch(type) {
+    case 'help':
+      this.myModal = new Modal('perm', 'How to use Audio Hash',
+        `
+          <p>Mix multiple sounds into one.</p>
 
-              <ol class="help">
-                <li>Create some SoundPlayers</li>
-                <li>Load up files</li>
-                <li>Choose how much of each you want sampled</li>
-                <li>Click/tap '#' and a link to your new sampler will be created for you to download</li>
-              </ol>
-            `,
-            null,
-            null
-          )
-          break
+          <ol class="help">
+            <li>Create some SoundPlayers</li>
+            <li>Load up files</li>
+            <li>Choose how much of each you want sampled</li>
+            <li>Click/tap '#' and a link to your new sampler will be created for you to download</li>
+          </ol>
+        `,
+        null,
+        null
+      )
+      break
 
-        case 'settings':
-          this.myModal = new Modal('perm', 'Settings',
-            `
-              <div id="settings">
+    case 'settings':
+      this.myModal = new Modal('perm', 'Settings',
+        `
+          <div id="settings">
 
-                <!-- dumpHex -->
-                <div class="setting-row">
-                  <div class="text">
-                    <div class="title">Dump hex on make?</div>
-                    <div class="description">Dump the raw hex of the hash when it is created (experimental TODO)</div>
-                  </div>
-                  <div class="control">
-                    <div class="container">
-                      <!--
-                      <div id="button-setting-dump-hex" data-status="" class="switch" onclick="changeSetting('dumpHex')">
-                        <span class="knob"></span>
-                      </div>
-                      -->
-                    </div>
-                  </div>
-                </div>
-
-                <!-- mixDemo -->
-                <div class="setting-row">
-                  <div class="text">
-                    <div class="title">Play hash on make?</div>
-                    <div class="description">Play audio hash when created (experimental TODO)</div>
-                  </div>
-                  <div class="control">
-                    <div class="container">
-                      <!--
-                      <div id="button-setting-mix-demo" data-status="" class="switch" onclick="changeSetting('mixDemo')">
-                        <span class="knob"></span>
-                      </div>
-                      -->
-                    </div>
-                  </div>
-                </div>
-
-                <!-- mixRate -->
-                <div class="setting-row">
-                  <div class="text">
-                    <div class="title">Play mix rate</div>
-                    <div class="description">???</div>
-                  </div>
-                  <div class="control">
-                    <div class="container">
-                      <input id="input-setting-mix-rate" type="number" min="1" max="500" value="100" pattern="[0-9]+" onchange="changeSetting('mixRate')">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- sampleSize -->
-                <div class="setting-row">
-                  <div class="text">
-                    <div class="title">Sample size</div>
-                    <div class="description">???</div>
-                  </div>
-                  <div class="control">
-                    <div class="container">
-                      <input id="range-setting-sample-size" type="range" min="1" max="30" value="5" onchange="changeSetting('sampleSize', event)">
-                      <label id="text-setting-sample-size" for="range-setting-sample-size">5</label>
-                    </div>
-                  </div>
-                </div>
-
+            <!-- dumpHex -->
+            <div class="setting-row">
+              <div class="text">
+                <div class="title">Dump hex on make?</div>
+                <div class="description">Dump the raw hex of the hash when it is created (experimental TODO)</div>
               </div>
-            `,
-            null,
-            null
-          )
+              <div class="control">
+                <div class="container">
+                  <!--
+                  <div id="button-setting-dump-hex" data-status="" class="switch" onclick="changeSetting('dumpHex')">
+                    <span class="knob"></span>
+                  </div>
+                  -->
+                </div>
+              </div>
+            </div>
 
-          loadGlobalSettings()
+            <!-- mixDemo -->
+            <div class="setting-row">
+              <div class="text">
+                <div class="title">Play hash on make?</div>
+                <div class="description">Play audio hash when created (experimental TODO)</div>
+              </div>
+              <div class="control">
+                <div class="container">
+                  <!--
+                  <div id="button-setting-mix-demo" data-status="" class="switch" onclick="changeSetting('mixDemo')">
+                    <span class="knob"></span>
+                  </div>
+                  -->
+                </div>
+              </div>
+            </div>
 
-          break
-      }
-    }
-  )
+            <!-- mixRate -->
+            <div class="setting-row">
+              <div class="text">
+                <div class="title">Play mix rate</div>
+                <div class="description">???</div>
+              </div>
+              <div class="control">
+                <div class="container">
+                  <input id="input-setting-mix-rate" type="number" min="1" max="500" value="100" pattern="[0-9]+" onchange="changeSetting('mixRate')">
+                </div>
+              </div>
+            </div>
+
+            <!-- sampleSize -->
+            <div class="setting-row">
+              <div class="text">
+                <div class="title">Sample size</div>
+                <div class="description">???</div>
+              </div>
+              <div class="control">
+                <div class="container">
+                  <input id="range-setting-sample-size" type="range" min="1" max="30" value="5" onchange="changeSetting('sampleSize', event)">
+                  <label id="text-setting-sample-size" for="range-setting-sample-size">5</label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        `,
+        null,
+        null
+      )
+
+      loadGlobalSettings()
+
+      break
+
+  }
 }
 
 function initApp() {
-  require(['app/constants', 'app/dom'], (constants, dom) => {
-    // set env
-    AudioHash.env = constants.ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
+  // set env
+  AudioHash.env = ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
 
-    // set <title>
-    document.title = `${constants.AH_APP_TITLE || 'AH'} | ${constants.AH_APP_TAGLINE || 'audio hash'}`
+  // set <title>
+  document.title = `${AH_APP_TITLE || 'AH'} | ${AH_APP_TAGLINE || 'audio hash'}`
 
-    // adjust <title> for env
-    if (AudioHash.env == 'local') {
-      document.title = '(LH) ' + document.title
-    }
+  // adjust <title> for env
+  if (AudioHash.env == 'local') {
+    document.title = '(LH) ' + document.title
+  }
 
-    // update DOM status elements
-    dom.lblSPCount.innerText = getSPNextId()
-    dom.lblSPCountMax.innerText = getSPCountMax()
+  // update DOM status elements
+  AudioHash.dom.lblSPCount.innerText = getSPNextId()
+  AudioHash.dom.lblSPCountMax.innerText = getSPCountMax()
 
-    // attach event listeners to DOM elements
-    attachEventListeners()
+  // attach event listeners to DOM elements
+  attachEventListeners()
 
-    initWebWorker()
+  initWebWorker()
 
-    // create some sample soundplayers
-    createSP(constants.AH_INIT_SP_COUNT)
+  // create some sample soundplayers
+  createSP(AH_INIT_SP_COUNT)
 
-    // load localStorage settings
-    loadGlobalSettings()
+  // load localStorage settings
+  loadGlobalSettings()
 
-    saveGlobalSettings()
-  })
+  saveGlobalSettings()
 }
+
 
 // create web worker
 function initWebWorker() {
@@ -183,68 +176,64 @@ function initWebWorker() {
 }
 
 function loadGlobalSettings() {
-  require(['app/constants'], (constants) => {
-    if (localStorage.getItem(constants.LS_SETTINGS_KEY)) {
-      var lsConfig = JSON.parse(localStorage.getItem(constants.LS_SETTINGS_KEY))
+  if (localStorage.getItem(LS_SETTINGS_KEY)) {
+    var lsConfig = JSON.parse(localStorage.getItem(LS_SETTINGS_KEY))
 
-      if (lsConfig) {
-        if (lsConfig.dumpHex) {
-          AudioHash.settings.dumpHex = lsConfig.dumpHex
+    if (lsConfig) {
+      if (lsConfig.dumpHex) {
+        AudioHash.settings.dumpHex = lsConfig.dumpHex
 
-          var setting = document.getElementById('button-setting-dump-hex')
+        var setting = document.getElementById('button-setting-dump-hex')
 
-          if (setting) {
-            setting.dataset.status = 'true'
-          }
+        if (setting) {
+          setting.dataset.status = 'true'
         }
+      }
 
-        if (lsConfig.mixDemo) {
-          AudioHash.settings.mixDemo = lsConfig.mixDemo
+      if (lsConfig.mixDemo) {
+        AudioHash.settings.mixDemo = lsConfig.mixDemo
 
-          var setting = document.getElementById('button-setting-mix-demo')
+        var setting = document.getElementById('button-setting-mix-demo')
 
-          if (setting) {
-            setting.dataset.status = 'true'
-          }
+        if (setting) {
+          setting.dataset.status = 'true'
         }
+      }
 
-        if (lsConfig.mixRate) {
-          AudioHash.settings.mixRate = parseInt(lsConfig.mixRate)
+      if (lsConfig.mixRate) {
+        AudioHash.settings.mixRate = parseInt(lsConfig.mixRate)
 
-          var setting = document.getElementById('input-setting-mix-rate')
+        var setting = document.getElementById('input-setting-mix-rate')
 
-          if (setting) {
-            setting.value = AudioHash.settings.mixRate
-          }
+        if (setting) {
+          setting.value = AudioHash.settings.mixRate
         }
+      }
 
-        if (lsConfig.sampleSize) {
-          AudioHash.settings.sampleSize = parseInt(lsConfig.sampleSize)
+      if (lsConfig.sampleSize) {
+        AudioHash.settings.sampleSize = parseInt(lsConfig.sampleSize)
 
-          var setting_range = document.getElementById('range-setting-sample-size')
-          var setting_text = document.getElementById('text-setting-sample-size')
+        var setting_range = document.getElementById('range-setting-sample-size')
+        var setting_text = document.getElementById('text-setting-sample-size')
 
-          if (setting_range) {
-            setting_range.value = AudioHash.settings.sampleSize
-          }
-          if (setting_text) {
-            setting_text.innerText = AudioHash.settings.sampleSize
-          }
+        if (setting_range) {
+          setting_range.value = AudioHash.settings.sampleSize
+        }
+        if (setting_text) {
+          setting_text.innerText = AudioHash.settings.sampleSize
         }
       }
     }
-  })
+  }
 }
 function saveGlobalSettings() {
-  require(['app/constants'], (constants) => {
-    try {
-      localStorage.setItem(constants.LS_SETTINGS_KEY, JSON.stringify(AudioHash.settings))
+  try {
+    localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(AudioHash.settings))
 
-      // console.log('!localStorage global settings saved!', JSON.parse(localStorage.getItem(constants.LS_SETTINGS_KEY)))
-    } catch(error) {
-      console.error('localStorage global settings save failed', error)
-    }
-  })
+    // console.log('!localStorage global settings saved!', JSON.parse(localStorage.getItem(LS_SETTINGS_KEY)))
+  } catch(error) {
+    console.error('localStorage global settings save failed', error)
+  }
 }
 function changeSetting(setting, event = null) {
   switch (setting) {
@@ -304,60 +293,58 @@ function changeSetting(setting, event = null) {
 function saveSetting(setting, value) {
   // console.log('saving setting to code/LS...', setting, value)
 
-  require(['app/constants'], (constants) => {
-    var settings = JSON.parse(localStorage.getItem(constants.LS_SETTINGS_KEY))
+  var settings = JSON.parse(localStorage.getItem(LS_SETTINGS_KEY))
 
-    if (settings) {
-      // set internal code model
-      AudioHash.settings[setting] = value
+  if (settings) {
+    // set internal code model
+    AudioHash.settings[setting] = value
 
-      // set temp obj that will go to LS
-      settings[setting] = value
+    // set temp obj that will go to LS
+    settings[setting] = value
 
-      // save all settings to LS
-      localStorage.setItem(constants.LS_SETTINGS_KEY, JSON.stringify(settings))
-    }
-  })
+    // save all settings to LS
+    localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(settings))
+  }
 
   // console.log('!setting saved!', AudioHash.settings)
 }
 
 function attachEventListeners() {
-  require(['app/dom'], (dom) => {
+
     // event listeners
-    dom.interactive.btnNav.addEventListener('click', () => {
-      dom.navOverlay.classList.toggle('show')
+    AudioHash.dom.interactive.btnNav.addEventListener('click', () => {
+      AudioHash.dom.navOverlay.classList.toggle('show')
     })
-    dom.interactive.btnNavClose.addEventListener('click', () => {
-      dom.navOverlay.classList.toggle('show')
+    AudioHash.dom.interactive.btnNavClose.addEventListener('click', () => {
+      AudioHash.dom.navOverlay.classList.toggle('show')
     })
 
-    dom.interactive.btnHelp.addEventListener('click', () => {
+    AudioHash.dom.interactive.btnHelp.addEventListener('click', () => {
       modalOpen('help')
     })
-    dom.interactive.btnSettings.addEventListener('click', () => {
+    AudioHash.dom.interactive.btnSettings.addEventListener('click', () => {
       modalOpen('settings')
     })
 
-    dom.interactive.btnCreateSP.addEventListener('click', () => {
+    AudioHash.dom.interactive.btnCreateSP.addEventListener('click', () => {
       if (getSPArrayLength() < getSPCountMax()) {
         createSP()
       } else {
-        require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_COUNT_MAX_REACHED))
+        alert(AH_ERROR_SP_COUNT_MAX_REACHED)
       }
     })
-    dom.interactive.btnCreateAH.addEventListener('click', () => {
+    AudioHash.dom.interactive.btnCreateAH.addEventListener('click', () => {
       if (getSPArrayLength() < 2) {
-        require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_COUNT_MIN_NOT_MET))
+        alert(AH_ERROR_SP_COUNT_MIN_NOT_MET)
       }
       else if (areSPBuffersEmpty()) {
-        require(['app/constants'], (constants) => alert(constants.AH_ERROR_SP_INCOMPLETE))
+        alert(AH_ERROR_SP_INCOMPLETE)
       }
       else {
         createAudioHash(getSPArray())
       }
     })
-  })
+
 
   // When the user clicks or touches anywhere outside of the modal, close it
   window.addEventListener('click', handleClickTouch)
@@ -410,20 +397,18 @@ function listSPIds() {
 
 // add new Sound Player to the array
 function createSP(quantity) {
-  require(['app/soundplayer'], (SoundPlayer) => {
-    var playerCount = (quantity || 1)
+  var playerCount = (quantity || 1)
 
-    if (playerCount <= 0) playerCount = 1
+  if (playerCount <= 0) playerCount = 1
 
-    for (var i = 0; i < playerCount; i++) {
-      const newSP = new SoundPlayer(this.getSPNextId(), this._getAudioContext())
-      this.getSPArray().push(newSP)
-      this._updateSPCount()
-      this.incSPNextId()
-    }
+  for (var i = 0; i < playerCount; i++) {
+    const newSP = new SoundPlayer(this.getSPNextId(), this._getAudioContext())
+    this.getSPArray().push(newSP)
+    this._updateSPCount()
+    this.incSPNextId()
+  }
 
-    // console.log('createSP this.listSPIds', this.listSPIds())
-  })
+  // console.log('createSP this.listSPIds', this.listSPIds())
 }
 // remove Sound Player from the array
 function removeSP(sp) {
@@ -445,9 +430,9 @@ function removeSP(sp) {
 }
 // make a new sampler of 2 or more sounds
 function createAudioHash(sndArr) {
-  let newSampler = [] // Float32Array
   const numberOfChannels = this._getSoundChannelsMin(sndArr)
   const sndLengthSum = this._getSoundLengthSum(sndArr)
+  let newSampler = [] // Float32Array
 
   // const sampleSize = document.getElementById('rngSampleSize').value
 

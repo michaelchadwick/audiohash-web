@@ -1,7 +1,11 @@
-.color-primary-1 { color: #081C4B }
-.color-primary-2 { color: #2E4373 }
-.color-primary-3 { color: #6E7C9C }
-.color-primary-4 { color: #D1D1D1 }
+/* base:        #081c4b */
+/* light:       #2e4373 */
+/* lighter:     #6e7c9c */
+/* gray:        #d1d1d1 */
+/* off-white:   #f0f1ff */
+/* link:        #bd7f13 */
+/* link-hover:  #ca5b16 */
+/* debug:       #715ec7 */
 
 * {
   margin: 0;
@@ -21,10 +25,10 @@ body {
 }
 
 a {
-  color: #BD7F13;
+  color: #bd7f13;
 }
   a:hover {
-    color: #CA5B16;
+    color: #ca5b16;
   }
 
 h1, h2, h3, h4, h5, h6 {
@@ -50,7 +54,7 @@ button {
   background-color: #ddd;
   border: 0;
   border-radius: 4px;
-  color: #6E7C9C;
+  color: #6e7c9c;
   cursor: pointer;
   display: flex;
   flex: 1;
@@ -178,7 +182,7 @@ button {
 
 header {
   align-items: center;
-  background: #081C4B;
+  background: #081c4b;
   border-bottom: 1px solid #000;
   color: #d1d1d1;
   display: flex;
@@ -240,7 +244,7 @@ header {
             padding: 0;
           }
             header .menu-left #nav-overlay #nav-content .container .nav-header {
-              color: #081C4B;
+              color: #081c4b;
               font-size: 20px;
               padding-bottom: 18px;
               padding-left: 18px;
@@ -257,7 +261,7 @@ header {
               padding: 4px 0 4px 18px;
             }
             header .menu-left #nav-overlay #nav-content .container .nav-list a:hover {
-              background-color: #6E7C9C;
+              background-color: #6e7c9c;
             }
           header .menu-left #nav-overlay #nav-content #button-nav-close {
             font-size: 20px;
@@ -271,8 +275,8 @@ header {
             display: flex;
           }
           header .menu-left #nav-overlay #nav-content #footer-neb-host {
-            background: #2E4373;
-            border-top: 2px solid #081C4B;
+            background: #2e4373;
+            border-top: 2px solid #081c4b;
             bottom: 0;
             color: #d1d1d1;
             font-family: 'Consolas', sans-serif;
@@ -332,7 +336,7 @@ section#dashboard {
     padding-right: 10px;
   }
   section#dashboard button {
-    color: #2E4373;
+    color: #2e4373;
     flex: 0;
     font-size: 24px;
   }
@@ -365,10 +369,10 @@ section#hex-dump {
   }
 
 footer {
-  background: #2E4373;
+  background: #2e4373;
   bottom: 0;
   clear: left;
-  color: #D1D1D1;
+  color: #d1d1d1;
   padding: 10px;
   position: fixed;
   width: 100%;

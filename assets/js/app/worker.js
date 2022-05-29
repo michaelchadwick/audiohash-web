@@ -1,6 +1,5 @@
-/**********************************
-** AudioHash JS Dedicated Worker **
-***********************************/
+/* worker */
+/* js background worker */
 
 // worker event handler
 this.onmessage = function(e) {
