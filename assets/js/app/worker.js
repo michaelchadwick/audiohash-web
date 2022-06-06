@@ -1,22 +1,5 @@
 /* worker */
-/* js background worker */
-
-// worker event handler
-this.onmessage = function(e) {
-  console.log('Message received from main script')
-
-  // let workerFunctionParam = e.data[1]
-  let workerResult
-
-  switch (e.data.command) {
-    case 'hexDump':
-      workerResult = hexDump(e.data.buffer)
-
-      console.log('workerResult', workerResult)
-
-      break
-    }
-}
+/* js background worker for hex dumping */
 
 /**
  * hexDump
@@ -24,14 +7,15 @@ this.onmessage = function(e) {
  * output: String[]
  */
 function hexDump(view) {
-  var lines = []
+  let lines = []
 
-  for (var i = 0; i < view.length; i += 16) {
-    var hex = []
-    var ascii = []
+  for (let i = 0; i < view.length; i += 16) {
+    let hex = []
+    let ascii = []
 
-    for (var x = 0; x < 16; x++) {
-      var b = view.charCodeAt(i + x).toString(16).toUpperCase()
+    for (let x = 0; x < 16; x++) {
+      let b = view.charCodeAt(i + x).toString(16).toUpperCase()
+
       b = b.length == 1 ? '0' + b : b
       hex.push(b + ' ')
 
@@ -49,8 +33,34 @@ function hexDump(view) {
     lines.push([hex.join(''), ascii.join('')].join(''))
   }
 
+  // send hex dump as ascii back to main thread
   postMessage({
-    command: 'hexDump',
+    command: 'asciiDump',
     ascii: lines.join('\n')
   })
+}
+
+// receive message from main thread
+onmessage = function(msg) {
+  // console.log('received msg from main js', msg.data)
+
+  if (msg.isTrusted) {
+    const command = msg.data.command
+    const buffer = msg.data.buffer
+    // let workerFunctionParam = msg.data[1]
+    let workerResult = null
+
+    console.log('Message received from main script:', command)
+
+    switch (command) {
+      case 'hexDump':
+        workerResult = hexDump(buffer)
+
+        console.log('workerResult', workerResult)
+
+        break
+    }
+  } else {
+    console.error('untrusted message posted to Web Worker!', msg)
+  }
 }

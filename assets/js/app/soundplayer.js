@@ -240,6 +240,7 @@ SoundPlayer.prototype = {
     var elem = document.createElement('div')
     var sId = this.soundId
     var elemId = `sound-destroyer${sId}`
+
     elem.id = elemId
     elem.title = `Destroy sound${sId}`
     elem.classList.add('sound-destroyer')
@@ -248,7 +249,7 @@ SoundPlayer.prototype = {
     var sp = this
 
     elem.addEventListener('click', function() {
-      removeSP(sp)
+      AudioHash.removeSP(sp)
     })
 
     this.soundDestroyer = elem

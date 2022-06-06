@@ -1,12 +1,12 @@
 /* constants */
 /* set any global constants */
 
-const ENV_PROD_URL = [
+const AH_ENV_PROD_URL = [
   'https://audiohash.neb.host',
   'https://ah.neb.host'
 ]
 
-const LS_SETTINGS_KEY = 'audiohash-settings'
+const AH_SETTINGS_KEY = 'audiohash-settings'
 
 const AH_APP_TITLE = 'Audio Hash'
 const AH_APP_TAGLINE = 'mix multiple sounds into one'
