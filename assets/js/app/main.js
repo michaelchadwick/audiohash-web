@@ -159,7 +159,7 @@ AudioHash.initApp = function() {
 
   // update DOM status elements
   AudioHash.dom.lblSPCount.innerText = AudioHash._getSPNextId()
-  AudioHash.dom.lblSPCountMax.innerText = AudioHash._getSPCountMax()
+  AudioHash.dom.lblSPCountMax.innerText = AH_SP_COUNT_MAX
 
   // attach event listeners to DOM elements
   AudioHash._attachEventListeners()
@@ -182,14 +182,12 @@ AudioHash.createSP = function(quantity) {
   if (playerCount <= 0) playerCount = 1
 
   for (var i = 0; i < playerCount; i++) {
-    const newSP = new SoundPlayer(AudioHash._getSPNextId(), AudioHash._getAudioContext())
+    const newSP = new SoundPlayer(AudioHash._getSPNextId(), AudioHash.config._audioContext())
 
-    AudioHash._getSPArray().push(newSP)
+    AudioHash.config._soundPlayerArray.push(newSP)
     AudioHash._updateSPCount()
     AudioHash._incSPNextId()
   }
-
-  // console.log('createSP AudioHash._listSPIds', AudioHash._listSPIds())
 }
 // remove Sound Player from the array
 AudioHash.removeSP = function(sp) {
@@ -382,21 +380,21 @@ AudioHash._attachEventListeners = function() {
   })
 
   AudioHash.dom.interactive.btnCreateSP.addEventListener('click', () => {
-    if (AudioHash._getSPArrayLength() < AudioHash._getSPCountMax()) {
+    if (AudioHash._getSPCount() < AH_SP_COUNT_MAX) {
       AudioHash.createSP()
     } else {
       modalOpen('max-count-reached')
     }
   })
   AudioHash.dom.interactive.btnCreateAH.addEventListener('click', () => {
-    if (AudioHash._getSPArrayLength() < 2) {
+    if (AudioHash._getSPCount() < 2) {
       modalOpen('min-count-unmet')
     }
     else if (AudioHash._areSPBuffersEmpty()) {
       modalOpen('sound-buffer-unmet')
     }
     else {
-      AudioHash._createAudioHash(AudioHash._getSPArray())
+      AudioHash._createAudioHash(AudioHash.config._soundPlayerArray)
     }
   })
 
@@ -421,19 +419,13 @@ AudioHash._handleClickTouch = function(event) {
   }
 }
 
-AudioHash._getAudioContext = function() {
-  return AudioHash.config._audioContext()
-}
 AudioHash._getSP = function(sId) {
   var position = AudioHash._listSPIds().indexOf(parseInt(sId))
+
   return AudioHash.config._soundPlayerArray[position]
 }
-AudioHash._setSPArray = function(arr) {
-  AudioHash.config._soundPlayerArray = arr
-}
 AudioHash._updateSPCount = function() {
-  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPArrayLength()
-  // console.log('audiohash.js AudioHash._getSPNextId()', AudioHash._getSPNextId())
+  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPCount()
 }
 AudioHash._resetSPCount = function() {
   AudioHash.config._soundPlayerArray = []
@@ -442,7 +434,7 @@ AudioHash._resetSPCount = function() {
 AudioHash._areSPBuffersEmpty = function() {
   var empty = false
 
-  AudioHash._getSPArray().forEach(function(sound) {
+  AudioHash.config._soundPlayerArray.forEach(function(sound) {
     if (!sound.audioBuffer) {
       empty = true
     }
@@ -456,14 +448,8 @@ AudioHash._getSPNextId = function() {
 AudioHash._incSPNextId = function() {
   AudioHash.config._soundPlayerNextId += 1
 }
-AudioHash._getSPArray = function() {
-  return AudioHash.config._soundPlayerArray
-}
-AudioHash._getSPArrayLength = function() {
+AudioHash._getSPCount = function() {
   return AudioHash.config._soundPlayerArray.length
-}
-AudioHash._getSPCountMax = function() {
-  return AudioHash.config._soundPlayerCountMax
 }
 AudioHash._listSPIds = function() {
   var arrIds = []
@@ -483,7 +469,7 @@ AudioHash._createAudioHash = function(sndArr) {
   // create new buffer to hold all the SoundPlayer audio data
   const sndSampleRate = sndArr[0].audioBuffer.sampleRate
 
-  const newSamplerBuffer = AudioHash._getAudioContext()
+  const newSamplerBuffer = AudioHash.config._audioContext()
     .createBuffer(
       numberOfChannels,
       sndLengthSum,
@@ -556,10 +542,10 @@ AudioHash._createAudioHash = function(sndArr) {
       mixRate = mixRate / 100
     }
 
-    var audioSource = AudioHash._getAudioContext().createBufferSource()
+    var audioSource = AudioHash.config._audioContext().createBufferSource()
 
     audioSource.buffer = newSamplerBuffer
-    audioSource.connect(AudioHash._getAudioContext().destination)
+    audioSource.connect(AudioHash.config._audioContext().destination)
     audioSource.playbackRate.value = mixRate
     audioSource.start()
   }
