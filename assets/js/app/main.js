@@ -119,6 +119,29 @@ async function modalOpen(type) {
 
       break
 
+    case 'max-count-reached':
+      this.myModal = new Modal('temp', null,
+        AH_ERROR_SP_COUNT_MAX_REACHED,
+        null,
+        null
+      )
+      break
+
+    case 'min-count-unmet':
+      this.myModal = new Modal('temp', null,
+        AH_ERROR_SP_COUNT_MIN_NOT_MET,
+        null,
+        null
+      )
+      break
+
+    case 'sound-buffer-unmet':
+      this.myModal = new Modal('temp', null,
+        AH_ERROR_SP_INCOMPLETE,
+        null,
+        null
+      )
+      break
   }
 }
 
@@ -172,7 +195,7 @@ AudioHash.createSP = function(quantity) {
 AudioHash.removeSP = function(sp) {
   const sId = sp.soundId
 
-  if (AudioHash.config._soundPlayerArray.length > 1) {
+  if (AudioHash.config._soundPlayerArray.length > 0) {
     var position = AudioHash.config._soundPlayerArray.indexOf(sId)
 
     AudioHash.config._soundPlayerArray.splice(position, 1)
@@ -181,10 +204,7 @@ AudioHash.removeSP = function(sp) {
     AudioHash._resetSPCount()
   }
 
-  var divSoundPlayers = document.querySelector('#soundPlayers')
-  var soundToRemove = document.querySelector(`#sound${sId}`)
-
-  divSoundPlayers.removeChild(soundToRemove)
+  AudioHash.dom.soundPlayers.removeChild(document.getElementById(`sound${sId}`))
 }
 
 /* ******************************** *
@@ -365,15 +385,15 @@ AudioHash._attachEventListeners = function() {
     if (AudioHash._getSPArrayLength() < AudioHash._getSPCountMax()) {
       AudioHash.createSP()
     } else {
-      alert(AH_ERROR_SP_COUNT_MAX_REACHED)
+      modalOpen('max-count-reached')
     }
   })
   AudioHash.dom.interactive.btnCreateAH.addEventListener('click', () => {
     if (AudioHash._getSPArrayLength() < 2) {
-      alert(AH_ERROR_SP_COUNT_MIN_NOT_MET)
+      modalOpen('min-count-unmet')
     }
     else if (AudioHash._areSPBuffersEmpty()) {
-      alert(AH_ERROR_SP_INCOMPLETE)
+      modalOpen('sound-buffer-unmet')
     }
     else {
       AudioHash._createAudioHash(AudioHash._getSPArray())
@@ -385,7 +405,6 @@ AudioHash._attachEventListeners = function() {
   window.addEventListener('touchend', AudioHash._handleClickTouch)
 }
 AudioHash._handleClickTouch = function(event) {
-
   var dialog = document.getElementsByClassName('modal-dialog')[0]
 
   if (dialog) {
@@ -413,7 +432,7 @@ AudioHash._setSPArray = function(arr) {
   AudioHash.config._soundPlayerArray = arr
 }
 AudioHash._updateSPCount = function() {
-  document.getElementById('lblSoundPlayersCount').innerText = AudioHash._getSPArrayLength()
+  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPArrayLength()
   // console.log('audiohash.js AudioHash._getSPNextId()', AudioHash._getSPNextId())
 }
 AudioHash._resetSPCount = function() {
@@ -461,8 +480,6 @@ AudioHash._createAudioHash = function(sndArr) {
   const sndLengthSum = AudioHash.__getSoundLengthSum(sndArr)
   let newSampler = [] // Float32Array
 
-  // const sampleSize = document.getElementById('rngSampleSize').value
-
   // create new buffer to hold all the SoundPlayer audio data
   const sndSampleRate = sndArr[0].audioBuffer.sampleRate
 
@@ -477,14 +494,14 @@ AudioHash._createAudioHash = function(sndArr) {
   // and then mix up order
   let indices = []
 
-  for (var i = 0; i < sndArr.length; i++) {
+  for (let i = 0; i < sndArr.length; i++) {
     indices.push(i)
   }
 
   const indicesShuffled = AudioHash.__shuffleArray(indices)
 
   // fill new audio buffer with SoundPlayer audio data
-  for (var channel = 0; channel < numberOfChannels; channel++) {
+  for (let channel = 0; channel < numberOfChannels; channel++) {
     // initialize newSampler's array with 0s
     newSampler = newSamplerBuffer.getChannelData(channel)
 
@@ -561,8 +578,8 @@ AudioHash._createAudioHash = function(sndArr) {
  ************************************************************************/
 
 AudioHash.__writePCMSamples = function(output, offset, input) {
-  for (var i = 0; i < input.length; i++, offset += 2){
-    var s = Math.max(-1, Math.min(1, input[i]))
+  for (let i = 0; i < input.length; i++, offset += 2){
+    const s = Math.max(-1, Math.min(1, input[i]))
 
     if (s < 0) {
       output.setInt16(offset, s * 0x8000, true)
@@ -573,7 +590,7 @@ AudioHash.__writePCMSamples = function(output, offset, input) {
   }
 }
 AudioHash.__writeString = function(view, offset, string) {
-  for (var i = 0; i < string.length; i++){
+  for (let i = 0; i < string.length; i++){
     view.setUint8(offset + i, string.charCodeAt(i))
   }
 }
@@ -621,6 +638,7 @@ AudioHash.__shuffleArray = function(array) {
     array[i] = array[j]
     array[j] = temp
   }
+
   return array
 }
 
@@ -632,9 +650,10 @@ AudioHash.__getSoundLengthSum = function(sndArr) {
   return lng
 }
 AudioHash.__getSoundSlice = function(audioBuffer) {
-  var sliceNumber = document.getElementById('txtSampleSize')
+  var sliceNumber = AudioHash.settings.sampleSize
   var randBegin = Math.Random() * (audioBuffer.length - sliceNumber)
   var randEnd = randBegin + sliceNumber
+
   return audioBuffer.slice(randBegin, randEnd)
 }
 AudioHash.__getSoundChannelsMin = function(sndArr) {
