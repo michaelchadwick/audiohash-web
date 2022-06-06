@@ -635,10 +635,13 @@ AudioHash.__getSoundLengthSum = function(sndArr) {
   }
   return lng
 }
+// TODO
 AudioHash.__getSoundSlice = function(audioBuffer) {
   var sliceNumber = AudioHash.settings.sampleSize
   var randBegin = Math.Random() * (audioBuffer.length - sliceNumber)
   var randEnd = randBegin + sliceNumber
+
+  // console.log('randBegin randEnd', randBegin, randEnd)
 
   return audioBuffer.slice(randBegin, randEnd)
 }
@@ -653,14 +656,18 @@ AudioHash.__getSoundChannelsMin = function(sndArr) {
 }
 
 AudioHash.__enableDownload = function(blob, givenFilename) {
-  var url = (window.URL || window.webkitURL).createObjectURL(blob)
-  var link = document.getElementById('linkDownloadAH')
-  var d = new Date()
-  var defaultFilename = 'sampler' + d.toJSON() + '.wav'
+  if (AudioHash.dom.interactive.btnDownloadAH.href) {
+    AudioHash.dom.interactive.btnDownloadAH.style.display = 'none'
+    AudioHash.dom.interactive.btnDownloadAH.href = ''
+  }
 
-  link.style.display = 'inline'
-  link.href = url
-  link.download = givenFilename || defaultFilename
+  var url = (window.URL || window.webkitURL).createObjectURL(blob)
+  var d = new Date().getTime()
+  var defaultFilename = 'audio-hash-' + d + '.wav'
+
+  AudioHash.dom.interactive.btnDownloadAH.style.display = 'inline'
+  AudioHash.dom.interactive.btnDownloadAH.href = url
+  AudioHash.dom.interactive.btnDownloadAH.download = givenFilename || defaultFilename
 }
 
 AudioHash.__displayHexDump = function(bufferString) {

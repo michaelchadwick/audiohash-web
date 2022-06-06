@@ -343,7 +343,7 @@ section#dashboard {
     section#dashboard button:hover {
       color: #ffffff;
     }
-  section#dashboard #linkDownloadAH {
+  section#dashboard #button-download-ah {
     display: none;
     flex: 0;
   }

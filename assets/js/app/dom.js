@@ -20,5 +20,6 @@ AudioHash.dom.interactive = {
   "btnHelp": document.getElementById('button-help'),
   "btnSettings": document.getElementById('button-settings'),
   "btnCreateSP": document.getElementById('button-create-sp'),
-  "btnCreateAH": document.getElementById('button-create-ah')
+  "btnCreateAH": document.getElementById('button-create-ah'),
+  "btnDownloadAH": document.getElementById('button-download-ah')
 }
