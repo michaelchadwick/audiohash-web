@@ -175,7 +175,6 @@ AudioHash.initApp = function() {
   AudioHash._saveSettings()
 }
 
-// add new Sound Player to the array
 AudioHash.createSP = function(quantity) {
   var playerCount = (quantity || 1)
 
@@ -189,7 +188,6 @@ AudioHash.createSP = function(quantity) {
     AudioHash._incSPNextId()
   }
 }
-// remove Sound Player from the array
 AudioHash.removeSP = function(sp) {
   const sId = sp.soundId
 
@@ -209,7 +207,6 @@ AudioHash.removeSP = function(sp) {
  * _private methods                 *
  * ******************************** */
 
-// create web worker
 AudioHash._initWebWorker = function() {
   if (window.Worker) {
     AudioHash.myWorker = new Worker('./assets/js/app/worker.js')
@@ -458,7 +455,6 @@ AudioHash._listSPIds = function() {
 
   return arrIds
 }
-
 
 // make a new sampler of 2 or more sounds
 AudioHash._createAudioHash = function(sndArr) {
