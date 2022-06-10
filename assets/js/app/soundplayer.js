@@ -49,14 +49,17 @@ SoundPlayer.prototype = {
     var lblVolumeId = 'lblVolume'.concat(this.soundId)
     var lblVolumeN = document.getElementById(lblVolumeId)
     var newVol = rangeVolN.value
+
     if (newVol < 100) newVol = '0' + newVol
     if (newVol < 10) newVol = '0' + newVol
+
     lblVolumeN.innerText = newVol
   },
 
   // clear sound info (whilst loading, etc.)
   clearSoundInfo: function(sId) {
     var sndInfo = document.getElementById('soundInfo' + sId)
+
     sndInfo.innerHTML = ''
   },
 
@@ -101,10 +104,13 @@ SoundPlayer.prototype = {
 
     this.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
       that.audioBuffer = buffer
+
       var btnP = document.getElementById('btnPlay' + sId)
       var btnS = document.getElementById('btnStop' + sId)
+
       btnP.disabled = false
       btnS.disabled = false
+
       that.updateSoundStatus(sId, AH_STATUS_LOADED)
       that.updateSoundInfo()
     }, function(e) {
@@ -117,6 +123,7 @@ SoundPlayer.prototype = {
     document.getElementById('sound' + sId).classList.remove('loaded')
 
     this.audioBuffer = null
+
     document.getElementById('btnPlay' + sId).disabled = true
     document.getElementById('btnStop' + sId).disabled = true
   },
@@ -128,6 +135,7 @@ SoundPlayer.prototype = {
     if(!this.audioContext.createGain) {
       this.audioContext.createGain = this.audioContext.createGainNode
     }
+
     this.gainNode = this.audioContext.createGain()
     this.initVolumeToRangeVal(this.rngVolume)
 
@@ -224,6 +232,7 @@ SoundPlayer.prototype = {
 
   createSoundDiv: function() {
     var elem = document.createElement('div')
+
     elem.classList.add('sound')
     elem.id = 'sound' + this.soundId
 
@@ -231,6 +240,7 @@ SoundPlayer.prototype = {
   },
   createSoundHeader: function() {
     var elem = document.createElement('div')
+
     elem.classList.add('sound-header')
     elem.innerText = 'SoundPlayer ' + this.soundId
 
@@ -256,6 +266,7 @@ SoundPlayer.prototype = {
   },
   createSoundStatus: function() {
     var elem = document.createElement('div')
+
     elem.id = 'soundStatus' + this.soundId
     elem.classList.add('sound-status')
     elem.innerText = AH_STATUS_UNLOADED
@@ -264,6 +275,7 @@ SoundPlayer.prototype = {
   },
   createSoundInfo: function() {
     var elem = document.createElement('div')
+
     elem.id = 'soundInfo' + this.soundId
     elem.classList.add('sound-info')
     elem.style.display = 'none'
@@ -272,31 +284,38 @@ SoundPlayer.prototype = {
   },
   createFileUpload: function() {
     var elem = document.createElement('input')
+    var that = this
+
     elem.id = 'fileUpload' + this.soundId
     elem.type = 'file'
     elem.accept = 'audio/mp3, audio/wav'
-    var that = this
 
     elem.addEventListener('change', function(e) {
       var reader = new FileReader()
       var sId = that.soundId
+
       that.clearSoundInfo(sId)
 
       reader.onloadstart = function() {
         that.updateSoundInfo(AH_STATUS_LOADING)
       }
+
       reader.onload = function() {
         if (this.result.byteLength > AH_FILE_MAX_LENGTH) {
           alert(AH_ERROR_LENGTH)
+
           that.disableSound(sId)
+
           this.abort()
         } else {
           that.initSound(this.result, sId)
         }
       }
+
       reader.onabort = function() {
         console.error('sound upload aborted')
       }
+
       if (e.srcElement.value != ''){
         reader.readAsArrayBuffer(this.files[0])
       } else {
@@ -308,6 +327,7 @@ SoundPlayer.prototype = {
   },
   createRngVolume: function() {
     var elem = document.createElement('input')
+
     elem.id = 'rngVolume' + this.soundId
     elem.type = 'range'
     elem.min = 0
@@ -327,6 +347,7 @@ SoundPlayer.prototype = {
   },
   createBtnPlay: function() {
     var elem = document.createElement('button')
+
     elem.id = 'btnPlay' + this.soundId
     elem.innerHTML = '<i class="fas fa-play"></i> <i class="fas fa-pause"></i>'
     elem.disabled = true
@@ -341,6 +362,7 @@ SoundPlayer.prototype = {
   },
   createBtnStop: function() {
     var elem = document.createElement('button')
+
     elem.id = 'btnStop' + this.soundId
     elem.innerHTML = '<i class="fas fa-stop"></i>'
     elem.disabled = true
@@ -363,6 +385,7 @@ SoundPlayer.prototype = {
   },
   createLblVolume: function() {
     var elem = document.createElement('label')
+
     elem.id = 'lblVolume' + this.soundId
     elem.innerText = this.initVol
 
