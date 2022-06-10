@@ -11,6 +11,8 @@ const AH_SETTINGS_KEY = 'audiohash-settings'
 const AH_APP_TITLE = 'Audio Hash'
 const AH_APP_TAGLINE = 'mix multiple sounds into one'
 
+const AH_CACHE_AUDIO_KEY = 'audiohash-cache-key'
+
 const AH_STATUS_PLAYING = 'playing'
 const AH_STATUS_STOPPED = 'stopped/finished'
 const AH_STATUS_PAUSED = 'paused'
