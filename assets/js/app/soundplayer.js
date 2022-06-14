@@ -142,7 +142,7 @@ class SoundPlayer {
   initSound(arrayBuffer, sId) {
     var that = this
 
-    console.log('initSound arrayBuffer', arrayBuffer)
+    // console.log('initSound arrayBuffer', arrayBuffer)
 
     this.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
       that.audioBuffer = buffer
@@ -281,11 +281,28 @@ class SoundPlayer {
 
       that.clearSoundInfo(sId)
 
-      reader.onloadstart = function() {
+      reader.onabort = (e) => {
+        console.error('FileReader read aborted', e)
+      }
+
+      reader.onerror = (e) => {
+        console.error('FileReader read error', e)
+      }
+
+      reader.onloadstart = (e) => {
+        console.log('FileReader read started', e)
+
         that.updateSoundInfo(AH_STATUS_LOADING)
       }
 
+      reader.onloadend = (e) => {
+        console.log('FileReader read ended', e)
+      }
+
+      // finished loading successfully
       reader.onload = function() {
+        console.log('FileReader read success', this.result)
+
         if (this.result.byteLength > AH_FILE_MAX_LENGTH) {
           alert(AH_ERROR_LENGTH)
 
@@ -295,7 +312,7 @@ class SoundPlayer {
         } else {
           const buf = this.result
 
-          console.log('reader.onload buf', typeof buf, buf)
+          console.log('FileReader read arrayBuffer:', buf)
 
           // that._saveToIDB(buf, sId)
 
@@ -303,11 +320,16 @@ class SoundPlayer {
         }
       }
 
-      reader.onabort = function() {
-        console.error('sound upload aborted')
+      reader.onprogress = (e) => {
+        if (e.lengthComputable) {
+          console.log('FileReader progress max', e.total)
+          console.log('FileReader progress val', e.loaded)
+        }
       }
 
-      if (e.target.value != ''){
+      if (e.target.value != '') {
+        console.log('this.files[0]', this.files[0])
+
         reader.readAsArrayBuffer(this.files[0])
       } else {
         that.disableSound(sId)
@@ -382,45 +404,65 @@ class SoundPlayer {
   _saveToIDB(buf, id) {
     const request = indexedDB.open(AH_DB_NAME, 1)
 
-    // buffer is 0 at this point?!?
-    console.log('_saveToIDB buf', typeof this.buf, this.buf)
+    console.log('_saveToIDB buf:', buf)
 
-    request.onsuccess = () => {
-      console.log('indexedDB opened successfully')
+    var that = this
+
+    request.addEventListener('success', that._handleFileUpload.bind(null, request, id, buf))
+
+    request.onerror = e => {
+      console.error(`IndexedDB request.onerror: ${ e.target.errorCode }`)
+    }
+
+    request.onupgradeneeded = (e) => {
+      console.log('IndexedDB request.onupgradeneeded:', e)
 
       const db = request.result
 
-      const transaction = db.transaction([AH_DB_STORE], 'readwrite')
+      let objectStore = db.createObjectStore(AH_DB_STORE, { keyPath: "id" })
 
-      const store = transaction.objectStore(AH_DB_STORE)
+      objectStore.createIndex("id", "id", { unique: true })
+    }
+  }
 
-      console.log('_saveToIDB request.onsuccess buf', typeof this.buf, this.buf)
+  _handleFileUpload(request, id, buf) {
+    console.log('indexedDB opened successfully')
+    console.log(request, id, buf)
 
-      store.put({ id: id, sound: buf })
-      store.put({ id: 4, sound: "foo" })
-      store.put({ id: 5, sound: "bar" })
-      store.put({ id: 6, sound: "baz" })
+    const db = request.result
 
-      const query = store.get(1)
+    const transaction = db.transaction([AH_DB_STORE], 'readwrite')
 
-      query.onsuccess = () => {
-        console.log('query', query.result)
-      }
+    transaction.oncomplete = (e) => {
+      console.log('transaction complete', e)
+    }
 
-      transaction.oncomplete = () => {
-        console.log('transaction complete')
-        db.close()
-      }
-    };
+    transaction.onerror = (e) => {
+      console.error('transaction failed', e)
+    }
 
-    request.onerror = e => {
-      console.error(`connect error: ${ e.target.errorCode }`);
-    };
+    const objectStore = transaction.objectStore(AH_DB_STORE)
 
-    request.onupgradeneeded = () => {
-      const db = request.result;
+    console.log('_saveToIDB request.onsuccess buf:', buf)
 
-      const store = db.createObjectStore(AH_DB_STORE, { keyPath: "id" })
+    const objectStoreRequest = objectStore.put({ "id": id, "sound": buf })
+
+    objectStoreRequest.onsuccess = (e) => {
+      console.log('objectStoreRequest.onsuccess:', e)
+    }
+
+    objectStoreRequest.onerror = (e) => {
+      console.log('objectStoreRequest.onerror:', e)
+    }
+
+    const query = objectStore.get(1)
+
+    query.onsuccess = () => {
+      console.log('query.onsuccess:', query.result)
+    }
+
+    query.onerror = (e) => {
+      console.log('query.onerror:', e)
     }
   }
 
