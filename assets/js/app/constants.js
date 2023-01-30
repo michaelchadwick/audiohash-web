@@ -38,3 +38,5 @@ const AH_SP_COUNT_MAX = 10
   * function will crash the website
   */
 const AH_FILE_MAX_LENGTH = 100000000
+
+const NEBYOOAPPS_SOURCE_URL = 'https://dave.neb.host/?sites'
