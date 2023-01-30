@@ -459,7 +459,6 @@ AudioHash._listSPIds = function() {
 }
 
 AudioHash._getNebyooApps = async function() {
-  console.log('getting nebyooapps...')
   const response = await fetch('https://dave.neb.host/?sites')
   const json = await response.json()
   const apps = json.body
