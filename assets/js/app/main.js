@@ -166,6 +166,8 @@ AudioHash.initApp = function() {
 
   AudioHash._initWebWorker()
 
+  AudioHash._getNebyooApps()
+
   // create some sample soundplayers
   AudioHash.createSP(AH_INIT_SP_COUNT)
 
@@ -454,6 +456,21 @@ AudioHash._listSPIds = function() {
   AudioHash.config._soundPlayerArray.forEach(sp => { arrIds.push(sp.soundId) })
 
   return arrIds
+}
+
+AudioHash._getNebyooApps = async function() {
+  console.log('getting nebyooapps...')
+  const response = await fetch('https://dave.neb.host/?sites')
+  const json = await response.json()
+  const apps = json.body
+  const appList = document.querySelector('.nav-list')
+
+  Object.values(apps).forEach(app => {
+    const appLink = document.createElement('a')
+    appLink.href = app.url
+    appLink.innerText = app.title
+    appList.appendChild(appLink)
+  })
 }
 
 // make a new sampler of 2 or more sounds
