@@ -55,9 +55,6 @@ onmessage = function(msg) {
     switch (command) {
       case 'hexDump':
         workerResult = hexDump(buffer)
-
-        console.log('workerResult', workerResult)
-
         break
     }
   } else {

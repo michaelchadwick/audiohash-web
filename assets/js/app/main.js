@@ -482,12 +482,11 @@ AudioHash._createAudioHash = function(sndArr) {
   // create new buffer to hold all the SoundPlayer audio data
   const sndSampleRate = sndArr[0].audioBuffer.sampleRate
 
-  const newSamplerBuffer = AudioHash.config._audioContext()
-    .createBuffer(
-      numberOfChannels,
-      sndLengthSum,
-      sndSampleRate
-    )
+  const newSamplerBuffer = AudioHash.config._audioContext().createBuffer(
+    numberOfChannels,
+    sndLengthSum,
+    sndSampleRate
+  )
 
   // create array of indices to choose from
   // and then mix up order
