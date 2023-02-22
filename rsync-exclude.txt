@@ -11,6 +11,7 @@ LICENSE.md
 README.md
 Rakefile
 node_modules/*
+test/*
 gulpfile.js
 rsync-exclude.txt
 TODO.md
