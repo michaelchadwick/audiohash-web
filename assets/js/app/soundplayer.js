@@ -1,4 +1,4 @@
-/* sp */
+/* soundplayer */
 /* custom class for soundplayers */
 
 class SoundPlayer {
