@@ -38,8 +38,8 @@ async function modalOpen(type) {
           <ol class="help">
             <li>Create some SoundPlayers</li>
             <li>Load up files</li>
-            <li>Choose how much of each you want sampled</li>
-            <li>Click/tap '#' and a link to your new sampler will be created for you to download</li>
+            <li>TODO: <s>Choose how much of each you want sampled</s></li>
+            <li>Click/tap '# MAKE HASH' and a download link to your new sampler will be created for you to download</li>
           </ol>
         `,
         null,
