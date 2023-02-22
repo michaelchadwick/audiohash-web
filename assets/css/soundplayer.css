@@ -12,44 +12,44 @@
   text-transform: uppercase;
   width: 100%;
 }
-@media (min-width: 768px) {
-  .sound {
-    border-bottom: 1px solid #333;
-    border-right: 1px solid #333;
-    clear: none;
-    width: 50%;
+  @media (min-width: 768px) {
+    .sound {
+      border-bottom: 1px solid #333;
+      border-right: 1px solid #333;
+      clear: none;
+      width: 50%;
+    }
   }
-}
-@media (min-width: 992px) {
-  .sound {
-    width: 33.3%;
+  @media (min-width: 992px) {
+    .sound {
+      width: 33.3%;
+    }
   }
-}
-@media (min-width: 1200px) {
-  .sound {
-    width: 25%;
+  @media (min-width: 1200px) {
+    .sound {
+      width: 25%;
+    }
   }
-}
-.sound > * {
-  clear: left;
-  float: left;
-}
-.sound .sound-header,
-.sound .sound-status,
-.sound .sound-info {
-  box-sizing: border-box;
-}
-.sound .sound-header {
-  background: #444;
-  color: #888;
-  font-size: 1.4em;
-  left: -5px;
-  margin: 0;
-  max-width: 100%;
-  padding: 3px 7px;
-  width: 100%;
-}
-  .sound-destroyer {
+  .sound > * {
+    clear: left;
+    float: left;
+  }
+  .sound .sound-header,
+  .sound .sound-status,
+  .sound .sound-info {
+    box-sizing: border-box;
+  }
+  .sound .sound-header {
+    background: #444;
+    color: #888;
+    font-size: 1.4em;
+    left: -5px;
+    margin: 0;
+    max-width: 100%;
+    padding: 3px 7px;
+    width: 100%;
+  }
+  .sound .sound-destroyer {
     float: right;
     margin: 0;
     padding: 0;
@@ -57,42 +57,47 @@
     right: 25px;
     top: -2px;
   }
-  .sound-destroyer:hover {
+    @media (hover: hover) {
+      .sound .sound-destroyer:hover {
+        background: #555;
+        cursor: pointer;
+      }
+        .sound .sound-destroyer:hover a {
+          color: #f00;
+        }
+    }
+    .sound .sound-destroyer a {
+      color: #fff;
+      left: 7px;
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      text-decoration: none;
+      top: 2px;
+    }
+      @media (hover: hover) {
+        .sound .sound-destroyer a:hover {
+          color: #f00;
+          cursor: pointer;
+        }
+      }
+
+  .sound .sound-status {
     background: #555;
-    cursor: pointer;
-  }
-  .sound-destroyer:hover a {
-    color: #f00;
-  }
-  .sound-destroyer a {
-    color: #fff;
-    left: 7px;
+    color: #888;
+    font-size: 0.75em;
     margin: 0;
-    padding: 0;
-    position: absolute;
-    text-decoration: none;
-    top: 2px;
+    padding: 2px 7px;
+    width: 100%;
   }
-  .sound-destroyer a:hover {
-    color: #f00;
-    cursor: pointer;
+  .sound .sound-info {
+    background: #666;
+    color: #fff;
+    font-size: 0.75em;
+    margin: 0 0 2px;
+    padding: 3px 7px;
+    width: 100%;
   }
-.sound .sound-status {
-  background: #555;
-  color: #888;
-  font-size: 0.75em;
-  margin: 0;
-  padding: 2px 7px;
-  width: 100%;
-}
-.sound .sound-info {
-  background: #666;
-  color: #fff;
-  font-size: 0.75em;
-  margin: 0 0 2px;
-  padding: 3px 7px;
-  width: 100%;
-}
 
 .sound.loaded {
   background: #f3f4ec;
@@ -172,6 +177,13 @@
   top: -2px;
   width: 32px;
 }
+  @media (hover: hover) {
+    .sound button:not(:disabled):hover {
+      background: #eee;
+      border: 1px solid #333;
+      color: #000;
+    }
+  }
   .sound button:last-of-type {
     clear: none;
     margin-left: 4px;

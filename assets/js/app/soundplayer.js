@@ -7,6 +7,7 @@ class SoundPlayer {
     this.audioContext = ac
 
     this.dom = {}
+    this.arrayBuffer = null
     this.audioBuffer = null
     this.gainNode = this.audioContext.createGain()
     this.source = null
@@ -139,13 +140,15 @@ class SoundPlayer {
   }
 
   // load the sound into a buffer
-  initSound(arrayBuffer, sId) {
-    var that = this
+  initSound(arrayBuffer, arrBytesWav, sId) {
+    var sound = this
 
     // console.log('initSound arrayBuffer', arrayBuffer)
 
+    sound.arrayBuffer = arrBytesWav
+
     this.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
-      that.audioBuffer = buffer
+      sound.audioBuffer = buffer
 
       var btnP = document.getElementById('btnPlay' + sId)
       var btnS = document.getElementById('btnStop' + sId)
@@ -153,8 +156,8 @@ class SoundPlayer {
       btnP.disabled = false
       btnS.disabled = false
 
-      that.updateSoundStatus(sId, AH_STATUS_LOADED)
-      that.updateSoundInfo()
+      sound.updateSoundStatus(sId, AH_STATUS_LOADED)
+      sound.updateSoundInfo()
     }, function(e) {
       console.warn(AH_ERROR_DECODING, e)
     })
@@ -302,6 +305,9 @@ class SoundPlayer {
       // finished loading successfully
       reader.onload = function() {
         console.log('FileReader read success', this.result)
+        console.log('FileReader read success',
+          new Blob([this.result], { type: 'audio/wav; codecs=MS_PCM' })
+        )
 
         if (this.result.byteLength > AH_FILE_MAX_LENGTH) {
           alert(AH_ERROR_LENGTH)
@@ -311,12 +317,38 @@ class SoundPlayer {
           this.abort()
         } else {
           const buf = this.result
+          const blob = new Blob([this.result], { type: 'audio/wav; codecs=MS_PCM' })
 
           console.log('FileReader read arrayBuffer:', buf)
 
+          const promise = new Promise((resolve, reject) => {
+            const reader = new FileReader()
+
+            reader.onload = async () => {
+              try {
+                // const response = arrBytesWav.push(reader.result)
+                // console.log('arrBytesWav', arrBytesWav)
+
+                const arrBytesWav = reader.result
+
+                that.initSound(buf, arrBytesWav, sId)
+
+                resolve(arrBytesWav)
+              } catch (err) {
+                reject(err)
+              }
+            }
+            reader.onerror = (error) => {
+              reject(error)
+            }
+            reader.readAsArrayBuffer(blob)
+          })
+
+          console.log('promise', promise)
+
           // that._saveToIDB(buf, sId)
 
-          that.initSound(buf, sId)
+          // that.initSound(buf, sId)
         }
       }
 
