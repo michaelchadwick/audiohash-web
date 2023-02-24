@@ -6,8 +6,7 @@
 AudioHash.settings = {
   "dumpHex": false,
   "mixDemo": false,
-  "mixRate": 100,
-  "sampleSize": 5
+  "mixRate": 100
 }
 
 // config: only saved while game is loaded
@@ -95,20 +94,6 @@ async function modalOpen(type) {
               </div>
             </div>
 
-            <!-- sampleSize -->
-            <div class="setting-row">
-              <div class="text">
-                <div class="title">Sample size</div>
-                <div class="description">???</div>
-              </div>
-              <div class="control">
-                <div class="container">
-                  <input id="range-setting-sample-size" type="range" min="1" max="30" value="5" onchange="AudioHash._changeSetting('sampleSize', event)">
-                  <label id="text-setting-sample-size" for="range-setting-sample-size">5</label>
-                </div>
-              </div>
-            </div>
-
           </div>
         `,
         null,
@@ -169,7 +154,7 @@ AudioHash.initApp = function() {
   AudioHash._getNebyooApps()
 
   // create some sample soundplayers
-  AudioHash.createSP(AH_INIT_SP_COUNT)
+  AudioHash.createSP(AH_SP_COUNT_INIT)
 
   // load localStorage settings
   AudioHash._loadSettings()
@@ -203,6 +188,12 @@ AudioHash.removeSP = function(sp) {
   }
 
   AudioHash.dom.soundPlayers.removeChild(document.getElementById(`sound${sId}`))
+
+  if (AudioHash._getSPCount() >= 2 && !AudioHash._areSPBuffersEmpty()) {
+    AudioHash.dom.interactive.btnCreateAH.removeAttribute('disabled')
+  } else {
+    AudioHash.dom.interactive.btnCreateAH.setAttribute('disabled', 'true')
+  }
 }
 
 /* ******************************** *
@@ -263,20 +254,6 @@ AudioHash._loadSettings = function() {
           setting.value = AudioHash.settings.mixRate
         }
       }
-
-      if (lsConfig.sampleSize) {
-        AudioHash.settings.sampleSize = parseInt(lsConfig.sampleSize)
-
-        var setting_range = document.getElementById('range-setting-sample-size')
-        var setting_text = document.getElementById('text-setting-sample-size')
-
-        if (setting_range) {
-          setting_range.value = AudioHash.settings.sampleSize
-        }
-        if (setting_text) {
-          setting_text.innerText = AudioHash.settings.sampleSize
-        }
-      }
     }
   }
 }
@@ -328,17 +305,6 @@ AudioHash._changeSetting = function(setting, event = null) {
 
       if (st !== '') {
         AudioHash._saveSetting('mixRate', parseInt(st))
-      }
-
-      break
-
-    case 'sampleSize':
-      var st = document.getElementById('range-setting-sample-size').value
-
-      if (st !== '') {
-        document.getElementById('text-setting-sample-size').innerText = st
-
-        AudioHash._saveSetting('sampleSize', parseInt(st))
       }
 
       break
@@ -477,11 +443,10 @@ AudioHash._getNebyooApps = async function() {
 
 // // new method that DOES work!
 // make a new sampler of 2 or more sounds
-AudioHash._createAudioHash = function(sndArr) {
+AudioHash._createAudioHash = function(spArr) {
   let byteLength = 0
 
-  sndArr.forEach(snd => {
-    console.log('snd', snd)
+  spArr.forEach(snd => {
     byteLength += snd.byteLength
   })
 
@@ -490,7 +455,7 @@ AudioHash._createAudioHash = function(sndArr) {
   let fullByteLength
 
   // set first buffer to beginning of array
-  sndArr.forEach((snd, i) => {
+  spArr.forEach((snd, i) => {
     // set initial buffer to beginning of array
     if (i == 0) {
       fullByteLength = 0
@@ -501,15 +466,15 @@ AudioHash._createAudioHash = function(sndArr) {
       fullByteLength = snd.byteLength
 
       for (let j = i - 1; j > 0; j--) {
-        fullByteLength += sndArr[j].byteLength;
+        fullByteLength += spArr[j].byteLength;
       }
 
       tmp.set(new Uint8Array(snd), fullByteLength)
     }
   })
 
-  // get sndArr[0] audio data to create the new combined wav
-  const audioData = AudioHash.__getAudioData.WavHeader.readHeader(new DataView(sndArr[0]))
+  // get spArr[0] audio data to create the new combined wav
+  const audioData = AudioHash.__getAudioData.WavHeader.readHeader(new DataView(spArr[0]))
 
   // send combined buffer+audio data to create the audio data of combined
   const arrBytesFinal = AudioHash.__getWavBytes(
@@ -521,7 +486,7 @@ AudioHash._createAudioHash = function(sndArr) {
     }
   )
 
-  console.log('arrBytesFinal', arrBytesFinal)
+  // console.log('arrBytesFinal', arrBytesFinal)
 
   // create a Blob as Base64 Raw data with audio/wav type
   const audioBlob = new Blob([arrBytesFinal], {
@@ -570,13 +535,13 @@ AudioHash._createAudioHash = function(sndArr) {
 
 // // old method that does not work
 // // make a new sampler of 2 or more sounds
-// AudioHash._createAudioHash = function(sndArr) {
-//   const numberOfChannels = AudioHash.__getSoundChannelsMin(sndArr)
-//   const sndLengthSum = AudioHash.__getSoundLengthSum(sndArr)
+// AudioHash._createAudioHash = function(spArr) {
+//   const numberOfChannels = AudioHash.__getSoundChannelsMin(spArr)
+//   const sndLengthSum = AudioHash.__getSoundLengthSum(spArr)
 //   let newSampler = [] // Float32Array
 
 //   // create new buffer to hold all the SoundPlayer audio data
-//   const sndSampleRate = sndArr[0].audioBuffer.sampleRate
+//   const sndSampleRate = spArr[0].audioBuffer.sampleRate
 
 //   const newSamplerBuffer = AudioHash.config._audioContext().createBuffer(
 //     numberOfChannels,
@@ -588,7 +553,7 @@ AudioHash._createAudioHash = function(sndArr) {
 //   // and then mix up order
 //   let indices = []
 
-//   for (let i = 0; i < sndArr.length; i++) {
+//   for (let i = 0; i < spArr.length; i++) {
 //     indices.push(i)
 //   }
 
@@ -610,10 +575,10 @@ AudioHash._createAudioHash = function(sndArr) {
 //       // console.log('count', count)
 
 //       if (count > 0) {
-//         offset = sndArr[count - 1].audioBuffer.length
+//         offset = spArr[count - 1].audioBuffer.length
 //       }
 
-//       // grab the nth shuffled index for sndArr
+//       // grab the nth shuffled index for spArr
 //       index = indicesShuffled[0]
 
 //       // console.log('index', index)
@@ -623,11 +588,11 @@ AudioHash._createAudioHash = function(sndArr) {
 
 //       // console.log('indicesShuffled', indicesShuffled)
 
-//       // write sndArr[index] to newSampler
-//       // offset by the last sndArr[index]
+//       // write spArr[index] to newSampler
+//       // offset by the last spArr[index]
 //       // or start at 0 if just begun
 //       newSampler.set(
-//         sndArr[index].audioBuffer.getChannelData(channel),
+//         spArr[index].audioBuffer.getChannelData(channel),
 //         offset
 //       )
 
@@ -676,12 +641,12 @@ AudioHash.__getWavBytes = function(buffer, options) {
   const type = options.isFloat ? Float32Array : Uint16Array
   const numFrames = buffer.byteLength / type.BYTES_PER_ELEMENT
 
-  console.log('_getWavBytes byteLength', buffer.byteLength)
+  // console.log('_getWavBytes byteLength', buffer.byteLength)
 
   const headerBytes = AudioHash.__getWavHeader(Object.assign({}, options, { numFrames }))
-  console.log('_getWavBytes headerBytes', headerBytes.length, buffer.byteLength)
+  // console.log('_getWavBytes headerBytes', headerBytes.length, buffer.byteLength)
   const wavBytes = new Uint8Array(headerBytes.length + buffer.byteLength);
-  console.log('_getWavBytes wavBytes', wavBytes)
+  // console.log('_getWavBytes wavBytes', wavBytes)
 
   // prepend header, then add pcmBytes
   wavBytes.set(headerBytes, 0)
@@ -814,6 +779,14 @@ AudioHash.__getAudioData = function() {
   AudioHash.__getAudioData.WavHeader = WavHeader;
 }
 
+// returns bytePosition in file at number of seconds in from beginning
+AudioHash.__getBytePosition = function(seconds, samples, channels, bits) {
+  const sampleNumber = Floor(seconds * samples * channels)
+  const bytePosition = sampleNumber * bits/8
+
+  return bytePosition
+}
+
 AudioHash.__writePCMSamples = function(output, offset, input) {
   for (let i = 0; i < input.length; i++, offset += 2){
     const s = Math.max(-1, Math.min(1, input[i]))
@@ -879,27 +852,17 @@ AudioHash.__shuffleArray = function(array) {
   return array
 }
 
-AudioHash.__getSoundLengthSum = function(sndArr) {
+AudioHash.__getSoundLengthSum = function(spArr) {
   var lng = 0
-  for (var i = 0; i < sndArr.length; i++) {
-    lng += sndArr[i].audioBuffer.length
+  for (var i = 0; i < spArr.length; i++) {
+    lng += spArr[i].audioBuffer.length
   }
   return lng
 }
-// TODO
-AudioHash.__getSoundSlice = function(audioBuffer) {
-  var sliceNumber = AudioHash.settings.sampleSize
-  var randBegin = Math.Random() * (audioBuffer.length - sliceNumber)
-  var randEnd = randBegin + sliceNumber
-
-  // console.log('randBegin randEnd', randBegin, randEnd)
-
-  return audioBuffer.slice(randBegin, randEnd)
-}
-AudioHash.__getSoundChannelsMin = function(sndArr) {
+AudioHash.__getSoundChannelsMin = function(spArr) {
   var sndChannelsArr = []
 
-  sndArr.forEach(function(snd) {
+  spArr.forEach(function(snd) {
     sndChannelsArr.push(snd.audioBuffer.numberOfChannels)
   })
 
@@ -913,8 +876,9 @@ AudioHash.__enableDownload = function(blob, givenFilename) {
   }
 
   const url = (window.URL || window.webkitURL).createObjectURL(blob)
-  const d = new Date(parseInt(ep.time * 1000)).toLocaleDateString('en-CA')
-  const defaultFilename = 'audio-hash-' + d + '.wav'
+  const d = new Date(parseInt(Date.now()))
+  let date = d.getFullYear() + '-' + (d.getMonth() + 1).toString().padStart(2, '0') + '-' + d.getDate().toString().padStart(2, '0')
+  const defaultFilename = 'audiohash_' + date + '.wav'
 
   AudioHash.dom.interactive.btnDownloadAH.style.display = 'flex'
   AudioHash.dom.interactive.btnDownloadAH.href = url

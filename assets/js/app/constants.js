@@ -22,6 +22,8 @@ const AH_STATUS_UNLOADED = 'unloaded'
 const AH_STATUS_LOADING = 'loading...'
 const AH_STATUS_LOADED = 'loaded and ready'
 
+const AH_INFO_UNLOADED = 'n/a'
+
 const AH_ERROR_NO_WEB_AUDIO = 'Web Audio API not supported in this browser'
 const AH_ERROR_DECODING = 'Error: cannot decode sound file'
 const AH_ERROR_LENGTH = 'Error: sound file too long'
@@ -29,7 +31,7 @@ const AH_ERROR_SP_INCOMPLETE = 'Error: existing SoundPlayers need sounds'
 const AH_ERROR_SP_COUNT_MAX_REACHED = 'Error: SoundPlayer max reached'
 const AH_ERROR_SP_COUNT_MIN_NOT_MET = 'Error: SoundPlayer min (2) not met'
 
-const AH_INIT_SP_COUNT = 2
+const AH_SP_COUNT_INIT = 2
 const AH_SP_COUNT_MAX = 10
 
 /**
