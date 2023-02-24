@@ -205,9 +205,9 @@ class SoundPlayer {
       document.getElementById('btnStop' + sId).disabled = false
 
       // update snippet range so it's 1/sound.length -> sound.length
-      console.log('Math.floor(buffer.duration)', Math.floor(buffer.duration))
-      console.log('Math.floor(buffer.duration) * .2', Math.floor(buffer.duration) * .2)
-      console.log('Math.round(Math.floor(buffer.duration) * .2', Math.round(Math.floor(buffer.duration) * .2))
+      // console.log('Math.floor(buffer.duration)', Math.floor(buffer.duration))
+      // console.log('Math.floor(buffer.duration) * .2', Math.floor(buffer.duration) * .2)
+      // console.log('Math.round(Math.floor(buffer.duration) * .2', Math.round(Math.floor(buffer.duration) * .2))
 
       const newMax = Math.floor(buffer.duration)
       const newVal = Math.round(Math.floor(buffer.duration) * .2)

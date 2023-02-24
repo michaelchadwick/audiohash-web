@@ -176,23 +176,25 @@ AudioHash.createSP = function(quantity) {
   }
 }
 AudioHash.removeSP = function(sp) {
-  const sId = sp.soundId
+  if (window.confirm('Are you sure you want to delete this SoundPlayer?')) {
+    const sId = sp.soundId
 
-  if (AudioHash.config._soundPlayerArray.length > 0) {
-    var position = AudioHash.config._soundPlayerArray.indexOf(sId)
+    if (AudioHash.config._soundPlayerArray.length > 0) {
+      var position = AudioHash.config._soundPlayerArray.indexOf(sId)
 
-    AudioHash.config._soundPlayerArray.splice(position, 1)
-    AudioHash._updateSPCount()
-  } else {
-    AudioHash._resetSPCount()
-  }
+      AudioHash.config._soundPlayerArray.splice(position, 1)
+      AudioHash._updateSPCount()
+    } else {
+      AudioHash._resetSPCount()
+    }
 
-  AudioHash.dom.soundPlayers.removeChild(document.getElementById(`sound${sId}`))
+    AudioHash.dom.soundPlayers.removeChild(document.getElementById(`sound${sId}`))
 
-  if (AudioHash._getSPCount() >= 2 && !AudioHash._areSPBuffersEmpty()) {
-    AudioHash.dom.interactive.btnCreateAH.removeAttribute('disabled')
-  } else {
-    AudioHash.dom.interactive.btnCreateAH.setAttribute('disabled', 'true')
+    if (AudioHash._getSPCount() >= 2 && !AudioHash._areSPBuffersEmpty()) {
+      AudioHash.dom.interactive.btnCreateAH.removeAttribute('disabled')
+    } else {
+      AudioHash.dom.interactive.btnCreateAH.setAttribute('disabled', 'true')
+    }
   }
 }
 
@@ -473,7 +475,7 @@ AudioHash._createAudioHash = function(spArr) {
     }
   })
 
-  // get spArr[0] audio data to create the new combined wav
+  // get spArr[0] audio data to create the new combined wav header
   const audioData = AudioHash.__getAudioData.WavHeader.readHeader(new DataView(spArr[0]))
 
   // send combined buffer+audio data to create the audio data of combined
@@ -785,71 +787,6 @@ AudioHash.__getBytePosition = function(seconds, samples, channels, bits) {
   const bytePosition = sampleNumber * bits/8
 
   return bytePosition
-}
-
-AudioHash.__writePCMSamples = function(output, offset, input) {
-  for (let i = 0; i < input.length; i++, offset += 2){
-    const s = Math.max(-1, Math.min(1, input[i]))
-
-    if (s < 0) {
-      output.setInt16(offset, s * 0x8000, true)
-    } else {
-      output.setInt16(offset, s * 0x7FFF, true)
-    }
-
-  }
-}
-AudioHash.__writeString = function(view, offset, string) {
-  for (let i = 0; i < string.length; i++){
-    view.setUint8(offset + i, string.charCodeAt(i))
-  }
-}
-
-AudioHash.__encodeWavFile = function(samples, sampleRate) {
-  var buffer = new ArrayBuffer(44 + samples.length * 2)
-  var view = new DataView(buffer)
-
-  // RIFF identifier
-  AudioHash.__writeString(view, 0, 'RIFF')
-  // file length
-  view.setUint32(4, 32 + samples.length * 2, true)
-  // RIFF type
-  AudioHash.__writeString(view, 8, 'WAVE')
-  // format chunk identifier
-  AudioHash.__writeString(view, 12, 'fmt ')
-  // format chunk length
-  view.setUint32(16, 16, true)
-  // sample format (raw)
-  view.setUint16(20, 1, true)
-  // stereo (2 channels)
-  view.setUint16(22, 2, true)
-  // sample rate
-  view.setUint32(24, sampleRate, true)
-  // byte rate (sample rate * block align)
-  view.setUint32(28, sampleRate * 4, true)
-  // block align (channels * bytes/sample)
-  view.setUint16(32, 4, true)
-  // bits/sample
-  view.setUint16(34, 16, true)
-  // data chunk identifier
-  AudioHash.__writeString(view, 36, 'data')
-  // data chunk length
-  view.setUint32(40, samples.length * 2, true)
-  // write the PCM samples
-  AudioHash.__writePCMSamples(view, 44, samples)
-
-  return view
-}
-
-AudioHash.__shuffleArray = function(array) {
-  for (var i = array.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1))
-    var temp = array[i]
-    array[i] = array[j]
-    array[j] = temp
-  }
-
-  return array
 }
 
 AudioHash.__getSoundLengthSum = function(spArr) {
