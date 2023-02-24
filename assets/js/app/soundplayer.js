@@ -200,17 +200,31 @@ class SoundPlayer {
     this.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
       sound.audioBuffer = buffer
 
-      // console.log('buffer', buffer)
-
+      // enabled the play/pause and stop buttons
       document.getElementById('btnPlay' + sId).disabled = false
       document.getElementById('btnStop' + sId).disabled = false
 
-      document.getElementById('rngSnippet' + sId).max = Math.floor(buffer.duration)
-      document.getElementById('rngSnippet' + sId).value = Math.floor(buffer.duration * .2)
+      // update snippet range so it's 1/sound.length -> sound.length
+      console.log('Math.floor(buffer.duration)', Math.floor(buffer.duration))
+      console.log('Math.floor(buffer.duration) * .2', Math.floor(buffer.duration) * .2)
+      console.log('Math.round(Math.floor(buffer.duration) * .2', Math.round(Math.floor(buffer.duration) * .2))
+
+      const newMax = Math.floor(buffer.duration)
+      const newVal = Math.round(Math.floor(buffer.duration) * .2)
+
+      document.getElementById('rngSnippet' + sId).max = newMax
+      document.getElementById('rngSnippet' + sId).value = newVal
+
+      let newLblVal = newVal < 100 ? '0' + newVal : newVal
+      newLblVal = newLblVal < 10 ? '0' + newLblVal : newLblVal
+
+      document.getElementById('lblPostRngSnippet' + sId).innerText = newLblVal
 
       sound.updateSoundStatus(sId, AH_STATUS_LOADED)
       sound.updateSoundInfo()
 
+      // if we now have at least 2 SoundPlayers with audioBuffers
+      // then enable the "MAKE HASH" button
       if (AudioHash._getSPCount() >= 2 && !AudioHash._areSPBuffersEmpty()) {
         AudioHash.dom.interactive.btnCreateAH.removeAttribute('disabled')
       }
