@@ -205,10 +205,6 @@ class SoundPlayer {
       document.getElementById('btnStop' + sId).disabled = false
 
       // update snippet range so it's 1/sound.length -> sound.length
-      // console.log('Math.floor(buffer.duration)', Math.floor(buffer.duration))
-      // console.log('Math.floor(buffer.duration) * .2', Math.floor(buffer.duration) * .2)
-      // console.log('Math.round(Math.floor(buffer.duration) * .2', Math.round(Math.floor(buffer.duration) * .2))
-
       const newMax = Math.floor(buffer.duration)
       const newVal = Math.round(Math.floor(buffer.duration) * .2)
 
@@ -378,7 +374,7 @@ class SoundPlayer {
 
     elem.id = 'fileUpload' + this.soundId
     elem.type = 'file'
-    elem.accept = 'audio/mp3, audio/wav'
+    elem.accept = 'audio/wav'
 
     elem.addEventListener('change', function(e) {
       var reader = new FileReader()

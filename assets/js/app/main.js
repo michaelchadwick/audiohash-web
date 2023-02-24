@@ -501,8 +501,6 @@ AudioHash._createAudioHash = function(spArr) {
   readerBlob.addEventListener('loadend', () => {
     combineBase64Wav = readerBlob.result.toString()
 
-    // console.log('combineBase64Wav', combineBase64Wav)
-
     // makes a temp audio buffer source and plays the new sampler mix
     if (AudioHash.settings.mixDemo) {
       var mixRate = AudioHash.settings.mixRate
@@ -690,23 +688,7 @@ AudioHash.__getBytePosition = function(seconds, samples, channels, bits) {
   return bytePosition
 }
 
-AudioHash.__getSoundLengthSum = function(spArr) {
-  var lng = 0
-  for (var i = 0; i < spArr.length; i++) {
-    lng += spArr[i].audioBuffer.length
-  }
-  return lng
-}
-AudioHash.__getSoundChannelsMin = function(spArr) {
-  var sndChannelsArr = []
-
-  spArr.forEach(function(snd) {
-    sndChannelsArr.push(snd.audioBuffer.numberOfChannels)
-  })
-
-  return Math.min.apply(Math, sndChannelsArr)
-}
-
+// enables a link with the base64 version of the audiohash
 AudioHash.__enableDownload = function(blob, givenFilename) {
   if (AudioHash.dom.interactive.btnDownloadAH.href) {
     AudioHash.dom.interactive.btnDownloadAH.style.display = 'none'
@@ -723,6 +705,7 @@ AudioHash.__enableDownload = function(blob, givenFilename) {
   AudioHash.dom.interactive.btnDownloadAH.download = givenFilename || defaultFilename
 }
 
+// displays textarea with hex version of audiohash
 AudioHash.__displayHexDump = function(bufferString) {
   AudioHash.dom.hexDump.style.display = 'flex'
   AudioHash.dom.hexDumpContents.innerHTML = 'dumping hex...'
