@@ -457,13 +457,12 @@ AudioHash._createAudioHash = function(spArr) {
   let fullByteLength
 
   // set first buffer to beginning of array
+  // set subsequent buffers to end of previous buffer
   spArr.forEach((snd, i) => {
-    // set initial buffer to beginning of array
     if (i == 0) {
       fullByteLength = 0
       tmp.set(new Uint8Array(snd), fullByteLength)
     }
-    // set subsequent buffers to end of previous buffer
     else {
       fullByteLength = snd.byteLength
 
@@ -529,8 +528,6 @@ AudioHash._createAudioHash = function(spArr) {
 
   // post new wav file to download link
   AudioHash.__enableDownload(audioBlob)
-
-  return combineBase64Wav
 }
 
 /************************************************************************
