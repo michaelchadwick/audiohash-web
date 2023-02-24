@@ -70,12 +70,6 @@ button {
   user-select: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.3);
 }
-  button:disabled {
-    background-color: #eee;
-    color: #ddd;
-    cursor: not-allowed;
-  }
-
   a.icon,
   button.icon {
     background: none;
@@ -87,6 +81,7 @@ button {
     button.icon:hover {
       color: #fff;
     }
+
   button.help {
     background-color: #ddd;
     border-radius: 4px;
@@ -101,6 +96,12 @@ button {
       bottom: 1px;
       position: relative;
     }
+
+  button:disabled {
+    background-color: #eee;
+    color: #ddd;
+    cursor: not-allowed;
+  }
 
 .container {
   align-items: center;
@@ -365,6 +366,15 @@ section#dashboard {
           width: 100px;
         }
       }
+
+  section#dashboard button.icon:disabled {
+    background-color: #BEC7DD;
+    color: #9aabd0;
+  }
+    section#dashboard button.icon:disabled > * {
+      color: #9aabd0;
+    }
+
   section#dashboard a#button-download-ah {
     align-items: center;
     display: none;
