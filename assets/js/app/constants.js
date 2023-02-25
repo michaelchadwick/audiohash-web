@@ -41,4 +41,13 @@ const AH_SP_COUNT_MAX = 10
   */
 const AH_FILE_MAX_LENGTH = 100000000
 
+// const AH_CONVERT_TO_WAV_SCRIPT = '/assets/php/convert_to_wav.php'
+
+const AH_ALLOWED_FORMATS = [
+  // 'audio/aif',
+  // 'audio/aiff',
+  // 'audio/mpeg',
+  'audio/wav'
+]
+
 const NEBYOOAPPS_SOURCE_URL = 'https://dave.neb.host/?sites'

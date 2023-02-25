@@ -369,92 +369,139 @@ class SoundPlayer {
   }
 
   _createFileUpload() {
-    var elem = document.createElement('input')
-    var that = this
+    var form = document.createElement('form')
 
-    elem.id = 'fileUpload' + this.soundId
-    elem.type = 'file'
-    elem.accept = 'audio/wav'
+    form.id = 'formUpload' + this.soundId
 
-    elem.addEventListener('change', function(e) {
-      var reader = new FileReader()
-      var sId = that.soundId
+      var upload = document.createElement('input')
+      var that = this
 
-      that.clearSoundInfo(sId)
+      upload.accept = AH_ALLOWED_FORMATS.join(', ')
+      upload.id = 'fileUpload' + this.soundId
+      upload.name = 'fileUpload' + this.soundId
+      upload.type = 'file'
 
-      reader.onabort = (e) => { console.error('FileReader read aborted', e) }
+      upload.addEventListener('change', function(e) {
+        var reader = new FileReader()
+        var sId = that.soundId
 
-      reader.onerror = (e) => { console.error('FileReader read error', e) }
+        that.clearSoundInfo(sId)
 
-      reader.onloadstart = (e) => {
-        // console.log('FileReader read started', e)
+        reader.onabort = (e) => { console.error('FileReader read aborted', e) }
 
-        that.updateSoundInfo(AH_STATUS_LOADING)
-      }
+        reader.onerror = (e) => { console.error('FileReader read error', e) }
 
-      reader.onloadend = (e) => {
-        // console.log('FileReader read ended', e)
-      }
+        reader.onloadstart = (e) => {
+          // console.log('FileReader read started', e)
 
-      // finished loading successfully
-      reader.onload = function() {
-        // console.log('FileReader read success', this.result)
+          that.updateSoundInfo(AH_STATUS_LOADING)
+        }
 
-        if (this.result.byteLength > AH_FILE_MAX_LENGTH) {
-          alert(AH_ERROR_LENGTH)
+        reader.onloadend = (e) => {
+          // console.log('FileReader read ended', e)
+        }
 
-          that.disableSound(sId)
+        // finished loading successfully
+        reader.onload = function() {
+          // console.log('FileReader read success', this.result)
 
-          this.abort()
-        } else {
-          const buf = this.result
-          const blob = new Blob([this.result], { type: 'audio/wav; codecs=MS_PCM' })
+          if (this.result.byteLength > AH_FILE_MAX_LENGTH) {
+            alert(AH_ERROR_LENGTH)
 
-          // console.log('FileReader read arrayBuffer:', buf)
+            that.disableSound(sId)
 
-          const promise = new Promise((resolve, reject) => {
-            const reader = new FileReader()
+            this.abort()
+          } else {
+            const buf = this.result
+            const blob = new Blob([this.result], { type: 'audio/wav; codecs=MS_PCM' })
 
-            reader.onerror = (error) => { reject(error) }
+            // console.log('FileReader read arrayBuffer:', buf)
 
-            reader.onload = async () => {
-              try {
-                // const response = arrBytesWav.push(reader.result)
-                // console.log('arrBytesWav', arrBytesWav)
+            const promise = new Promise((resolve, reject) => {
+              const reader = new FileReader()
 
-                const arrBytesWav = reader.result
+              reader.onerror = (error) => { reject(error) }
 
-                // that._saveToIDB(buf, sId)
+              reader.onload = async () => {
+                try {
+                  // const response = arrBytesWav.push(reader.result)
+                  // console.log('arrBytesWav', arrBytesWav)
 
-                that.initSound(buf, arrBytesWav, sId)
+                  const arrBytesWav = reader.result
 
-                resolve(arrBytesWav)
-              } catch (err) {
-                reject(err)
+                  // that._saveToIDB(buf, sId)
+
+                  that.initSound(buf, arrBytesWav, sId)
+
+                  resolve(arrBytesWav)
+                } catch (err) {
+                  reject(err)
+                }
               }
-            }
 
-            reader.readAsArrayBuffer(blob)
-          })
+              reader.readAsArrayBuffer(blob)
+            })
+          }
         }
-      }
 
-      reader.onprogress = (e) => {
-        if (e.lengthComputable) {
-          console.log(`FileReader progress: ${e.loaded} / ${e.total}`)
+        reader.onprogress = (e) => {
+          if (e.lengthComputable) {
+            console.log(`FileReader progress: ${e.loaded} / ${e.total}`)
+          }
         }
-      }
 
-      if (e.target.value != '') {
-        console.log('this.files[0]', this.files[0])
+        if (e.target.value != '') {
+          const file = this.files[0];
 
-        reader.readAsArrayBuffer(this.files[0])
-      } else {
-        that.disableSound(sId)
-      }
-    }, false)
+          console.log('file uploaded', file)
 
-    return elem
+          // TODO: fix server-side conversion of * -> wav
+          // if (file.name.split('.')[1].toLowerCase() != 'wav') {
+          //   console.log('uploaded a non-wav')
+
+          //   // const path = (window.URL || window.webkitURL).createObjectURL(file);
+
+          //   const form = new FormData()
+          //   form.append('fileUpload', this.files[0])
+
+          //   console.log('form', form)
+
+          //   const url = AH_CONVERT_TO_WAV_SCRIPT
+          //   const request = new Request(url, {
+          //     method: 'POST',
+          //     body: form
+          //   })
+
+          //   fetch(request)
+          //     .then(response => {
+          //       if (response) {
+          //         console.log('script sent response', response)
+
+          //         return response.json()
+          //       } else {
+          //         console.error('script did not send response')
+
+          //         return null
+          //       }
+          //     })
+          //     .then(data => {
+          //       if (data) {
+          //         console.log('response sent data', data)
+          //       } else {
+          //         console.error('response did not send data')
+          //       }
+          //     })
+          // }
+
+          reader.readAsArrayBuffer(file)
+        } else {
+          that.disableSound(sId)
+        }
+      }, false)
+
+      form.appendChild(upload)
+
+    return form
   }
 
   _createRngVolume() {
