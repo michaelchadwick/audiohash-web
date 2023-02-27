@@ -69,6 +69,10 @@ class Modal {
       this.modal.classList.add('temp');
     }
 
+    if (modalType == 'temp-loading') {
+      this.modal.classList.add('temp-loading');
+    }
+
     // Message window
     const window = document.createElement('div');
     window.classList.add('modal-window');

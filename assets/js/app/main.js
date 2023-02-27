@@ -174,6 +174,10 @@ AudioHash.createSP = function(quantity) {
     AudioHash._updateSPCount()
     AudioHash._incSPNextId()
   }
+
+  if (AudioHash._getSPCount() >= 10) {
+    AudioHash.dom.interactive.btnCreateSP.setAttribute('disabled', true)
+  }
 }
 AudioHash.removeSP = function(sp) {
   if (window.confirm('Are you sure you want to delete this SoundPlayer?')) {
@@ -184,6 +188,8 @@ AudioHash.removeSP = function(sp) {
 
       AudioHash.config._soundPlayerArray.splice(position, 1)
       AudioHash._updateSPCount()
+
+      AudioHash.dom.interactive.btnCreateSP.removeAttribute('disabled')
     } else {
       AudioHash._resetSPCount()
     }
@@ -446,6 +452,12 @@ AudioHash._getNebyooApps = async function() {
 // // new method that DOES work!
 // make a new sampler of 2 or more sounds
 AudioHash._createAudioHash = function(spArr) {
+  this.myModal = new Modal('temp-loading', 'Creating Audio Hash',
+    'Creating audio hash of your files...',
+    null,
+    null
+  )
+
   let byteLength = 0
 
   spArr.forEach(snd => {
@@ -496,13 +508,22 @@ AudioHash._createAudioHash = function(spArr) {
 
   let combineBase64Wav
   const readerBlob = new FileReader()
+  let that = this
 
   readerBlob.addEventListener('loadend', () => {
+    that.myModal._destroyModal()
+
     combineBase64Wav = readerBlob.result.toString()
 
     // makes a temp audio buffer source and plays the new sampler mix
     if (AudioHash.settings.mixDemo) {
-      var mixRate = AudioHash.settings.mixRate
+      this.myModal = new Modal('temp-loading', 'Loading Audio',
+        'Loading audio hash data into player...',
+        null,
+        null
+      )
+
+      let mixRate = AudioHash.settings.mixRate
 
       if (mixRate !== '') {
         mixRate = mixRate / 100
@@ -510,6 +531,11 @@ AudioHash._createAudioHash = function(spArr) {
 
       // assign to audiocontrol to allow the new combined wav to be played.
       const audio = document.getElementById('audio')
+
+      audio.addEventListener('canplaythrough', () => {
+        this.myModal._destroyModal()
+      })
+
       audio.src = combineBase64Wav
       audio.volume = 0.5
       audio.style.display = 'block'
