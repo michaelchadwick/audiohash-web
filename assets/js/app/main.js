@@ -449,8 +449,6 @@ AudioHash._getNebyooApps = async function() {
   })
 }
 
-// // new method that DOES work!
-// make a new sampler of 2 or more sounds
 AudioHash._createAudioHash = function(spArr) {
   this.myModal = new Modal('temp-loading', 'Creating Audio Hash',
     'Creating audio hash of your files...',
