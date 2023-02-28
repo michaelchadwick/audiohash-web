@@ -534,6 +534,7 @@ class SoundPlayer {
     return elem
   }
 
+  // TODO
   // create an <input type="range">
   // controls amount, in seconds, of file to use in hash
   // will be updated upon file upload
@@ -546,6 +547,7 @@ class SoundPlayer {
     elem.min = 1
     elem.max = 60
     elem.value = 5
+    elem.disabled = true
 
     var sp = this
 
