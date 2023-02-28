@@ -36,8 +36,9 @@ async function modalOpen(type) {
 
           <ol class="help">
             <li>Create some SoundPlayers</li>
-            <li>Load up files</li>
-            <li>TODO: <s>Choose how much of each you want sampled</s></li>
+            <li>Load files into SoundPlayers</li>
+            <li>TODO: <s>Choose how much of each you want sampled</s> (currently, entire audio file will be sampled)</li>
+            <li>Optionally: turn on "Play hash on make?" in Settings (gear icon) for an audio player to be created upon successful hash</li>
             <li>Click/tap '# MAKE HASH' and a download link to your new sampler will be created for you to download</li>
           </ol>
         `,
@@ -47,10 +48,28 @@ async function modalOpen(type) {
       break
 
     case 'settings':
-      this.myModal = new Modal('perm', 'Settings',
+      let markup = `
+        <div id="settings">
+      `
+      markup += `
+          <!-- mixDemo -->
+          <div class="setting-row">
+            <div class="text">
+              <div class="title">Play hash on make?</div>
+              <div class="description">Create sound player for audio hash when created</div>
+            </div>
+            <div class="control">
+              <div class="container">
+                <div id="button-setting-mix-demo" data-status="" class="switch" onclick="AudioHash._changeSetting('mixDemo')">
+                  <span class="knob"></span>
+                </div>
+              </div>
+            </div>
+          </div>
         `
-          <div id="settings">
 
+        if (AudioHash.env == 'local') {
+          markup += `
             <!-- dumpHex -->
             <div class="setting-row">
               <div class="text">
@@ -66,22 +85,7 @@ async function modalOpen(type) {
               </div>
             </div>
 
-            <!-- mixDemo -->
-            <div class="setting-row">
-              <div class="text">
-                <div class="title">Play hash on make?</div>
-                <div class="description">Play audio hash when created (experimental TODO)</div>
-              </div>
-              <div class="control">
-                <div class="container">
-                  <div id="button-setting-mix-demo" data-status="" class="switch" onclick="AudioHash._changeSetting('mixDemo')">
-                    <span class="knob"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- mixRate -->
+            <!-- TODO: mixRate
             <div class="setting-row">
               <div class="text">
                 <div class="title">Play mix rate</div>
@@ -93,9 +97,15 @@ async function modalOpen(type) {
                 </div>
               </div>
             </div>
+            -->
+          `
+        }
 
-          </div>
-        `,
+      markup += `
+        </div>
+      `
+      this.myModal = new Modal('perm', 'Settings',
+        markup,
         null,
         null
       )
