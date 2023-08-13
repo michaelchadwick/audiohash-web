@@ -147,14 +147,9 @@ AudioHash.initApp = function() {
   // set <title>
   document.title = `${AH_APP_TITLE || 'AH'} | ${AH_APP_TAGLINE || 'audio hash'}`
 
-  // adjust <title> for env
-  if (AudioHash.env == 'local') {
-    document.title = '(LH) ' + document.title
-  }
-
   // update DOM status elements
-  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPNextId()
-  AudioHash.dom.lblSPCountMax.innerText = AH_SP_COUNT_MAX
+  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPNextId().toString().padStart(2, '0')
+  AudioHash.dom.lblSPCountMax.innerText = AH_SP_COUNT_MAX.toString().padStart(2, '0')
 
   // attach event listeners to DOM elements
   AudioHash._attachEventListeners()
@@ -165,6 +160,13 @@ AudioHash.initApp = function() {
 
   // create some sample soundplayers
   AudioHash.createSP(AH_SP_COUNT_INIT)
+
+  // adjust <title> for env
+  if (AudioHash.env == 'local') {
+    document.title = '(LH) ' + document.title
+
+    // AudioHash._addDefaultFiles()
+  }
 
   // load localStorage settings
   AudioHash._loadSettings()
@@ -404,13 +406,33 @@ AudioHash._handleClickTouch = function(event) {
   }
 }
 
+AudioHash._addDefaultFiles = function() {
+  const fileInput0 = document.querySelector('#fileUpload0')
+  const fileInput1 = document.querySelector('#fileUpload1')
+
+  const myFile0 = new File(['waymu0.wav'], '/assets/audio/waymu0.wav', {
+    type: 'audio/mp3',
+  })
+  const myFile1 = new File(['waymu1.wav'], '/assets/audio/waymu1.wav', {
+    type: 'audio/mp3',
+  })
+
+  const dataTransfer0 = new DataTransfer()
+  dataTransfer0.items.add(myFile0)
+  fileInput0.files = dataTransfer0.files
+
+  const dataTransfer1 = new DataTransfer()
+  dataTransfer1.items.add(myFile1)
+  fileInput1.files = dataTransfer1.files
+}
+
 AudioHash._getSP = function(sId) {
   var position = AudioHash._listSPIds().indexOf(parseInt(sId))
 
   return AudioHash.config._soundPlayerArray[position]
 }
 AudioHash._updateSPCount = function() {
-  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPCount()
+  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPCount().toString().padStart(2, '0')
 }
 AudioHash._resetSPCount = function() {
   AudioHash.config._soundPlayerArray = []

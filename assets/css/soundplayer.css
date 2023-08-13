@@ -3,37 +3,97 @@
   background: #fefefe;
   border: none;
   box-sizing: border-box;
-  clear: left;
-  float: left;
-  margin: 0 0 1px;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
   min-height: 165px;
   min-width: 100px;
   padding: 0;
   text-transform: uppercase;
   width: 100%;
 }
-  @media (min-width: 768px) {
+  @media (min-width: 576px) {
     .sound {
-      border-bottom: 2px solid #333;
-      border-right: 2px solid #333;
-      clear: none;
-      width: 50%;
+      border: 2px solid #333;
     }
   }
-  @media (min-width: 992px) {
-    .sound {
-      width: 33.3%;
-    }
-  }
-  @media (min-width: 1200px) {
-    .sound {
-      width: 25%;
-    }
-  }
+
   .sound > * {
     clear: left;
     float: left;
   }
+
+  .sound.hovered-over {
+    border: 2px dashed #b4a72c;
+  }
+    .sound.hovered-over > * {
+      pointer-events: none;
+    }
+    .sound.hovered-over .sound-overlay {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+    }
+
+  .sound.loaded {
+    background: #f3f4ec;
+    border-bottom: 2px solid #b4a72c;
+    border-right: 2px solid #b4a72c;
+  }
+    .sound.loaded .sound-header,
+    .sound.loaded .sound-status,
+    .sound.loaded .sound-info {
+      color: #fff;
+    }
+      .sound.loaded .sound-header {
+        background: #717711;
+      }
+      .sound.loaded .sound-status {
+        background: #8f8a1b;
+      }
+      .sound.loaded .sound-info {
+        background: #a59f23;
+      }
+      .sound.loaded label {
+        background: #717711;
+      }
+
+  .sound.playing {
+    background: #ECF4EE;
+    border-bottom: 2px solid #2CB43C;
+    border-right: 2px solid #2CB43C;
+  }
+    .sound.playing .sound-header,
+    .sound.playing .sound-status,
+    .sound.playing .sound-info {
+      color: #fff;
+    }
+      .sound.playing .sound-header {
+        background: #117719;
+      }
+      .sound.playing .sound-status {
+        background: #1B8F1D;
+      }
+      .sound.playing .sound-info {
+        background: #22a924;
+      }
+      .sound.playing label {
+        background: #1B8F1D;
+      }
+
+  .sound .sound-overlay {
+    background-color: #ffffffc8;
+    border: 2px dashed #b4a72c;
+    display: none;
+    height: 161px;
+    position: absolute;
+    width: 316px;
+    z-index: 1;
+  }
+    .sound .sound-overlay p {
+      padding: 2em;
+    }
+
   .sound .sound-header,
   .sound .sound-status,
   .sound .sound-info {
@@ -43,27 +103,45 @@
     background: #444;
     color: #888;
     font-size: 1.4em;
-    left: -5px;
+    left: 0;
     margin: 0;
     max-width: 100%;
-    padding: 3px 7px 0;
+    padding: 1rem 1rem 0;
+    position: relative;
     width: 100%;
   }
+    @media (min-width: 576px) {
+      .sound .sound-header {
+        padding-top: 0.35rem;
+      }
+    }
     .sound .sound-header span {
       display: inline-block;
       float: left;
+      font-size: 1.85rem;
+      padding-right: 0.25em;
     }
+      @media (min-width: 576px) {
+        .sound .sound-header span {
+          font-size: 2rem;
+        }
+      }
     .sound .sound-header button {
       background-color: #626262;
       clear: none;
       color: #484848;
       float: left;
       height: 22px;
-      margin: 5px 0 5px 8px;
+      margin: 5px;
       position: relative;
-      top: -2px;
+      top: -5px;
       width: 32px;
     }
+      @media (min-width: 576px) {
+        .sound .sound-header button {
+          top: -3px;
+        }
+      }
       .sound .sound-header button:not(:disabled) {
         background-color: #ffffff;
         color: #000;
@@ -85,8 +163,13 @@
         padding: 0;
         position: relative;
         right: 25px;
-        top: -2px;
+        top: -5px;
       }
+        @media (min-width: 576px) {
+          .sound .sound-header .sound-destroyer {
+            top: -2px;
+          }
+        }
         @media (hover: hover) {
           .sound .sound-header .sound-destroyer:hover {
             background: #555;
@@ -112,121 +195,98 @@
             }
           }
 
-  .sound .sound-status {
-    background: #555;
+  .sound .sound-status,
+  .sound .sound-info {
     color: #888;
     font-size: 0.75em;
     margin: 0;
-    padding: 2px 7px;
+    padding: 0.3rem 1rem;
     width: 100%;
+  }
+    /* @media (min-width: 576px) {
+      .sound .sound-status,
+      .sound .sound-info {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    } */
+
+  .sound .sound-status {
+    background: #555;
   }
   .sound .sound-info {
     background: #666;
-    color: #888;
-    font-size: 0.75em;
-    margin: 0 0 2px;
-    padding: 3px 7px;
-    width: 100%;
   }
     .sound.loaded .sound-info {
       color: #fff;
     }
 
-.sound.loaded {
-  background: #f3f4ec;
-  border-bottom: 2px solid #b4a72c;
-  border-right: 2px solid #b4a72c;
-}
-.sound.loaded .sound-header,
-.sound.loaded .sound-status,
-.sound.loaded .sound-info {
-  color: #fff;
-}
-  .sound.loaded .sound-header {
-    background: #717711;
+  .sound .sound-upload {
+    padding: 0.5rem 1rem 0.25rem;
   }
-  .sound.loaded .sound-status {
-    background: #8f8a1b;
-  }
-  .sound.loaded .sound-info {
-    background: #a59f23;
-  }
-  .sound.loaded label {
-    background: #717711;
-  }
+    .sound .sound-upload input[type="file"] {
+      font-size: 0.9em;
+      margin: 5px 0;
+      padding: 0;
+    }
+      /* @media (min-width: 576px) {
+        .sound .sound-upload input[type="file"] {
+          padding-left: 1rem;
+          padding-right: 1rem;
+        }
+      } */
 
-.sound.playing {
-  background: #ECF4EE;
-  border-bottom: 2px solid #2CB43C;
-  border-right: 2px solid #2CB43C;
-}
-.sound.playing .sound-header,
-.sound.playing .sound-status,
-.sound.playing .sound-info {
-  color: #fff;
-}
-  .sound.playing .sound-header {
-    background: #117719;
-  }
-  .sound.playing .sound-status {
-    background: #1B8F1D;
-  }
-  .sound.playing .sound-info {
-    background: #22a924;
-  }
-  .sound.playing label {
-    background: #1B8F1D;
-  }
-
-.sound input[type="file"] {
-  font-size: 0.9em;
-  margin: 5px 0;
-  padding: 0 8px;
-}
 .sound input[type='range'] {
-  clear: none;
-  float: left;
-  margin: 3px 8px 5px 0;
+  margin: 0;
   padding: 0;
-  position: relative;
-  top: 2px;
-  width: 90px;
+  width: 100%;
 }
 
 .sound label {
   background: #555;
   color: #fff;
-  clear: none;
-  float: left;
   padding: 2px 4px;
-  position: relative;
-  top: 2px;
 }
+  .sound .sound-volume-row,
+  .sound .sound-snippet-row {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 1rem;
+  }
+    /* @media (min-width: 576px) {
+      .sound .sound-volume-row,
+      .sound .sound-snippet-row {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    } */
+
+  .sound .sound-volume-row {
+    padding-bottom: 2px;
+  }
+  .sound .sound-snippet-row {
+    padding-top: 0;
+  }
 
 .sound .control-label {
-  clear: left;
-  float: left;
   font-size: 1.2rem;
-  padding: 5px 0 5px 10px;
-  width: 110px;
+  min-width: 110px;
 }
 .sound .amount-label {
   font-size: 1.4rem;
+  margin-left: 1em;
 }
 
-.ctrl-row div {
-  background: #eef;
-  float: left;
-}
 .ctrl-label {
   clear: left;
+  height: 20px;
   padding: 4px;
   text-align: right;
-  height: 20px;
   width: 100px;
 }
 .ctrl-input {
-  padding: 4px;
   height: 20px;
+  padding: 4px;
   width: 240px;
 }

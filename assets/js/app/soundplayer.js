@@ -2,7 +2,7 @@
 /* custom class for soundplayers */
 
 class SoundPlayer {
-  constructor(id, ac) {
+  constructor(id, ac, file = null) {
     this.soundId = id
     this.audioContext = ac
 
@@ -18,7 +18,7 @@ class SoundPlayer {
     this.isStopped = true
     this.isPlaying = false
 
-    this.createSoundPlayerUI()
+    this.createSoundPlayerUI(file)
   }
 
   /************************************************************************
@@ -28,9 +28,26 @@ class SoundPlayer {
   createSoundPlayerUI() {
     this.dom.soundDiv = document.createElement('div')
     this.dom.soundDiv.classList.add('sound')
+    this.dom.soundDiv.classList.add('dropbox')
     this.dom.soundDiv.id = 'sound' + this.soundId
 
+    const eventOptions = {
+      once: false
+    }
+
+    this.dom.soundDiv.addEventListener('dragenter', this.__onDragEnter, eventOptions)
+    this.dom.soundDiv.addEventListener('dragleave', this.__onDragLeave, eventOptions)
+    this.dom.soundDiv.addEventListener('dragover', this.__onDragOver, eventOptions)
+    this.dom.soundDiv.addEventListener('drop', this._onDrop, false)
+
+      this.dom.soundOverlay = document.createElement('div')
+      this.dom.soundOverlay.id = 'soundOverlay' + this.soundId
+      this.dom.soundOverlay.classList.add('sound-overlay')
+      this.dom.soundOverlay.innerHTML = '<p>Drop an audio file on me to upload</p>'
+      this.dom.soundDiv.appendChild(this.dom.soundOverlay)
+
       this.dom.soundHeader = document.createElement('div')
+      this.dom.soundHeader.id = 'soundHeader' + this.soundId
       this.dom.soundHeader.classList.add('sound-header')
 
         this.dom.soundHeaderTitle = document.createElement('span')
@@ -57,43 +74,59 @@ class SoundPlayer {
       this.dom.soundInfo.classList.add('sound-info')
       this.dom.soundInfo.innerText = AH_INFO_UNLOADED
 
-      this.dom.fileUpload = this._createFileUpload()
+      this.dom.fileUploadRow = document.createElement('div')
+      this.dom.fileUploadRow.id = 'soundUpload' + this.soundId
+      this.dom.fileUploadRow.classList.add('sound-upload')
 
-      this.dom.lblPreRngVolume = document.createElement('span')
-      this.dom.lblPreRngVolume.classList.add('control-label')
-      this.dom.lblPreRngVolume.innerText = 'Volume Amt (%)'
+        this.dom.fileUpload = this._createFileUpload()
 
-      this.dom.rngVolume = this._createRngVolume()
+        this.dom.fileUploadRow.appendChild(this.dom.fileUpload)
 
-      this.dom.lblPostRngVolume = document.createElement('label')
-      this.dom.lblPostRngVolume.classList.add('amount-label')
-      this.dom.lblPostRngVolume.id = 'lblPostRngVolume' + this.soundId
-      this.dom.lblPostRngVolume.innerText = this.initVol
+      this.dom.soundVolumeRow = document.createElement('div')
+      this.dom.soundVolumeRow.id = 'soundVolumeRow' + this.soundId
+      this.dom.soundVolumeRow.classList.add('sound-volume-row')
 
-      this.dom.lblPreRngSnippet = document.createElement('span')
-      this.dom.lblPreRngSnippet.classList.add('control-label')
-      this.dom.lblPreRngSnippet.innerText = 'Snippet Amt (s)'
+        this.dom.lblPreRngVolume = document.createElement('span')
+        this.dom.lblPreRngVolume.classList.add('control-label')
+        this.dom.lblPreRngVolume.innerText = 'Volume Amt (%)'
 
-      this.dom.rngSnippet = this._createRngSnippet()
+        this.dom.rngVolume = this._createRngVolume()
 
-      this.dom.lblPostRngSnippet = document.createElement('label')
-      this.dom.lblPostRngSnippet.classList.add('amount-label')
-      this.dom.lblPostRngSnippet.id = 'lblPostRngSnippet' + this.soundId
-      this.dom.lblPostRngSnippet.innerText = this.initSnip
+        this.dom.lblPostRngVolume = document.createElement('label')
+        this.dom.lblPostRngVolume.classList.add('amount-label')
+        this.dom.lblPostRngVolume.id = 'lblPostRngVolume' + this.soundId
+        this.dom.lblPostRngVolume.innerText = this.initVol
+
+        this.dom.soundVolumeRow.appendChild(this.dom.lblPreRngVolume)
+        this.dom.soundVolumeRow.appendChild(this.dom.rngVolume)
+        this.dom.soundVolumeRow.appendChild(this.dom.lblPostRngVolume)
+
+      this.dom.soundSnippetRow = document.createElement('div')
+      this.dom.soundSnippetRow.id = 'soundSnippetRow' + this.soundId
+      this.dom.soundSnippetRow.classList.add('sound-snippet-row')
+
+        this.dom.lblPreRngSnippet = document.createElement('span')
+        this.dom.lblPreRngSnippet.classList.add('control-label')
+        this.dom.lblPreRngSnippet.innerText = 'Snippet Amt (s)'
+
+        this.dom.rngSnippet = this._createRngSnippet()
+
+        this.dom.lblPostRngSnippet = document.createElement('label')
+        this.dom.lblPostRngSnippet.classList.add('amount-label')
+        this.dom.lblPostRngSnippet.id = 'lblPostRngSnippet' + this.soundId
+        this.dom.lblPostRngSnippet.innerText = this.initSnip
+
+        this.dom.soundSnippetRow.appendChild(this.dom.lblPreRngSnippet)
+        this.dom.soundSnippetRow.appendChild(this.dom.rngSnippet)
+        this.dom.soundSnippetRow.appendChild(this.dom.lblPostRngSnippet)
 
       this.dom.soundDiv.appendChild(this.dom.soundHeader)
       this.dom.soundDiv.appendChild(this.dom.soundStatus)
       this.dom.soundDiv.appendChild(this.dom.soundInfo)
 
-      this.dom.soundDiv.appendChild(this.dom.fileUpload)
-
-      this.dom.soundDiv.appendChild(this.dom.lblPreRngVolume)
-      this.dom.soundDiv.appendChild(this.dom.rngVolume)
-      this.dom.soundDiv.appendChild(this.dom.lblPostRngVolume)
-
-      this.dom.soundDiv.appendChild(this.dom.lblPreRngSnippet)
-      this.dom.soundDiv.appendChild(this.dom.rngSnippet)
-      this.dom.soundDiv.appendChild(this.dom.lblPostRngSnippet)
+      this.dom.soundDiv.appendChild(this.dom.fileUploadRow)
+      this.dom.soundDiv.appendChild(this.dom.soundVolumeRow)
+      this.dom.soundDiv.appendChild(this.dom.soundSnippetRow)
 
     AudioHash.dom.soundPlayers.appendChild(this.dom.soundDiv)
   }
@@ -499,7 +532,7 @@ class SoundPlayer {
         }
       }, false)
 
-      form.appendChild(upload)
+    form.appendChild(upload)
 
     return form
   }
@@ -632,6 +665,189 @@ class SoundPlayer {
 
     query.onerror = (e) => {
       console.log('query.onerror:', e)
+    }
+  }
+
+  /************************************************************************
+  * _private __helper methods *
+  ************************************************************************/
+
+  __handleDroppedFiles(files) {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+
+      if (!file.type.startsWith("audio/")) {
+        console.error('Only audio files can be dropped here!')
+      } else {
+        console.log('audio files dropped')
+      }
+    }
+  }
+
+  __onDrop(e) {
+    e.stopPropagation()
+    e.preventDefault()
+
+    const dt = e.dataTransfer
+    const files = dt.files
+
+    this.__handleDroppedFiles(files)
+  }
+
+  __onDragEnter(e) {
+    e.stopPropagation()
+    e.preventDefault()
+
+    // ignore child elements
+    if (e.target !== e.currentTarget) {
+      return
+    }
+
+    // add hovered-over style
+    const elem = document.querySelector(`#${e.target.id}`)
+    elem.classList.add('hovered-over')
+
+    console.log('dragenter', e.target.id)
+  }
+
+  __onDragLeave(e) {
+    e.stopPropagation()
+    e.preventDefault()
+
+    // ignore child elements
+    if (e.target !== e.currentTarget) {
+      return
+    }
+
+    // remove hovered-over style
+    const elem = document.querySelector(`#${e.target.id}`)
+    elem.classList.remove('hovered-over')
+
+    console.log('dragleave', e.target.id)
+  }
+
+  __onDragOver(e) {
+    e.stopPropagation()
+    e.preventDefault()
+
+    // console.log('dragover', e)
+  }
+
+  __onFileUploadChange(e, that) {
+    var reader = new FileReader()
+    var sId = that.soundId
+
+    that.clearSoundInfo(sId)
+
+    reader.onabort = (e) => { console.error('FileReader read aborted', e) }
+
+    reader.onerror = (e) => { console.error('FileReader read error', e) }
+
+    reader.onloadstart = (e) => {
+      // console.log('FileReader read started', e)
+
+      that.updateSoundInfo(AH_STATUS_LOADING)
+    }
+
+    reader.onloadend = (e) => {
+      // console.log('FileReader read ended', e)
+    }
+
+    // finished loading successfully
+    reader.onload = function() {
+      // console.log('FileReader read success', this.result)
+
+      if (this.result.byteLength > AH_FILE_MAX_LENGTH) {
+        alert(AH_ERROR_LENGTH)
+
+        that.disableSound(sId)
+
+        this.abort()
+      } else {
+        const buf = this.result
+        const blob = new Blob([this.result], { type: 'audio/wav; codecs=MS_PCM' })
+
+        // console.log('FileReader read arrayBuffer:', buf)
+
+        const promise = new Promise((resolve, reject) => {
+          const reader = new FileReader()
+
+          reader.onerror = (error) => { reject(error) }
+
+          reader.onload = async () => {
+            try {
+              // const response = arrBytesWav.push(reader.result)
+              // console.log('arrBytesWav', arrBytesWav)
+
+              const arrBytesWav = reader.result
+
+              // that._saveToIDB(buf, sId)
+
+              that.initSound(buf, arrBytesWav, sId)
+
+              resolve(arrBytesWav)
+            } catch (err) {
+              reject(err)
+            }
+          }
+
+          reader.readAsArrayBuffer(blob)
+        })
+      }
+    }
+
+    reader.onprogress = (e) => {
+      if (e.lengthComputable) {
+        console.log(`FileReader progress: ${e.loaded} / ${e.total}`)
+      }
+    }
+
+    if (e.target.value != '') {
+      const file = this.files[0];
+
+      console.log('file uploaded', file)
+
+      // TODO: fix server-side conversion of * -> wav
+      // if (file.name.split('.')[1].toLowerCase() != 'wav') {
+      //   console.log('uploaded a non-wav')
+
+      //   // const path = (window.URL || window.webkitURL).createObjectURL(file);
+
+      //   const form = new FormData()
+      //   form.append('fileUpload', this.files[0])
+
+      //   console.log('form', form)
+
+      //   const url = AH_CONVERT_TO_WAV_SCRIPT
+      //   const request = new Request(url, {
+      //     method: 'POST',
+      //     body: form
+      //   })
+
+      //   fetch(request)
+      //     .then(response => {
+      //       if (response) {
+      //         console.log('script sent response', response)
+
+      //         return response.json()
+      //       } else {
+      //         console.error('script did not send response')
+
+      //         return null
+      //       }
+      //     })
+      //     .then(data => {
+      //       if (data) {
+      //         console.log('response sent data', data)
+      //       } else {
+      //         console.error('response did not send data')
+      //       }
+      //     })
+      // }
+
+      reader.readAsArrayBuffer(file)
+    } else {
+      that.disableSound(sId)
     }
   }
 
