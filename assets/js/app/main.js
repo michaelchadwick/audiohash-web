@@ -483,7 +483,7 @@ AudioHash._getNebyooApps = async function() {
 
 AudioHash._createAudioHash = function(spArr) {
   this.myModal = new Modal('temp-loading', 'Creating Audio Hash',
-    'Creating audio hash of your files...',
+    'Mixing your audio files into a delicious hash...',
     null,
     null
   )
@@ -545,7 +545,7 @@ AudioHash._createAudioHash = function(spArr) {
     // optional thing #1: add <audio> of hash to page
     if (AudioHash.settings.mixDemo) {
       this.myModal = new Modal('temp-loading', 'Loading Audio',
-        'Loading audio hash data into player...',
+        'Loading preview of your new delicious audio hash...',
         null,
         null
       )
