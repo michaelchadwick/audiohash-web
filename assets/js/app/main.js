@@ -504,8 +504,7 @@ AudioHash._createAudioHash = function(spArr) {
     if (i == 0) {
       fullByteLength = 0
       tmp.set(new Uint8Array(snd), fullByteLength)
-    }
-    else {
+    } else {
       fullByteLength = snd.byteLength
 
       for (let j = i - 1; j > 0; j--) {
@@ -523,7 +522,7 @@ AudioHash._createAudioHash = function(spArr) {
   const arrBytesFinal = AudioHash.__getWavBytes(
     tmp,
     {
-      isFloat: false,       // floating point or 16-bit integer
+      isFloat: false, // floating point or 16-bit integer
       numChannels: audioData.channels,
       sampleRate: audioData.sampleRate,
     }
@@ -531,21 +530,19 @@ AudioHash._createAudioHash = function(spArr) {
 
   // console.log('arrBytesFinal', arrBytesFinal)
 
-  // create a Blob as Base64 Raw data with audio/wav type
   const audioBlob = new Blob([arrBytesFinal], {
     type: 'audio/wav; codecs=MS_PCM'
   })
-
-  let combineBase64Wav
   const readerBlob = new FileReader()
-  let that = this
 
+  // when hash is done being created, do
   readerBlob.addEventListener('loadend', () => {
-    that.myModal._destroyModal()
+    // close "creating hash" modal
+    this.myModal._destroyModal()
 
-    combineBase64Wav = readerBlob.result.toString()
+    let combineBase64Wav = readerBlob.result.toString()
 
-    // makes a temp audio buffer source and plays the new sampler mix
+    // optional thing #1: add <audio> of hash to page
     if (AudioHash.settings.mixDemo) {
       this.myModal = new Modal('temp-loading', 'Loading Audio',
         'Loading audio hash data into player...',
@@ -553,25 +550,20 @@ AudioHash._createAudioHash = function(spArr) {
         null
       )
 
-      let mixRate = AudioHash.settings.mixRate
-
-      if (mixRate !== '') {
-        mixRate = mixRate / 100
-      }
-
-      // assign to audiocontrol to allow the new combined wav to be played.
+      // assign to <audio> element
       const audio = document.getElementById('audio')
-
-      audio.addEventListener('canplaythrough', () => {
-        this.myModal._destroyModal()
-      })
 
       audio.src = combineBase64Wav
       audio.volume = 0.5
       audio.style.display = 'block'
+
+      // once <audio> source is filled, close loading modal
+      audio.addEventListener('canplaythrough', () => {
+        this.myModal._destroyModal()
+      })
     }
 
-    // post hex dump
+    // optional thing #2: add hex dump to page
     if (AudioHash.settings.dumpHex) {
       var decoder = new TextDecoder('utf-8')
       var decodedString = decoder.decode(arrBytesFinal)
@@ -580,9 +572,10 @@ AudioHash._createAudioHash = function(spArr) {
     }
   });
 
+  // read hash audio data into hash wav file
   readerBlob.readAsDataURL(audioBlob)
 
-  // post new wav file to download link
+  // display new hash wav file download link
   AudioHash.__enableDownload(audioBlob)
 }
 
