@@ -14,6 +14,7 @@ class SoundPlayer {
     this.source = null
     this.startTime = 0
     this.startOffset = 0
+    this.isLoaded = false
     this.isPaused = false
     this.isStopped = true
     this.isPlaying = false
@@ -128,7 +129,7 @@ class SoundPlayer {
       this.dom.soundDiv.appendChild(this.dom.soundVolumeRow)
       this.dom.soundDiv.appendChild(this.dom.soundSnippetRow)
 
-    AudioHash.dom.soundPlayers.appendChild(this.dom.soundDiv)
+    AudioHash.dom.players.appendChild(this.dom.soundDiv)
   }
 
   initVolumeToRangeVal(el) {
@@ -429,6 +430,7 @@ class SoundPlayer {
 
         reader.onloadend = (e) => {
           // console.log('FileReader read ended', e)
+          that.isLoaded = true
         }
 
         // finished loading successfully
@@ -483,7 +485,7 @@ class SoundPlayer {
         if (e.target.value != '') {
           const file = this.files[0];
 
-          console.log('file uploaded', file)
+          console.log('file uploaded', file, that)
 
           // TODO: fix server-side conversion of * -> wav
           // if (file.name.split('.')[1].toLowerCase() != 'wav') {

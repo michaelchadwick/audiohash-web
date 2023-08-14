@@ -8,7 +8,8 @@ AudioHash.dom = {
   "navContent": document.getElementById('nav-content'),
   "lblSPCount": document.getElementById('lblSoundPlayersCount'),
   "lblSPCountMax": document.getElementById('lblSoundPlayersCountMax'),
-  "soundPlayers": document.getElementById('soundPlayers'),
+  "mixDemo": document.getElementById('mix-demo'),
+  "players": document.getElementById('players'),
   "hexDump": document.getElementById('hex-dump'),
   "hexDumpContents": document.getElementById('hex-dump-contents')
 }

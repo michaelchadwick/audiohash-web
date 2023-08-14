@@ -192,7 +192,9 @@ AudioHash.createSP = function(quantity) {
   }
 }
 AudioHash.removeSP = function(sp) {
-  if (window.confirm('Are you sure you want to delete this SoundPlayer?')) {
+  const confirm = sp.isLoaded ? window.confirm('Are you sure you want to delete this SoundPlayer?') : true
+
+  if (confirm) {
     const sId = sp.soundId
 
     if (AudioHash.config._soundPlayerArray.length > 0) {
@@ -206,7 +208,7 @@ AudioHash.removeSP = function(sp) {
       AudioHash._resetSPCount()
     }
 
-    AudioHash.dom.soundPlayers.removeChild(document.getElementById(`sound${sId}`))
+    AudioHash.dom.players.removeChild(document.getElementById(`sound${sId}`))
 
     if (AudioHash._getSPCount() >= 2 && !AudioHash._areSPBuffersEmpty()) {
       AudioHash.dom.interactive.btnCreateAH.removeAttribute('disabled')
@@ -481,6 +483,9 @@ AudioHash._getNebyooApps = async function() {
   })
 }
 
+// main magic function
+// INPUT: array of ArrayBuffer objects
+// OUTPUT: wav file
 AudioHash._createAudioHash = function(spArr) {
   this.myModal = new Modal('temp-loading', 'Creating Audio Hash',
     'Mixing your audio files into a delicious hash...',
@@ -488,32 +493,30 @@ AudioHash._createAudioHash = function(spArr) {
     null
   )
 
-  let byteLength = 0
+  // let hashByteLength = spArr.reduce((a, b) => a.byteLength + b.byteLength, 0);
+
+  // get combined byte length by adding up all sounds' byte length
+  let hashByteLength = 0
 
   spArr.forEach(snd => {
-    byteLength += snd.byteLength
+    hashByteLength += snd.byteLength
   })
+
+  console.log('hashByteLength', hashByteLength)
 
   // create temp array with size to hold all buffers
-  let tmp = new Uint8Array(byteLength)
-  let fullByteLength
+  let tmp = new Uint8Array(hashByteLength)
+  let spByteOffset = spArr[0].byteLength
 
   // set first buffer to beginning of array
+  tmp.set(new Uint8Array(spArr[0], 0))
+
   // set subsequent buffers to end of previous buffer
-  spArr.forEach((snd, i) => {
-    if (i == 0) {
-      fullByteLength = 0
-      tmp.set(new Uint8Array(snd), fullByteLength)
-    } else {
-      fullByteLength = snd.byteLength
+  for (let i = 1; i < spArr.length; i++) {
+    tmp.set(new Uint8Array(spArr[i]), spByteOffset)
 
-      for (let j = i - 1; j > 0; j--) {
-        fullByteLength += spArr[j].byteLength;
-      }
-
-      tmp.set(new Uint8Array(snd), fullByteLength)
-    }
-  })
+    spByteOffset += spArr[i].byteLength
+  }
 
   // get spArr[0] audio data to create the new combined wav header
   const audioData = AudioHash.__getAudioData.WavHeader.readHeader(new DataView(spArr[0]))
@@ -528,11 +531,12 @@ AudioHash._createAudioHash = function(spArr) {
     }
   )
 
-  // console.log('arrBytesFinal', arrBytesFinal)
+  console.log('arrBytesFinal', arrBytesFinal)
 
   const audioBlob = new Blob([arrBytesFinal], {
     type: 'audio/wav; codecs=MS_PCM'
   })
+
   const readerBlob = new FileReader()
 
   // when hash is done being created, do
@@ -549,6 +553,9 @@ AudioHash._createAudioHash = function(spArr) {
         null,
         null
       )
+
+      // show mix-demo section
+      AudioHash.dom.mixDemo.style.display = 'block'
 
       // assign to <audio> element
       const audio = document.getElementById('audio')

@@ -1,11 +1,14 @@
-/* base:        #081c4b */
-/* light:       #2e4373 */
-/* lighter:     #6e7c9c */
-/* gray:        #d1d1d1 */
-/* off-white:   #f0f1ff */
-/* link:        #bd7f13 */
-/* link-hover:  #ca5b16 */
-/* debug:       #715ec7 */
+:root {
+  --base:        #081c4b;
+  --light:       #2e4373;
+  --lighter:     #6e7c9c;
+  --gray:        #d1d1d1;
+  --off-white:   #f0f1ff;
+  --link:        #bd7f13;
+  --link-hover:  #ca5b16;
+  --debug:       #715ec7;
+}
+
 
 * {
   margin: 0;
@@ -399,7 +402,23 @@ section#dashboard {
     }
 
 /* Main Sections */
-section#soundPlayers {
+section#mix-demo {
+  background-color: #f1f3f4;
+  display: none;
+  margin: 1rem;
+  padding: 0;
+}
+  section#mix-demo fieldset {
+    border: 2px solid var(--base);
+  }
+    section#mix-demo fieldset legend {
+      background-color: #f1f3f4;
+      border: 2px solid var(--base);
+      margin: 0 0.5em;
+      padding: 0 0.3em;
+    }
+
+section#players {
   clear: both;
   display: block;
   min-height: 200px;
@@ -409,7 +428,7 @@ section#soundPlayers {
   width: 100%;
 }
   @media (min-width: 576px) {
-    section#soundPlayers {
+    section#players {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: repeat(5, 1fr);
@@ -418,7 +437,7 @@ section#soundPlayers {
     }
   }
   @media (min-width: 992px) {
-    section#soundPlayers {
+    section#players {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(4, 1fr);
@@ -427,7 +446,7 @@ section#soundPlayers {
     }
   }
   @media (min-width: 1200px) {
-    section#soundPlayers {
+    section#players {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(3, 1fr);
@@ -536,7 +555,8 @@ footer {
 
 audio {
   display: none;
-  height: 3rem;
+  height: 4rem;
+  margin-top: 0.25rem;
   width: 100%;
 }
 
