@@ -18,14 +18,14 @@ class SoundPlayer {
     this.isStopped = true
     this.isPlaying = false
 
-    this.createSoundPlayerUI(file)
+    this.createUI(file)
   }
 
   /************************************************************************
   * public methods *
   ************************************************************************/
 
-  createSoundPlayerUI() {
+  createUI() {
     this.dom.soundDiv = document.createElement('div')
     this.dom.soundDiv.classList.add('sound')
     this.dom.soundDiv.classList.add('dropbox')
@@ -196,14 +196,11 @@ class SoundPlayer {
     if (msg) {
       this.dom.soundInfo.innerHTML = msg
     } else {
-      var sndDuration = this.audioBuffer.duration
+      let sndDuration = this._convertToHMS(this.audioBuffer.duration)
+      let sndChannels = this.audioBuffer.numberOfChannels + 'ch'
+      let sndSampleRate = Math.round(this.audioBuffer.sampleRate / 1000).toString() + 'KHz'
 
-      sndDuration = sndDuration > 60 ? Math.round(sndDuration / 60) + 'm, ' : Math.round(sndDuration) + 's, '
-
-      var sndSampleRate = this.audioBuffer.sampleRate / 1000
-      var sndChannels = this.audioBuffer.numberOfChannels
-
-      this.dom.soundInfo.innerHTML = sndDuration + sndChannels + 'ch, ' + Math.round(sndSampleRate) + 'KHz'
+      this.dom.soundInfo.innerHTML = `${sndDuration},  ${sndChannels}, ${sndSampleRate}`
     }
   }
 
@@ -565,6 +562,26 @@ class SoundPlayer {
     this.initVol = iv
 
     return elem
+  }
+
+  _convertToHMS(durationInSeconds) {
+    let seconds = Math.round(durationInSeconds)
+
+    let minutes = (seconds - seconds % 60) / 60
+	  seconds = seconds - minutes * 60
+    seconds = seconds.toString().padStart(2, '0')
+
+    let hours = (minutes - minutes % 60) / 60
+	  minutes = minutes - hours * 60
+    minutes = minutes.toString().padStart(2, '0')
+
+    if (hours > 0) {
+      hours = hours.toString().padStart(2, '0')
+
+      return `${hours}:${minutes}:${seconds}`
+    } else {
+      return `${minutes}:${seconds}`
+    }
   }
 
   // TODO
