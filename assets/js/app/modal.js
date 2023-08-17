@@ -151,7 +151,9 @@ class Modal {
   }
 
   _destroyModal() {
-    this.parent.removeChild(this.modal);
-    delete this;
+    if (this.parent.hasChildNodes()) {
+      this.parent.removeChild(this.modal);
+      delete this;
+    }
   }
 }
