@@ -55,4 +55,6 @@ const AH_ALLOWED_FORMATS = [
   'audio/wav'
 ]
 
+const AH_WAV_BIT_DEPTH = 16
+
 const NEBYOOAPPS_SOURCE_URL = 'https://dave.neb.host/?sites'
