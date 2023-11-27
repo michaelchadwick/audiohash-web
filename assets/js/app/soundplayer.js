@@ -10,7 +10,7 @@ class SoundPlayer {
     this.arrayBuffer = null
     this.audioBuffer = null
     this.gainNode = this.audioContext.createGain()
-    this.snippet = 0
+    this.snippetSeconds = 0
     this.source = null
     this.startTime = 0
     this.startOffset = 0
@@ -53,7 +53,10 @@ class SoundPlayer {
 
         this.dom.soundHeaderTitle = document.createElement('span')
         this.dom.soundHeaderTitle.classList.add('sound-header-title')
-        this.dom.soundHeaderTitle.innerText = 'SoundPlayer ' + this.soundId
+
+        const headerTitleUserDisplay = `SoundPlayer ${parseInt(this.soundId + 1).toString().padStart(2, '0')}`
+
+        this.dom.soundHeaderTitle.innerText = headerTitleUserDisplay
 
         this.dom.btnPlay = this._createBtnPlay()
         this.dom.btnStop = this._createBtnStop()
@@ -141,57 +144,10 @@ class SoundPlayer {
     this.gainNode.gain.value = gainVal
   }
 
-  // change the internal gain node value
-  updateVolume(event) {
-    var volume = event.srcElement.value
-    var volumeMax = event.srcElement.max
-    var fraction = parseInt(volume) / parseInt(volumeMax)
-    var gainVal = fraction * fraction
-
-    this.gainNode.gain.value = gainVal
-  }
-
-  updateVolumeLabel(event) {
-    var rangeVolN = event.srcElement
-    var lblVolumeId = 'lblPostRngVolume'.concat(this.soundId)
-    var lblVolumeN = document.getElementById(lblVolumeId)
-    var newVol = rangeVolN.value
-
-    if (newVol < 100) newVol = '0' + newVol
-    if (newVol < 10) newVol = '0' + newVol
-
-    lblVolumeN.innerText = newVol
-  }
-
-  // change the snippet value
-  updateSnippet(event) {
-    var snippet = event.srcElement.value
-    var snippetMax = event.srcElement.max
-    var fraction = parseInt(snippet) / parseInt(snippetMax)
-    var snippetVal = fraction * fraction
-
-    this.snippet = snippetVal
-  }
-
-  updateSnippetLabel(event) {
-    var rangeSnipN = event.srcElement
-    var lblSnipId = 'lblPostRngSnippet'.concat(this.soundId)
-    var lblSnipN = document.getElementById(lblSnipId)
-    var newSnip = rangeSnipN.value
-
-    if (newSnip < 100) newSnip = '0' + newSnip
-    if (newSnip < 10) newSnip = '0' + newSnip
-
-    lblSnipN.innerText = newSnip
-  }
-
-  // clear sound info (whilst loading, etc.)
-  clearSoundInfo(sId) {
-    document.getElementById('soundInfo' + sId).innerHTML = ''
-  }
-
   // updates info about the loaded sound (duration, channels, sample rate)
-  updateSoundInfo(msg) {
+  updateSoundInfo(msg = null) {
+    // console.log('updateSoundInfo', msg)
+
     this.dom.soundInfo.style.display = 'block'
 
     if (msg) {
@@ -207,8 +163,10 @@ class SoundPlayer {
 
   // updates the current sound status label (playing, paused, etc)
   updateSoundStatus(sId, status) {
-    var curSoundStatusId = 'soundStatus'.concat(sId)
-    var curSoundStatusN = document.getElementById(curSoundStatusId)
+    // console.log('updateSoundStatus', sId, status)
+
+    const curSoundStatusId = 'soundStatus'.concat(sId)
+    const curSoundStatusN = document.getElementById(curSoundStatusId)
     curSoundStatusN.innerText = status
 
     if (status == AH_STATUS_PAUSED || status == AH_STATUS_STOPPED) {
@@ -224,7 +182,7 @@ class SoundPlayer {
 
   // load the sound into a buffer
   initSound(arrayBuffer, arrBytesWav, sId) {
-    var sound = this
+    const sound = this
 
     sound.arrayBuffer = arrBytesWav
 
@@ -236,19 +194,25 @@ class SoundPlayer {
       document.getElementById('btnStop' + sId).disabled = false
 
       // update snippet range so it's 1/sound.length -> sound.length
-      const newMax = Math.floor(buffer.duration)
-      const newVal = Math.round(Math.floor(buffer.duration) * .2)
+      const newSnippetMax = Math.floor(buffer.duration)
+      const newSnippetVal = Math.round(Math.floor(buffer.duration) * .2)
 
-      document.getElementById('rngSnippet' + sId).max = newMax
-      document.getElementById('rngSnippet' + sId).value = newVal
+      const rngSnippetN = document.getElementById('rngSnippet' + sId)
+      rngSnippetN.disabled = false
+      rngSnippetN.max = newSnippetMax
+      rngSnippetN.value = newSnippetVal
 
-      let newLblVal = newVal < 100 ? '0' + newVal : newVal
+      let newLblVal = newSnippetVal < 100 ? '0' + newSnippetVal : newSnippetVal
       newLblVal = newLblVal < 10 ? '0' + newLblVal : newLblVal
 
       document.getElementById('lblPostRngSnippet' + sId).innerText = newLblVal
 
       sound.updateSoundStatus(sId, AH_STATUS_LOADED)
       sound.updateSoundInfo()
+
+      sound.snippetSeconds = newSnippetVal
+
+      sound.isLoaded = true
 
       // if we now have at least 2 SoundPlayers with audioBuffers
       // then enable the "MAKE HASH" button
@@ -264,10 +228,18 @@ class SoundPlayer {
   disableSound(sId) {
     document.getElementById('sound' + sId).classList.remove('loaded')
 
-    this.audioBuffer = null
-
+    // turn off interactive buttons
     document.getElementById('btnPlay' + sId).disabled = true
     document.getElementById('btnStop' + sId).disabled = true
+
+    // reset sound info
+    document.getElementById('soundInfo' + sId).innerHTML = 'N/A'
+
+    // clear SoundPlayer buffer
+    this.audioBuffer = null
+
+    // clear file upload
+    document.getElementById('fileUpload' + sId).value = ''
   }
 
   // play the sound from a specific startOffset
@@ -400,168 +372,255 @@ class SoundPlayer {
   }
 
   _createFileUpload() {
-    var form = document.createElement('form')
+    const form = document.createElement('form')
+    const sp = this
 
-    form.id = 'formUpload' + this.soundId
+    form.id = 'formUpload' + sp.soundId
 
-      var upload = document.createElement('input')
-      var that = this
+      const fileUpload = document.createElement('input')
+      const that = sp
 
-      upload.accept = AH_ALLOWED_FORMATS.join(', ')
-      upload.id = 'fileUpload' + this.soundId
-      upload.name = 'fileUpload' + this.soundId
-      upload.type = 'file'
+      fileUpload.accept = AH_ALLOWED_FORMATS.join(', ')
+      fileUpload.id = 'fileUpload' + sp.soundId
+      fileUpload.name = 'fileUpload' + sp.soundId
+      fileUpload.type = 'file'
 
-      upload.addEventListener('change', function(e) {
-        var reader = new FileReader()
-        var sId = that.soundId
+      fileUpload.addEventListener('change', function(e) {
+        // console.log('fileUpload changed', e)
 
-        that.clearSoundInfo(sId)
+        const sp = that
+        const sId = sp.soundId
+        const file = this.files[0];
 
-        reader.onabort = (e) => { console.error('FileReader read aborted', e) }
-
-        reader.onerror = (e) => { console.error('FileReader read error', e) }
-
-        reader.onloadstart = (e) => {
-          // console.log('FileReader read started', e)
-
-          that.updateSoundInfo(AH_STATUS_LOADING)
-        }
-
-        reader.onloadend = (e) => {
-          // console.log('FileReader read ended', e)
-          that.isLoaded = true
-        }
-
-        // finished loading successfully
-        reader.onload = function() {
-          // console.log('FileReader read success', this.result)
-
-          if (this.result.byteLength > AH_FILE_MAX_LENGTH) {
-            alert(AH_ERROR_LENGTH)
-
-            that.disableSound(sId)
-
-            this.abort()
-          } else {
-            const buf = this.result
-            const blob = new Blob([this.result], { type: 'audio/wav; codecs=MS_PCM' })
-
-            // console.log('FileReader read arrayBuffer:', buf)
-
-            const promise = new Promise((resolve, reject) => {
-              const reader = new FileReader()
-
-              reader.onerror = (error) => { reject(error) }
-
-              reader.onload = async () => {
-                try {
-                  // const response = arrBytesWav.push(reader.result)
-                  // console.log('arrBytesWav', arrBytesWav)
-
-                  const arrBytesWav = reader.result
-
-                  // that._saveToIDB(buf, sId)
-
-                  that.initSound(buf, arrBytesWav, sId)
-
-                  resolve(arrBytesWav)
-                } catch (err) {
-                  reject(err)
-                }
-              }
-
-              reader.readAsArrayBuffer(blob)
-            })
-          }
-        }
-
-        reader.onprogress = (e) => {
-          if (e.lengthComputable) {
-            console.log(`FileReader progress: ${e.loaded} / ${e.total}`)
-          }
-        }
-
+        // if a file has been selected, create FileReader object; load file
         if (e.target.value != '') {
-          const file = this.files[0];
+          const fileReader = new FileReader()
+          fileReader.readAsArrayBuffer(file)
 
-          console.log('file uploaded', file, that)
+          // file read starts
+          fileReader.onloadstart = (e) => {
+            // console.log('FileReader onloadstart', e)
 
-          // TODO: fix server-side conversion of * -> wav
-          // if (file.name.split('.')[1].toLowerCase() != 'wav') {
-          //   console.log('uploaded a non-wav')
+            sp.updateSoundInfo(AH_STATUS_LOADING)
 
-          //   // const path = (window.URL || window.webkitURL).createObjectURL(file);
+            // check for valid filesize before uploading
+            if (e.total > AH_FILE_MAX_LENGTH) {
+              sp.disableSound(sId)
 
-          //   const form = new FormData()
-          //   form.append('fileUpload', this.files[0])
+              e.target.abort()
 
-          //   console.log('form', form)
+              alert(AH_ERROR_LENGTH)
+            } else {
+              // TODO: fix server-side conversion of * -> wav
+              // if (file.name.split('.')[1].toLowerCase() != 'wav') {
+              //   console.log('uploaded a non-wav')
 
-          //   const url = AH_CONVERT_TO_WAV_SCRIPT
-          //   const request = new Request(url, {
-          //     method: 'POST',
-          //     body: form
-          //   })
+              //   // const path = (window.URL || window.webkitURL).createObjectURL(file);
 
-          //   fetch(request)
-          //     .then(response => {
-          //       if (response) {
-          //         console.log('script sent response', response)
+              //   const form = new FormData()
+              //   form.append('fileUpload', this.files[0])
 
-          //         return response.json()
-          //       } else {
-          //         console.error('script did not send response')
+              //   console.log('form', form)
 
-          //         return null
-          //       }
-          //     })
-          //     .then(data => {
-          //       if (data) {
-          //         console.log('response sent data', data)
-          //       } else {
-          //         console.error('response did not send data')
-          //       }
-          //     })
-          // }
+              //   const url = AH_CONVERT_TO_WAV_SCRIPT
+              //   const request = new Request(url, {
+              //     method: 'POST',
+              //     body: form
+              //   })
 
-          reader.readAsArrayBuffer(file)
-        } else {
-          that.disableSound(sId)
+              //   fetch(request)
+              //     .then(response => {
+              //       if (response) {
+              //         console.log('script sent response', response)
+
+              //         return response.json()
+              //       } else {
+              //         console.error('script did not send response')
+
+              //         return null
+              //       }
+              //     })
+              //     .then(data => {
+              //       if (data) {
+              //         console.log('response sent data', data)
+              //       } else {
+              //         console.error('response did not send data')
+              //       }
+              //     })
+              // }
+            }
+          }
+
+          // file read progressing, with potential updated status
+          fileReader.onprogress = (e) => {
+            if (e.lengthComputable) {
+              // console.log(`FileReader progress: ${e.loaded} / ${e.total}`)
+            }
+          }
+
+          // file read completed successfully
+          fileReader.onload = function(e) {
+            // console.log('FileReader onload', e)
+
+            const uploadedFile = this.result
+
+            // check for invalid file size after uploading
+            if (uploadedFile.byteLength > AH_FILE_MAX_LENGTH) {
+              alert(AH_ERROR_LENGTH)
+
+              sp.disableSound(sId)
+            }
+            // if file size is good, proceed
+            else {
+              const buffer = uploadedFile
+              const blob = new Blob([buffer], { type: 'audio/wav; codecs=MS_PCM' })
+
+              const promise = new Promise((resolve, reject) => {
+                const fileReader = new FileReader()
+
+                fileReader.onerror = (error) => { reject(error) }
+
+                fileReader.onload = async () => {
+                  try {
+                    const arrBytesWav = fileReader.result
+
+                    sp.initSound(buffer, arrBytesWav, sId)
+
+                    resolve(arrBytesWav)
+                  } catch (err) {
+                    reject(err)
+                  }
+                }
+
+                fileReader.readAsArrayBuffer(blob)
+              })
+            }
+          }
+
+          // file read completed, success or failure
+          fileReader.onloadend = (e) => {
+            // console.log('FileReader onloadend', e)
+          }
+          // file read aborted (manually)
+          fileReader.onabort = (e) => {
+            console.error('FileReader onabort', e)
+          }
+          // file read error (automatically)
+          fileReader.onerror = (e) => {
+            console.error('FileReader onerror', e)
+          }
         }
       }, false)
 
-    form.appendChild(upload)
+    form.appendChild(fileUpload)
 
     return form
   }
 
   _createRngVolume() {
-    var elem = document.createElement('input')
+    const sp = this
+    const elem = document.createElement('input')
 
-    elem.classList.add('volume')
-    elem.id = 'rngVolume' + this.soundId
-    elem.type = 'range'
-    elem.min = 0
-    elem.max = 100
-    elem.value = 75
+      elem.classList.add('volume')
+      elem.id = 'rngVolume' + this.soundId
+      elem.type = 'range'
+      elem.min = 0
+      elem.max = 100
+      elem.value = 75
 
-    var sp = this
+      // user moves the input slider indicator
+      elem.addEventListener('input', function(event) {
+        // console.log('volume range input', event.target.value)
 
-    elem.addEventListener('input', function(event) {
-      sp.updateVolume(event)
-    })
-    elem.addEventListener('change', function(event) {
-      sp.updateVolumeLabel(event)
-    })
+        // set user-facing label
 
-    // create this.initVol
-    let iv = elem.value
+        let newVolValue = event.target.value
 
-    iv = iv < 100 ? '0' + iv : iv
-    iv = iv < 10 ? '0' + iv : iv
+        if (newVolValue < 100) newVolValue = '0' + newVolValue
+        if (newVolValue < 10) newVolValue = '0' + newVolValue
 
-    this.initVol = iv
+        document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText = newVolValue
+
+        // set soundplayer internal gain amount
+
+        const volumeMax = event.target.max
+        const fraction = parseInt(newVolValue) / parseInt(volumeMax)
+        const newGainValue = fraction * fraction
+
+        sp.gainNode.gain.value = newGainValue
+      })
+      // slider value changes
+      elem.addEventListener('change', function(event) {
+        // console.log('volume range change', event.target.value)
+
+        let newVolValue = event.target.value
+
+        if (newVolValue < 100) newVolValue = '0' + newVolValue
+        if (newVolValue < 10) newVolValue = '0' + newVolValue
+
+        document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText = newVolValue
+      })
+
+      // create this.initVol
+      let initVol = elem.value
+
+      initVol = initVol < 100 ? '0' + initVol : initVol
+      initVol = initVol < 10 ? '0' + initVol : initVol
+
+      sp.initVol = initVol
+
+    return elem
+  }
+
+  _createRngSnippet() {
+    const sp = this
+    const elem = document.createElement('input')
+
+      elem.classList.add('snippet')
+      elem.id = 'rngSnippet' + this.soundId
+      elem.type = 'range'
+      elem.min = 1
+      elem.max = 60
+      elem.step = 1
+      elem.value = 5
+      elem.disabled = true
+
+      // user moves the input slider indicator
+      elem.addEventListener('input', function(event) {
+        // console.log('snippet range input', event.target.value)
+
+        // set user-facing label
+
+        let newSnipValue = event.target.value
+
+        if (newSnipValue < 100) newSnipValue = '0' + newSnipValue
+        if (newSnipValue < 10) newSnipValue = '0' + newSnipValue
+
+        document.getElementById('lblPostRngSnippet'.concat(sp.soundId)).innerText = newSnipValue
+
+        // set soundplayer internal snipper amount
+
+        sp.snippetSeconds = parseInt(newSnipValue)
+      })
+      // slider value changes
+      elem.addEventListener('change', function(event) {
+        // console.log('snippet range change', event.target.value)
+
+        let newSnipValue = event.target.value
+
+        if (newSnipValue < 100) newSnipValue = '0' + newSnipValue
+        if (newSnipValue < 10) newSnipValue = '0' + newSnipValue
+
+        document.getElementById('lblPostRngSnippet'.concat(sp.soundId)).innerText = newSnipValue
+      })
+
+      // create this.initSnip
+      let initSnip = elem.value
+
+      initSnip = initSnip < 100 ? '0' + initSnip : initSnip
+      initSnip = initSnip < 10 ? '0' + initSnip : initSnip
+
+      sp.initSnip = initSnip
 
     return elem
   }
@@ -584,41 +643,6 @@ class SoundPlayer {
     } else {
       return `${minutes}:${seconds}`
     }
-  }
-
-  // TODO
-  // create an <input type="range">
-  // controls amount, in seconds, of file to use in hash
-  // will be updated upon file upload
-  _createRngSnippet() {
-    var elem = document.createElement('input')
-
-    elem.classList.add('snippet')
-    elem.id = 'rngSnippet' + this.soundId
-    elem.type = 'range'
-    elem.min = 1
-    elem.max = 60
-    elem.value = 5
-    elem.disabled = true
-
-    var sp = this
-
-    elem.addEventListener('input', function(event) {
-      sp.updateSnippet(event)
-    })
-    elem.addEventListener('change', function(event) {
-      sp.updateSnippetLabel(event)
-    })
-
-    // create this.initSnip
-    let initSnip = elem.value
-
-    initSnip = initSnip < 100 ? '0' + initSnip : initSnip
-    initSnip = initSnip < 10 ? '0' + initSnip : initSnip
-
-    this.initSnip = initSnip
-
-    return elem
   }
 
   /************************************************************************
