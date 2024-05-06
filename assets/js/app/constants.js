@@ -31,6 +31,7 @@ const AH_ERROR_SP_INCOMPLETE = 'Error: existing SoundPlayers need sounds'
 const AH_ERROR_SP_COUNT_MAX_REACHED = 'Error: SoundPlayer max reached'
 const AH_ERROR_SP_COUNT_MIN_NOT_MET = 'Error: SoundPlayer min (2) not met'
 
+// TODO: make audioHash function work with other formats besides WAV
 const AH_DEFAULT_FILES = [
   '/assets/audio/waymu1.wav',
   '/assets/audio/waymu2.wav',

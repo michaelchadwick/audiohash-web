@@ -520,6 +520,8 @@ AudioHash._createAudioHash = function() {
   AudioHash.config._soundPlayerArray.forEach(sp => {
     const spFileTitle = sp.dom.fileUpload[0].value
 
+    // TODO: make audioHash function work with randomly-chosen snippets of files
+    // TODO: make audioHash function work with crossfade between files
     // get percentage of song to grab for snippet
     const snippetLengthPerc = (sp.snippetSeconds / sp.audioBuffer.duration).toFixed(2)
 

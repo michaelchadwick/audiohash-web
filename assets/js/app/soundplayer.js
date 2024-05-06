@@ -78,6 +78,8 @@ class SoundPlayer {
       this.dom.soundInfo.classList.add('sound-info')
       this.dom.soundInfo.innerText = AH_INFO_UNLOADED
 
+      // TODO: add progress bars to each SoundPlayer
+
       this.dom.fileUploadRow = document.createElement('div')
       this.dom.fileUploadRow.id = 'soundUpload' + this.soundId
       this.dom.fileUploadRow.classList.add('sound-upload')

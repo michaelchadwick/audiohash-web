@@ -1,4 +1,4 @@
-// TODO: IDB methods to add to SoundPlayer class
+// TODO: add IDB methods to SoundPlayer class
 
 /*
 
