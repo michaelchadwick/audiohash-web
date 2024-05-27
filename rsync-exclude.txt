@@ -15,4 +15,3 @@ node_modules/*
 test/*
 gulpfile.js
 rsync-exclude.txt
-TODO.md
