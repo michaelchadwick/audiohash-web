@@ -175,7 +175,6 @@ button:disabled {
   display: block;
   height: 20px;
   position: relative;
-  vertical-align: middle;
   width: 32px;
 }
 .switch[data-status='true'] {
@@ -542,7 +541,6 @@ footer a:hover {
   display: block;
   height: 20px;
   position: relative;
-  vertical-align: middle;
   width: 32px;
 }
 .switch[data-status='true'] {
