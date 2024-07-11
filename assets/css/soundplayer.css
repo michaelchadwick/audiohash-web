@@ -116,7 +116,7 @@
   }
 }
 .sound .sound-header span {
-  display: inline-block;
+  display: block;
   float: left;
   font-size: 1.85rem;
   padding-right: 0.25em;
