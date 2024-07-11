@@ -23,8 +23,8 @@ class SoundPlayer {
   }
 
   /************************************************************************
-  * public methods *
-  ************************************************************************/
+   * public methods *
+   ************************************************************************/
 
   createUI() {
     this.dom.soundDiv = document.createElement('div')
@@ -33,7 +33,7 @@ class SoundPlayer {
     this.dom.soundDiv.id = 'sound' + this.soundId
 
     const eventOptions = {
-      once: false
+      once: false,
     }
 
     this.dom.soundDiv.addEventListener('dragenter', this.__onDragEnter, eventOptions)
@@ -41,98 +41,100 @@ class SoundPlayer {
     this.dom.soundDiv.addEventListener('dragover', this.__onDragOver, eventOptions)
     this.dom.soundDiv.addEventListener('drop', this._onDrop, false)
 
-      this.dom.soundOverlay = document.createElement('div')
-      this.dom.soundOverlay.id = 'soundOverlay' + this.soundId
-      this.dom.soundOverlay.classList.add('sound-overlay')
-      this.dom.soundOverlay.innerHTML = '<p>Drop an audio file on me to upload</p>'
-      this.dom.soundDiv.appendChild(this.dom.soundOverlay)
+    this.dom.soundOverlay = document.createElement('div')
+    this.dom.soundOverlay.id = 'soundOverlay' + this.soundId
+    this.dom.soundOverlay.classList.add('sound-overlay')
+    this.dom.soundOverlay.innerHTML = '<p>Drop an audio file on me to upload</p>'
+    this.dom.soundDiv.appendChild(this.dom.soundOverlay)
 
-      this.dom.soundHeader = document.createElement('div')
-      this.dom.soundHeader.id = 'soundHeader' + this.soundId
-      this.dom.soundHeader.classList.add('sound-header')
+    this.dom.soundHeader = document.createElement('div')
+    this.dom.soundHeader.id = 'soundHeader' + this.soundId
+    this.dom.soundHeader.classList.add('sound-header')
 
-        this.dom.soundHeaderTitle = document.createElement('span')
-        this.dom.soundHeaderTitle.classList.add('sound-header-title')
+    this.dom.soundHeaderTitle = document.createElement('span')
+    this.dom.soundHeaderTitle.classList.add('sound-header-title')
 
-        const headerTitleUserDisplay = `SoundPlayer ${parseInt(this.soundId + 1).toString().padStart(2, '0')}`
+    const headerTitleUserDisplay = `SoundPlayer ${parseInt(this.soundId + 1)
+      .toString()
+      .padStart(2, '0')}`
 
-        this.dom.soundHeaderTitle.innerText = headerTitleUserDisplay
+    this.dom.soundHeaderTitle.innerText = headerTitleUserDisplay
 
-        this.dom.btnPlay = this._createBtnPlay()
-        this.dom.btnStop = this._createBtnStop()
+    this.dom.btnPlay = this._createBtnPlay()
+    this.dom.btnStop = this._createBtnStop()
 
-        this.dom.soundDestroyer = this._createSoundDestroyer()
+    this.dom.soundDestroyer = this._createSoundDestroyer()
 
-        this.dom.soundHeader.appendChild(this.dom.soundHeaderTitle)
-        this.dom.soundHeader.appendChild(this.dom.btnPlay)
-        this.dom.soundHeader.appendChild(this.dom.btnStop)
-        this.dom.soundHeader.appendChild(this.dom.soundDestroyer)
+    this.dom.soundHeader.appendChild(this.dom.soundHeaderTitle)
+    this.dom.soundHeader.appendChild(this.dom.btnPlay)
+    this.dom.soundHeader.appendChild(this.dom.btnStop)
+    this.dom.soundHeader.appendChild(this.dom.soundDestroyer)
 
-      this.dom.soundStatus = document.createElement('div')
-      this.dom.soundStatus.id = 'soundStatus' + this.soundId
-      this.dom.soundStatus.classList.add('sound-status')
-      this.dom.soundStatus.innerText = AH_STATUS_UNLOADED
+    this.dom.soundStatus = document.createElement('div')
+    this.dom.soundStatus.id = 'soundStatus' + this.soundId
+    this.dom.soundStatus.classList.add('sound-status')
+    this.dom.soundStatus.innerText = AH_STATUS_UNLOADED
 
-      this.dom.soundInfo = document.createElement('div')
-      this.dom.soundInfo.id = 'soundInfo' + this.soundId
-      this.dom.soundInfo.classList.add('sound-info')
-      this.dom.soundInfo.innerText = AH_INFO_UNLOADED
+    this.dom.soundInfo = document.createElement('div')
+    this.dom.soundInfo.id = 'soundInfo' + this.soundId
+    this.dom.soundInfo.classList.add('sound-info')
+    this.dom.soundInfo.innerText = AH_INFO_UNLOADED
 
-      // TODO: add progress bars to each SoundPlayer
+    // TODO: add progress bars to each SoundPlayer
 
-      this.dom.fileUploadRow = document.createElement('div')
-      this.dom.fileUploadRow.id = 'soundUpload' + this.soundId
-      this.dom.fileUploadRow.classList.add('sound-upload')
+    this.dom.fileUploadRow = document.createElement('div')
+    this.dom.fileUploadRow.id = 'soundUpload' + this.soundId
+    this.dom.fileUploadRow.classList.add('sound-upload')
 
-        this.dom.fileUpload = this._createFileUpload()
+    this.dom.fileUpload = this._createFileUpload()
 
-        this.dom.fileUploadRow.appendChild(this.dom.fileUpload)
+    this.dom.fileUploadRow.appendChild(this.dom.fileUpload)
 
-      this.dom.soundVolumeRow = document.createElement('div')
-      this.dom.soundVolumeRow.id = 'soundVolumeRow' + this.soundId
-      this.dom.soundVolumeRow.classList.add('sound-volume-row')
+    this.dom.soundVolumeRow = document.createElement('div')
+    this.dom.soundVolumeRow.id = 'soundVolumeRow' + this.soundId
+    this.dom.soundVolumeRow.classList.add('sound-volume-row')
 
-        this.dom.lblPreRngVolume = document.createElement('span')
-        this.dom.lblPreRngVolume.classList.add('control-label')
-        this.dom.lblPreRngVolume.innerText = 'Volume Amt (%)'
+    this.dom.lblPreRngVolume = document.createElement('span')
+    this.dom.lblPreRngVolume.classList.add('control-label')
+    this.dom.lblPreRngVolume.innerText = 'Volume Amt (%)'
 
-        this.dom.rngVolume = this._createRngVolume()
+    this.dom.rngVolume = this._createRngVolume()
 
-        this.dom.lblPostRngVolume = document.createElement('label')
-        this.dom.lblPostRngVolume.classList.add('amount-label')
-        this.dom.lblPostRngVolume.id = 'lblPostRngVolume' + this.soundId
-        this.dom.lblPostRngVolume.innerText = this.initVol
+    this.dom.lblPostRngVolume = document.createElement('label')
+    this.dom.lblPostRngVolume.classList.add('amount-label')
+    this.dom.lblPostRngVolume.id = 'lblPostRngVolume' + this.soundId
+    this.dom.lblPostRngVolume.innerText = this.initVol
 
-        this.dom.soundVolumeRow.appendChild(this.dom.lblPreRngVolume)
-        this.dom.soundVolumeRow.appendChild(this.dom.rngVolume)
-        this.dom.soundVolumeRow.appendChild(this.dom.lblPostRngVolume)
+    this.dom.soundVolumeRow.appendChild(this.dom.lblPreRngVolume)
+    this.dom.soundVolumeRow.appendChild(this.dom.rngVolume)
+    this.dom.soundVolumeRow.appendChild(this.dom.lblPostRngVolume)
 
-      this.dom.soundSnippetRow = document.createElement('div')
-      this.dom.soundSnippetRow.id = 'soundSnippetRow' + this.soundId
-      this.dom.soundSnippetRow.classList.add('sound-snippet-row')
+    this.dom.soundSnippetRow = document.createElement('div')
+    this.dom.soundSnippetRow.id = 'soundSnippetRow' + this.soundId
+    this.dom.soundSnippetRow.classList.add('sound-snippet-row')
 
-        this.dom.lblPreRngSnippet = document.createElement('span')
-        this.dom.lblPreRngSnippet.classList.add('control-label')
-        this.dom.lblPreRngSnippet.innerText = 'Snippet Amt (s)'
+    this.dom.lblPreRngSnippet = document.createElement('span')
+    this.dom.lblPreRngSnippet.classList.add('control-label')
+    this.dom.lblPreRngSnippet.innerText = 'Snippet Amt (s)'
 
-        this.dom.rngSnippet = this._createRngSnippet()
+    this.dom.rngSnippet = this._createRngSnippet()
 
-        this.dom.lblPostRngSnippet = document.createElement('label')
-        this.dom.lblPostRngSnippet.classList.add('amount-label')
-        this.dom.lblPostRngSnippet.id = 'lblPostRngSnippet' + this.soundId
-        this.dom.lblPostRngSnippet.innerText = this.initSnip
+    this.dom.lblPostRngSnippet = document.createElement('label')
+    this.dom.lblPostRngSnippet.classList.add('amount-label')
+    this.dom.lblPostRngSnippet.id = 'lblPostRngSnippet' + this.soundId
+    this.dom.lblPostRngSnippet.innerText = this.initSnip
 
-        this.dom.soundSnippetRow.appendChild(this.dom.lblPreRngSnippet)
-        this.dom.soundSnippetRow.appendChild(this.dom.rngSnippet)
-        this.dom.soundSnippetRow.appendChild(this.dom.lblPostRngSnippet)
+    this.dom.soundSnippetRow.appendChild(this.dom.lblPreRngSnippet)
+    this.dom.soundSnippetRow.appendChild(this.dom.rngSnippet)
+    this.dom.soundSnippetRow.appendChild(this.dom.lblPostRngSnippet)
 
-      this.dom.soundDiv.appendChild(this.dom.soundHeader)
-      this.dom.soundDiv.appendChild(this.dom.soundStatus)
-      this.dom.soundDiv.appendChild(this.dom.soundInfo)
+    this.dom.soundDiv.appendChild(this.dom.soundHeader)
+    this.dom.soundDiv.appendChild(this.dom.soundStatus)
+    this.dom.soundDiv.appendChild(this.dom.soundInfo)
 
-      this.dom.soundDiv.appendChild(this.dom.fileUploadRow)
-      this.dom.soundDiv.appendChild(this.dom.soundVolumeRow)
-      this.dom.soundDiv.appendChild(this.dom.soundSnippetRow)
+    this.dom.soundDiv.appendChild(this.dom.fileUploadRow)
+    this.dom.soundDiv.appendChild(this.dom.soundVolumeRow)
+    this.dom.soundDiv.appendChild(this.dom.soundSnippetRow)
 
     AudioHash.dom.players.appendChild(this.dom.soundDiv)
   }
@@ -188,42 +190,46 @@ class SoundPlayer {
 
     sound.arrayBuffer = arrBytesWav
 
-    this.audioContext.decodeAudioData(arrayBuffer, function(buffer) {
-      sound.audioBuffer = buffer
+    this.audioContext.decodeAudioData(
+      arrayBuffer,
+      function (buffer) {
+        sound.audioBuffer = buffer
 
-      // enabled the play/pause and stop buttons
-      document.getElementById('btnPlay' + sId).disabled = false
-      document.getElementById('btnStop' + sId).disabled = false
+        // enabled the play/pause and stop buttons
+        document.getElementById('btnPlay' + sId).disabled = false
+        document.getElementById('btnStop' + sId).disabled = false
 
-      // update snippet range so it's 1/sound.length -> sound.length
-      const newSnippetMax = Math.floor(buffer.duration)
-      const newSnippetVal = Math.round(Math.floor(buffer.duration) * .2)
+        // update snippet range so it's 1/sound.length -> sound.length
+        const newSnippetMax = Math.floor(buffer.duration)
+        const newSnippetVal = Math.round(Math.floor(buffer.duration) * 0.2)
 
-      const rngSnippetN = document.getElementById('rngSnippet' + sId)
-      rngSnippetN.disabled = false
-      rngSnippetN.max = newSnippetMax
-      rngSnippetN.value = newSnippetVal
+        const rngSnippetN = document.getElementById('rngSnippet' + sId)
+        rngSnippetN.disabled = false
+        rngSnippetN.max = newSnippetMax
+        rngSnippetN.value = newSnippetVal
 
-      let newLblVal = newSnippetVal < 100 ? '0' + newSnippetVal : newSnippetVal
-      newLblVal = newLblVal < 10 ? '0' + newLblVal : newLblVal
+        let newLblVal = newSnippetVal < 100 ? '0' + newSnippetVal : newSnippetVal
+        newLblVal = newLblVal < 10 ? '0' + newLblVal : newLblVal
 
-      document.getElementById('lblPostRngSnippet' + sId).innerText = newLblVal
+        document.getElementById('lblPostRngSnippet' + sId).innerText = newLblVal
 
-      sound.updateSoundStatus(sId, AH_STATUS_LOADED)
-      sound.updateSoundInfo()
+        sound.updateSoundStatus(sId, AH_STATUS_LOADED)
+        sound.updateSoundInfo()
 
-      sound.snippetSeconds = newSnippetVal
+        sound.snippetSeconds = newSnippetVal
 
-      sound.isLoaded = true
+        sound.isLoaded = true
 
-      // if we now have at least 2 SoundPlayers with audioBuffers
-      // then enable the "MAKE HASH" button
-      if (AudioHash._getSPCount() >= 2 && !AudioHash._areSPBuffersEmpty()) {
-        AudioHash.dom.interactive.btnCreateAH.removeAttribute('disabled')
+        // if we now have at least 2 SoundPlayers with audioBuffers
+        // then enable the "MAKE HASH" button
+        if (AudioHash._getSPCount() >= 2 && !AudioHash._areSPBuffersEmpty()) {
+          AudioHash.dom.interactive.btnCreateAH.removeAttribute('disabled')
+        }
+      },
+      function (e) {
+        console.warn(AH_ERROR_DECODING, e)
       }
-    }, function(e) {
-      console.warn(AH_ERROR_DECODING, e)
-    })
+    )
   }
 
   // set audioBuffer to null and turn off play/pause/stop controls
@@ -248,7 +254,7 @@ class SoundPlayer {
   playSound() {
     this.startTime = this.audioContext.currentTime
 
-    if(!this.audioContext.createGain) {
+    if (!this.audioContext.createGain) {
       this.audioContext.createGain = this.audioContext.createGainNode
     }
 
@@ -260,7 +266,7 @@ class SoundPlayer {
 
     var sp = this
 
-    this.source.onended = function() {
+    this.source.onended = function () {
       var pauseOrStopStatus = sp.isPaused ? AH_STATUS_PAUSED : AH_STATUS_STOPPED
 
       if (pauseOrStopStatus == AH_STATUS_STOPPED) {
@@ -319,8 +325,8 @@ class SoundPlayer {
   }
 
   /************************************************************************
-  * _private methods *
-  ************************************************************************/
+   * _private methods *
+   ************************************************************************/
 
   _createBtnPlay() {
     var elem = document.createElement('button')
@@ -331,7 +337,7 @@ class SoundPlayer {
 
     var sp = this
 
-    elem.addEventListener('click', function() {
+    elem.addEventListener('click', function () {
       sp.togglePlayState()
     })
 
@@ -347,7 +353,7 @@ class SoundPlayer {
 
     var sp = this
 
-    elem.addEventListener('click', function() {
+    elem.addEventListener('click', function () {
       sp.stopSound()
     })
 
@@ -366,7 +372,7 @@ class SoundPlayer {
 
     var sp = this
 
-    elem.addEventListener('click', function() {
+    elem.addEventListener('click', function () {
       AudioHash.removeSP(sp)
     })
 
@@ -379,20 +385,22 @@ class SoundPlayer {
 
     form.id = 'formUpload' + sp.soundId
 
-      const fileUpload = document.createElement('input')
-      const that = sp
+    const fileUpload = document.createElement('input')
+    const that = sp
 
-      fileUpload.accept = AH_ALLOWED_FORMATS.join(', ')
-      fileUpload.id = 'fileUpload' + sp.soundId
-      fileUpload.name = 'fileUpload' + sp.soundId
-      fileUpload.type = 'file'
+    fileUpload.accept = AH_ALLOWED_FORMATS.join(', ')
+    fileUpload.id = 'fileUpload' + sp.soundId
+    fileUpload.name = 'fileUpload' + sp.soundId
+    fileUpload.type = 'file'
 
-      fileUpload.addEventListener('change', function(e) {
+    fileUpload.addEventListener(
+      'change',
+      function (e) {
         // console.log('fileUpload changed', e)
 
         const sp = that
         const sId = sp.soundId
-        const file = this.files[0];
+        const file = this.files[0]
 
         // if a file has been selected, create FileReader object; load file
         if (e.target.value != '') {
@@ -416,29 +424,22 @@ class SoundPlayer {
               // TODO: fix server-side conversion of * -> wav
               // if (file.name.split('.')[1].toLowerCase() != 'wav') {
               //   console.log('uploaded a non-wav')
-
               //   // const path = (window.URL || window.webkitURL).createObjectURL(file);
-
               //   const form = new FormData()
               //   form.append('fileUpload', this.files[0])
-
               //   console.log('form', form)
-
               //   const url = AH_CONVERT_TO_WAV_SCRIPT
               //   const request = new Request(url, {
               //     method: 'POST',
               //     body: form
               //   })
-
               //   fetch(request)
               //     .then(response => {
               //       if (response) {
               //         console.log('script sent response', response)
-
               //         return response.json()
               //       } else {
               //         console.error('script did not send response')
-
               //         return null
               //       }
               //     })
@@ -461,7 +462,7 @@ class SoundPlayer {
           }
 
           // file read completed successfully
-          fileReader.onload = function(e) {
+          fileReader.onload = function (e) {
             // console.log('FileReader onload', e)
 
             const uploadedFile = this.result
@@ -480,7 +481,9 @@ class SoundPlayer {
               const promise = new Promise((resolve, reject) => {
                 const fileReader = new FileReader()
 
-                fileReader.onerror = (error) => { reject(error) }
+                fileReader.onerror = (error) => {
+                  reject(error)
+                }
 
                 fileReader.onload = async () => {
                   try {
@@ -512,7 +515,9 @@ class SoundPlayer {
             console.error('FileReader onerror', e)
           }
         }
-      }, false)
+      },
+      false
+    )
 
     form.appendChild(fileUpload)
 
@@ -523,53 +528,53 @@ class SoundPlayer {
     const sp = this
     const elem = document.createElement('input')
 
-      elem.classList.add('volume')
-      elem.id = 'rngVolume' + this.soundId
-      elem.type = 'range'
-      elem.min = 0
-      elem.max = 100
-      elem.value = 75
+    elem.classList.add('volume')
+    elem.id = 'rngVolume' + this.soundId
+    elem.type = 'range'
+    elem.min = 0
+    elem.max = 100
+    elem.value = 75
 
-      // user moves the input slider indicator
-      elem.addEventListener('input', function(event) {
-        // console.log('volume range input', event.target.value)
+    // user moves the input slider indicator
+    elem.addEventListener('input', function (event) {
+      // console.log('volume range input', event.target.value)
 
-        // set user-facing label
+      // set user-facing label
 
-        let newVolValue = event.target.value
+      let newVolValue = event.target.value
 
-        if (newVolValue < 100) newVolValue = '0' + newVolValue
-        if (newVolValue < 10) newVolValue = '0' + newVolValue
+      if (newVolValue < 100) newVolValue = '0' + newVolValue
+      if (newVolValue < 10) newVolValue = '0' + newVolValue
 
-        document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText = newVolValue
+      document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText = newVolValue
 
-        // set soundplayer internal gain amount
+      // set soundplayer internal gain amount
 
-        const volumeMax = event.target.max
-        const fraction = parseInt(newVolValue) / parseInt(volumeMax)
-        const newGainValue = fraction * fraction
+      const volumeMax = event.target.max
+      const fraction = parseInt(newVolValue) / parseInt(volumeMax)
+      const newGainValue = fraction * fraction
 
-        sp.gainNode.gain.value = newGainValue
-      })
-      // slider value changes
-      elem.addEventListener('change', function(event) {
-        // console.log('volume range change', event.target.value)
+      sp.gainNode.gain.value = newGainValue
+    })
+    // slider value changes
+    elem.addEventListener('change', function (event) {
+      // console.log('volume range change', event.target.value)
 
-        let newVolValue = event.target.value
+      let newVolValue = event.target.value
 
-        if (newVolValue < 100) newVolValue = '0' + newVolValue
-        if (newVolValue < 10) newVolValue = '0' + newVolValue
+      if (newVolValue < 100) newVolValue = '0' + newVolValue
+      if (newVolValue < 10) newVolValue = '0' + newVolValue
 
-        document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText = newVolValue
-      })
+      document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText = newVolValue
+    })
 
-      // create this.initVol
-      let initVol = elem.value
+    // create this.initVol
+    let initVol = elem.value
 
-      initVol = initVol < 100 ? '0' + initVol : initVol
-      initVol = initVol < 10 ? '0' + initVol : initVol
+    initVol = initVol < 100 ? '0' + initVol : initVol
+    initVol = initVol < 10 ? '0' + initVol : initVol
 
-      sp.initVol = initVol
+    sp.initVol = initVol
 
     return elem
   }
@@ -578,51 +583,51 @@ class SoundPlayer {
     const sp = this
     const elem = document.createElement('input')
 
-      elem.classList.add('snippet')
-      elem.id = 'rngSnippet' + this.soundId
-      elem.type = 'range'
-      elem.min = 1
-      elem.max = 60
-      elem.step = 1
-      elem.value = 5
-      elem.disabled = true
+    elem.classList.add('snippet')
+    elem.id = 'rngSnippet' + this.soundId
+    elem.type = 'range'
+    elem.min = 1
+    elem.max = 60
+    elem.step = 1
+    elem.value = 5
+    elem.disabled = true
 
-      // user moves the input slider indicator
-      elem.addEventListener('input', function(event) {
-        // console.log('snippet range input', event.target.value)
+    // user moves the input slider indicator
+    elem.addEventListener('input', function (event) {
+      // console.log('snippet range input', event.target.value)
 
-        // set user-facing label
+      // set user-facing label
 
-        let newSnipValue = event.target.value
+      let newSnipValue = event.target.value
 
-        if (newSnipValue < 100) newSnipValue = '0' + newSnipValue
-        if (newSnipValue < 10) newSnipValue = '0' + newSnipValue
+      if (newSnipValue < 100) newSnipValue = '0' + newSnipValue
+      if (newSnipValue < 10) newSnipValue = '0' + newSnipValue
 
-        document.getElementById('lblPostRngSnippet'.concat(sp.soundId)).innerText = newSnipValue
+      document.getElementById('lblPostRngSnippet'.concat(sp.soundId)).innerText = newSnipValue
 
-        // set soundplayer internal snipper amount
+      // set soundplayer internal snipper amount
 
-        sp.snippetSeconds = parseInt(newSnipValue)
-      })
-      // slider value changes
-      elem.addEventListener('change', function(event) {
-        // console.log('snippet range change', event.target.value)
+      sp.snippetSeconds = parseInt(newSnipValue)
+    })
+    // slider value changes
+    elem.addEventListener('change', function (event) {
+      // console.log('snippet range change', event.target.value)
 
-        let newSnipValue = event.target.value
+      let newSnipValue = event.target.value
 
-        if (newSnipValue < 100) newSnipValue = '0' + newSnipValue
-        if (newSnipValue < 10) newSnipValue = '0' + newSnipValue
+      if (newSnipValue < 100) newSnipValue = '0' + newSnipValue
+      if (newSnipValue < 10) newSnipValue = '0' + newSnipValue
 
-        document.getElementById('lblPostRngSnippet'.concat(sp.soundId)).innerText = newSnipValue
-      })
+      document.getElementById('lblPostRngSnippet'.concat(sp.soundId)).innerText = newSnipValue
+    })
 
-      // create this.initSnip
-      let initSnip = elem.value
+    // create this.initSnip
+    let initSnip = elem.value
 
-      initSnip = initSnip < 100 ? '0' + initSnip : initSnip
-      initSnip = initSnip < 10 ? '0' + initSnip : initSnip
+    initSnip = initSnip < 100 ? '0' + initSnip : initSnip
+    initSnip = initSnip < 10 ? '0' + initSnip : initSnip
 
-      sp.initSnip = initSnip
+    sp.initSnip = initSnip
 
     return elem
   }
@@ -630,12 +635,12 @@ class SoundPlayer {
   _convertToHMS(durationInSeconds) {
     let seconds = Math.round(durationInSeconds)
 
-    let minutes = (seconds - seconds % 60) / 60
-	  seconds = seconds - minutes * 60
+    let minutes = (seconds - (seconds % 60)) / 60
+    seconds = seconds - minutes * 60
     seconds = seconds.toString().padStart(2, '0')
 
-    let hours = (minutes - minutes % 60) / 60
-	  minutes = minutes - hours * 60
+    let hours = (minutes - (minutes % 60)) / 60
+    minutes = minutes - hours * 60
     minutes = minutes.toString().padStart(2, '0')
 
     if (hours > 0) {
@@ -648,14 +653,14 @@ class SoundPlayer {
   }
 
   /************************************************************************
-  * _private __helper methods *
-  ************************************************************************/
+   * _private __helper methods *
+   ************************************************************************/
 
   __handleDroppedFiles(files) {
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
 
-      if (!file.type.startsWith("audio/")) {
+      if (!file.type.startsWith('audio/')) {
         console.error('Only audio files can be dropped here!')
       } else {
         console.log('audio files dropped')

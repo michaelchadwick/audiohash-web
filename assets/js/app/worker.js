@@ -14,7 +14,10 @@ function hexDump(view) {
     let ascii = []
 
     for (let x = 0; x < 16; x++) {
-      let b = view.charCodeAt(i + x).toString(16).toUpperCase()
+      let b = view
+        .charCodeAt(i + x)
+        .toString(16)
+        .toUpperCase()
 
       b = b.length == 1 ? '0' + b : b
       hex.push(b + ' ')
@@ -36,12 +39,12 @@ function hexDump(view) {
   // send hex dump as ascii back to main thread
   postMessage({
     command: 'asciiDump',
-    ascii: lines.join('\n')
+    ascii: lines.join('\n'),
   })
 }
 
 // receive message from main thread
-onmessage = function(msg) {
+onmessage = function (msg) {
   // console.log('received msg from main js', msg.data)
 
   if (msg.isTrusted) {

@@ -12,23 +12,23 @@
   width: 100%;
   z-index: 1;
 }
-  .modal-dialog * {
-    box-sizing: border-box;
-  }
-  .modal-dialog.temp {
-    background-color: transparent;
-  }
-  .modal-dialog.temp .modal-window {
-    background-color: #081C4B;
-    border: 2px solid #000;
-    border-radius: 8px;
-    box-shadow: none;
-    color: #fff;
-    pointer-events: none;
-    position: absolute;
-    top: 6%;
-    width: fit-content;
-  }
+.modal-dialog * {
+  box-sizing: border-box;
+}
+.modal-dialog.temp {
+  background-color: transparent;
+}
+.modal-dialog.temp .modal-window {
+  background-color: #081c4b;
+  border: 2px solid #000;
+  border-radius: 8px;
+  box-shadow: none;
+  color: #fff;
+  pointer-events: none;
+  position: absolute;
+  top: 6%;
+  width: fit-content;
+}
 
 .modal-window {
   --animate-duration: 100ms;
@@ -43,13 +43,13 @@
   max-width: 500px;
   width: 90%;
 }
-  .modal-window.debug {
-    border-color: #715ec7;
-  }
+.modal-window.debug {
+  border-color: #715ec7;
+}
 
 .modal-title {
   align-items: center;
-  background-color: #081C4B;
+  background-color: #081c4b;
   color: #fff;
   display: flex;
   font-weight: 500;
@@ -57,9 +57,9 @@
   padding: 4px 10px;
   width: 100%;
 }
-  .modal-title.debug {
-    background-color: #715ec7;
-  }
+.modal-title.debug {
+  background-color: #715ec7;
+}
 
 .modal-close {
   background: none;
@@ -81,39 +81,39 @@
   padding: 0 16px;
   width: 100%;
 }
-  .modal-text ul,
-  .modal-text {
-    list-style-type: none;
-    margin: 0;
-    padding: 10px;
-  }
-    .modal-text ul ul {
-      padding: 2px 10px;
-    }
-    .modal-text ul li {
-      padding: 0;
-    }
-      .modal-text ul li span.solution-category {
-        font-size: 20px;
-        font-weight: 700;
-      }
-        .modal-text ul li span.solution-category + ul {
-          background-color: #f8f8f8;
-          border: 1px solid #222;
-          margin-bottom: 10px;
-          padding: 10px;
-        }
-          .modal-text ul li span.solution-category + ul li {
-            margin-left: 0;
-          }
+.modal-text ul,
+.modal-text {
+  list-style-type: none;
+  margin: 0;
+  padding: 10px;
+}
+.modal-text ul ul {
+  padding: 2px 10px;
+}
+.modal-text ul li {
+  padding: 0;
+}
+.modal-text ul li span.solution-category {
+  font-size: 20px;
+  font-weight: 700;
+}
+.modal-text ul li span.solution-category + ul {
+  background-color: #f8f8f8;
+  border: 1px solid #222;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+.modal-text ul li span.solution-category + ul li {
+  margin-left: 0;
+}
 
-  .modal-text dl dt {
-    margin-left: 1em;
-    min-height: 20px;
-  }
-  .modal-text dl dl {
-    margin-left: 1em;
-  }
+.modal-text dl dt {
+  margin-left: 1em;
+  min-height: 20px;
+}
+.modal-text dl dl {
+  margin-left: 1em;
+}
 
 .modal-button-group {
   margin: auto 0 16px 0;
@@ -122,10 +122,10 @@
   justify-content: space-between;
   flex-direction: row;
 }
-  .modal-button-group button {
-    font-weight: inherit;
-    font-family: inherit;
-  }
+.modal-button-group button {
+  font-weight: inherit;
+  font-family: inherit;
+}
 
 .modal-button {
   font-family: inherit;
@@ -141,13 +141,13 @@
   border-radius: 2px;
   line-height: 1.3;
 }
-  .modal-button:hover {
-    box-shadow: inset 0 99px 0 rgba(0, 0, 0, 0.05);
-    text-decoration: none;
-  }
+.modal-button:hover {
+  box-shadow: inset 0 99px 0 rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+}
 .modal-button-primary {
   color: #ffffff;
-  background-color: #081C4B;
+  background-color: #081c4b;
 }
 .modal-button-secondary {
   color: #000000;
@@ -206,27 +206,27 @@
   flex-direction: column;
   justify-content: center;
 }
-  #settings .setting-row {
-    align-items: center;
-    border-bottom: 1px solid #666;
-    display: flex;
-    justify-content: space-between;
-    padding: 0;
-  }
-      #settings .setting-row:last-of-type {
-        border-bottom: none;
-      }
-    #settings .setting-row .text {
-      padding: 8px 8px 8px 0;
-    }
-      #settings .setting-row .text .title {
-        font-size: 18px;
-      }
-      #settings .setting-row .text .description {
-        color: #444;
-        font-size: 12px;
-      }
-    #settings .setting-row .control {
-      display: block;
-      margin-left: 1em;
-    }
+#settings .setting-row {
+  align-items: center;
+  border-bottom: 1px solid #666;
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+}
+#settings .setting-row:last-of-type {
+  border-bottom: none;
+}
+#settings .setting-row .text {
+  padding: 8px 8px 8px 0;
+}
+#settings .setting-row .text .title {
+  font-size: 18px;
+}
+#settings .setting-row .text .description {
+  color: #444;
+  font-size: 12px;
+}
+#settings .setting-row .control {
+  display: block;
+  margin-left: 1em;
+}

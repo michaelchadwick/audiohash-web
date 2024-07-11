@@ -1,10 +1,7 @@
 /* constants */
 /* set any global constants */
 
-const AH_ENV_PROD_URL = [
-  'audiohash.neb.host',
-  'ah.neb.host'
-]
+const AH_ENV_PROD_URL = ['audiohash.neb.host', 'ah.neb.host']
 
 const AH_SETTINGS_KEY = 'audiohash-settings'
 
@@ -35,16 +32,16 @@ const AH_ERROR_SP_COUNT_MIN_NOT_MET = 'Error: SoundPlayer min (2) not met'
 const AH_DEFAULT_FILES = [
   '/assets/audio/waymu1.wav',
   '/assets/audio/waymu2.wav',
-  '/assets/audio/waymu3.wav'
+  '/assets/audio/waymu3.wav',
 ]
 const AH_SP_COUNT_INIT = 3
 const AH_SP_COUNT_MAX = 10
 
 /**
-  * While testing and not actually doing any sampling,
-  * we need to keep this small or else the sampler
-  * function will crash the website
-  */
+ * While testing and not actually doing any sampling,
+ * we need to keep this small or else the sampler
+ * function will crash the website
+ */
 const AH_FILE_MAX_LENGTH = 100000000
 
 // const AH_CONVERT_TO_WAV_SCRIPT = '/assets/php/convert_to_wav.php'
@@ -53,7 +50,7 @@ const AH_ALLOWED_FORMATS = [
   // 'audio/aif',
   // 'audio/aiff',
   // 'audio/mpeg',
-  'audio/wav'
+  'audio/wav',
 ]
 
 const AH_WAV_BIT_DEPTH = 16
