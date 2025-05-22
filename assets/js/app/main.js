@@ -37,7 +37,7 @@ async function modalOpen(type) {
             <li>Click/tap '# MAKE HASH' and a download link to your new sampler will be created for you to download</li>
           </ol>
 
-          <p>Creator: <a href="https://michaelchadwick.info">Mike</a>. Source: <a href="https://github.com/michaelchadwick/audiohash">Github</a>.</p>
+          <p>Creator: <a href="https://michaelchadwick.info">Mike</a>. Source: <a href="https://github.com/michaelchadwick/audiohash-web">Github</a>.</p>
         `,
         null,
         null
