@@ -30,9 +30,9 @@ const AH_ERROR_SP_COUNT_MIN_NOT_MET = 'Error: SoundPlayer min (2) not met'
 
 // TODO: make audioHash function work with other formats besides WAV
 const AH_DEFAULT_FILES = [
-  '/assets/audio/waymu1.wav',
-  '/assets/audio/waymu2.wav',
-  '/assets/audio/waymu3.wav',
+  '/assets/audio/track1.wav',
+  '/assets/audio/track2.wav',
+  '/assets/audio/track3.wav',
 ]
 const AH_SP_COUNT_INIT = 3
 const AH_SP_COUNT_MAX = 10
