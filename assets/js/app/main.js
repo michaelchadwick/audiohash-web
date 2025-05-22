@@ -32,10 +32,12 @@ async function modalOpen(type) {
           <ol class="help">
             <li>Create some SoundPlayers</li>
             <li>Load files into SoundPlayers</li>
-            <li>TODO: <s>Choose how much of each you want sampled</s> (currently, entire audio file will be sampled)</li>
+            <li>Choose how much of each you want sampled</li>
             <li>Optionally: turn on "Play hash on make?" in Settings (gear icon) for an audio player to be created upon successful hash</li>
             <li>Click/tap '# MAKE HASH' and a download link to your new sampler will be created for you to download</li>
           </ol>
+
+          <p>Creator: <a href="https://michaelchadwick.info">Mike</a>. Source: <a href="https://github.com/michaelchadwick/audiohash">Github</a>.</p>
         `,
         null,
         null
@@ -106,11 +108,23 @@ async function modalOpen(type) {
       break
 
     case 'max-count-reached':
-      this.myModal = new Modal('temp', null, AH_ERROR_SP_COUNT_MAX_REACHED, null, null)
+      this.myModal = new Modal(
+        'temp',
+        null,
+        AH_ERROR_SP_COUNT_MAX_REACHED,
+        null,
+        null
+      )
       break
 
     case 'min-count-unmet':
-      this.myModal = new Modal('temp', null, AH_ERROR_SP_COUNT_MIN_NOT_MET, null, null)
+      this.myModal = new Modal(
+        'temp',
+        null,
+        AH_ERROR_SP_COUNT_MIN_NOT_MET,
+        null,
+        null
+      )
       break
 
     case 'sound-buffer-unmet':
@@ -121,14 +135,21 @@ async function modalOpen(type) {
 
 AudioHash.initApp = function () {
   // set env
-  AudioHash.env = AH_ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
+  AudioHash.env = AH_ENV_PROD_URL.includes(document.location.hostname)
+    ? 'prod'
+    : 'local'
 
   // set <title>
   document.title = `${AH_APP_TITLE || 'AH'} | ${AH_APP_TAGLINE || 'audio hash'}`
 
   // update DOM status elements
-  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPNextId().toString().padStart(2, '0')
-  AudioHash.dom.lblSPCountMax.innerText = AH_SP_COUNT_MAX.toString().padStart(2, '0')
+  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPNextId()
+    .toString()
+    .padStart(2, '0')
+  AudioHash.dom.lblSPCountMax.innerText = AH_SP_COUNT_MAX.toString().padStart(
+    2,
+    '0'
+  )
 
   // attach event listeners to DOM elements
   AudioHash._attachEventListeners()
@@ -161,7 +182,10 @@ AudioHash.createSP = function (quantity) {
   if (playerCount <= 0) playerCount = 1
 
   for (var i = 0; i < playerCount; i++) {
-    const newSP = new SoundPlayer(AudioHash._getSPNextId(), AudioHash._getAudioContext())
+    const newSP = new SoundPlayer(
+      AudioHash._getSPNextId(),
+      AudioHash._getAudioContext()
+    )
 
     AudioHash.config._soundPlayerArray.push(newSP)
     AudioHash._updateSPCount()
@@ -286,13 +310,15 @@ AudioHash._changeSetting = function (setting, event = null) {
 
       if (st == '' || st == 'false') {
         // update setting DOM
-        document.getElementById('button-setting-dump-hex').dataset.status = 'true'
+        document.getElementById('button-setting-dump-hex').dataset.status =
+          'true'
 
         // save to code/LS
         AudioHash._saveSetting('dumpHex', true)
       } else {
         // update setting DOM
-        document.getElementById('button-setting-dump-hex').dataset.status = 'false'
+        document.getElementById('button-setting-dump-hex').dataset.status =
+          'false'
 
         // save to code/LS
         AudioHash._saveSetting('dumpHex', false)
@@ -303,11 +329,13 @@ AudioHash._changeSetting = function (setting, event = null) {
       var st = document.getElementById('button-setting-mix-demo').dataset.status
 
       if (st == '' || st == 'false') {
-        document.getElementById('button-setting-mix-demo').dataset.status = 'true'
+        document.getElementById('button-setting-mix-demo').dataset.status =
+          'true'
 
         AudioHash._saveSetting('mixDemo', true)
       } else {
-        document.getElementById('button-setting-mix-demo').dataset.status = 'false'
+        document.getElementById('button-setting-mix-demo').dataset.status =
+          'false'
 
         AudioHash._saveSetting('mixDemo', false)
       }
@@ -408,7 +436,9 @@ AudioHash._addDefaultFiles = function () {
     AudioHash._getAudioUrl(url, (audioBlob) => {
       const myFile = new File(
         [audioBlob],
-        AH_DEFAULT_FILES[index].substring(AH_DEFAULT_FILES[index].lastIndexOf('/') + 1),
+        AH_DEFAULT_FILES[index].substring(
+          AH_DEFAULT_FILES[index].lastIndexOf('/') + 1
+        ),
         options
       )
 
@@ -444,7 +474,9 @@ AudioHash._getSP = function (sId) {
   return AudioHash.config._soundPlayerArray[position]
 }
 AudioHash._updateSPCount = function () {
-  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPCount().toString().padStart(2, '0')
+  AudioHash.dom.lblSPCount.innerText = AudioHash._getSPCount()
+    .toString()
+    .padStart(2, '0')
 }
 AudioHash._resetSPCount = function () {
   AudioHash.config._soundPlayerArray = []
@@ -511,10 +543,13 @@ AudioHash._createAudioHash = function () {
     // TODO: make audioHash function work with randomly-chosen snippets of files
     // TODO: make audioHash function work with crossfade between files
     // get percentage of song to grab for snippet
-    const snippetLengthPerc = (sp.snippetSeconds / sp.audioBuffer.duration).toFixed(2)
+    const snippetLengthPerc = (
+      sp.snippetSeconds / sp.audioBuffer.duration
+    ).toFixed(2)
 
     // get length in bytes of said snippet
-    const snippetByteLength = Math.round(sp.arrayBuffer.byteLength * snippetLengthPerc) - 500000
+    const snippetByteLength =
+      Math.round(sp.arrayBuffer.byteLength * snippetLengthPerc) - 500000
 
     const snippetSampleRate = sp.audioBuffer.sampleRate
     const snippetChannels = sp.audioBuffer.numberOfChannels
@@ -523,7 +558,9 @@ AudioHash._createAudioHash = function () {
 
     const originalDuration =
       sp.arrayBuffer.byteLength /
-      (sp.audioBuffer.sampleRate * sp.audioBuffer.numberOfChannels * (bitRate / 8))
+      (sp.audioBuffer.sampleRate *
+        sp.audioBuffer.numberOfChannels *
+        (bitRate / 8))
 
     // console.log('originalDuration', originalDuration)
 
@@ -608,12 +645,24 @@ AudioHash._createAudioHash = function () {
     audioHashByteLength += sp.snippet.len
   })
 
-  const hashPercOfOriginal = Math.round((audioHashByteLength / spArrByteLength) * 100)
+  const hashPercOfOriginal = Math.round(
+    (audioHashByteLength / spArrByteLength) * 100
+  )
 
-  console.log(`hashPercOfOriginal  : ${hashPercOfOriginal.toLocaleString().padStart(3, ' ')}%`)
-  console.log(`spArrByteLength     : ${spArrByteLength.toLocaleString().padStart(11, ' ')} bytes`)
   console.log(
-    `audioHashByteLength : ${audioHashByteLength.toLocaleString().padStart(11, ' ')} bytes`
+    `hashPercOfOriginal  : ${hashPercOfOriginal
+      .toLocaleString()
+      .padStart(3, ' ')}%`
+  )
+  console.log(
+    `spArrByteLength     : ${spArrByteLength
+      .toLocaleString()
+      .padStart(11, ' ')} bytes`
+  )
+  console.log(
+    `audioHashByteLength : ${audioHashByteLength
+      .toLocaleString()
+      .padStart(11, ' ')} bytes`
   )
 
   this.myModal = new Modal(
@@ -632,7 +681,9 @@ AudioHash._createAudioHash = function () {
 
   let audioHashDuration = 0
 
-  console.log(`initial spOffset    : ${spOffset.toLocaleString().padStart(11, ' ')} bytes`)
+  console.log(
+    `initial spOffset    : ${spOffset.toLocaleString().padStart(11, ' ')} bytes`
+  )
 
   // iterate through soundplayer array, adding each buffer's start to previous buffer's end
   for (let i = 0; i < spArr.length; i++) {
@@ -648,7 +699,11 @@ AudioHash._createAudioHash = function () {
     spOffset += spLength
     audioHashDuration += spArr[i].snippet.sec
 
-    console.log(`next spOffset       : ${spOffset.toLocaleString().padStart(11, ' ')} bytes`)
+    console.log(
+      `next spOffset       : ${spOffset
+        .toLocaleString()
+        .padStart(11, ' ')} bytes`
+    )
   }
 
   console.log(
@@ -656,7 +711,11 @@ AudioHash._createAudioHash = function () {
       .toLocaleString()
       .padStart(11, ' ')} bytes`
   )
-  console.log(`                    : ${audioHashDuration.toLocaleString().padStart(11, ' ')} s`)
+  console.log(
+    `                    : ${audioHashDuration
+      .toLocaleString()
+      .padStart(11, ' ')} s`
+  )
 
   // get spArr[0] audio data to create the new combined wav header
   const audioHashAudioHeader = AudioHash.__getAudioData.WavHeader.readHeader(
@@ -666,14 +725,19 @@ AudioHash._createAudioHash = function () {
   // console.log('audioHashAudioHeader', audioHashAudioHeader)
 
   // actually get the final audio hash audio data
-  const audioHashAudioByteArray = AudioHash.__getWavByteArray(audioHashByteArray, {
-    isFloat: false, // floating point or 16-bit integer
-    numChannels: audioHashAudioHeader.channels,
-    sampleRate: audioHashAudioHeader.sampleRate,
-  })
+  const audioHashAudioByteArray = AudioHash.__getWavByteArray(
+    audioHashByteArray,
+    {
+      isFloat: false, // floating point or 16-bit integer
+      numChannels: audioHashAudioHeader.channels,
+      sampleRate: audioHashAudioHeader.sampleRate,
+    }
+  )
 
   // create new Blob to hold audioHash data
-  const audioHashBlob = new Blob([audioHashAudioByteArray], { type: 'audio/wav; codecs=MS_PCM' })
+  const audioHashBlob = new Blob([audioHashAudioByteArray], {
+    type: 'audio/wav; codecs=MS_PCM',
+  })
 
   // read that blob (so it can be downloaded, and possibly previewed/hex dumped)
   const audioHashBlobReader = new FileReader()
@@ -738,8 +802,12 @@ AudioHash._createAudioHash = function () {
 AudioHash.__getWavByteArray = function (buffer, options) {
   const arrayType = options.isFloat ? Float32Array : Uint16Array
   const numFrames = buffer.byteLength / arrayType.BYTES_PER_ELEMENT
-  const headerBytesArray = AudioHash.__getWavHeader(Object.assign({}, options, { numFrames }))
-  const audioBytesArray = new Uint8Array(headerBytesArray.length + buffer.byteLength)
+  const headerBytesArray = AudioHash.__getWavHeader(
+    Object.assign({}, options, { numFrames })
+  )
+  const audioBytesArray = new Uint8Array(
+    headerBytesArray.length + buffer.byteLength
+  )
 
   // prepend header, then add pcmBytes
   audioBytesArray.set(headerBytesArray, 0)
@@ -906,7 +974,8 @@ AudioHash.__enableDownload = function (blob, givenFilename) {
 
   AudioHash.dom.interactive.btnDownloadAH.style.display = 'flex'
   AudioHash.dom.interactive.btnDownloadAH.href = url
-  AudioHash.dom.interactive.btnDownloadAH.download = givenFilename || defaultFilename
+  AudioHash.dom.interactive.btnDownloadAH.download =
+    givenFilename || defaultFilename
 }
 
 // displays textarea with hex version of audiohash
