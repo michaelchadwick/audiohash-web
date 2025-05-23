@@ -1,5 +1,4 @@
-/* soundplayer */
-/* custom class for soundplayers */
+/* Soundplayer class */
 
 class SoundPlayer {
   constructor(id, ac, file = null) {
@@ -36,15 +35,28 @@ class SoundPlayer {
       once: false,
     }
 
-    this.dom.soundDiv.addEventListener('dragenter', this.__onDragEnter, eventOptions)
-    this.dom.soundDiv.addEventListener('dragleave', this.__onDragLeave, eventOptions)
-    this.dom.soundDiv.addEventListener('dragover', this.__onDragOver, eventOptions)
+    this.dom.soundDiv.addEventListener(
+      'dragenter',
+      this.__onDragEnter,
+      eventOptions
+    )
+    this.dom.soundDiv.addEventListener(
+      'dragleave',
+      this.__onDragLeave,
+      eventOptions
+    )
+    this.dom.soundDiv.addEventListener(
+      'dragover',
+      this.__onDragOver,
+      eventOptions
+    )
     this.dom.soundDiv.addEventListener('drop', this._onDrop, false)
 
     this.dom.soundOverlay = document.createElement('div')
     this.dom.soundOverlay.id = 'soundOverlay' + this.soundId
     this.dom.soundOverlay.classList.add('sound-overlay')
-    this.dom.soundOverlay.innerHTML = '<p>Drop an audio file on me to upload</p>'
+    this.dom.soundOverlay.innerHTML =
+      '<p>Drop an audio file on me to upload</p>'
     this.dom.soundDiv.appendChild(this.dom.soundOverlay)
 
     this.dom.soundHeader = document.createElement('div')
@@ -159,7 +171,8 @@ class SoundPlayer {
     } else {
       let sndDuration = this._convertToHMS(this.audioBuffer.duration)
       let sndChannels = this.audioBuffer.numberOfChannels + 'ch'
-      let sndSampleRate = Math.round(this.audioBuffer.sampleRate / 1000).toString() + 'KHz'
+      let sndSampleRate =
+        Math.round(this.audioBuffer.sampleRate / 1000).toString() + 'KHz'
 
       this.dom.soundInfo.innerHTML = `${sndDuration},  ${sndChannels}, ${sndSampleRate}`
     }
@@ -208,7 +221,8 @@ class SoundPlayer {
         rngSnippetN.max = newSnippetMax
         rngSnippetN.value = newSnippetVal
 
-        let newLblVal = newSnippetVal < 100 ? '0' + newSnippetVal : newSnippetVal
+        let newLblVal =
+          newSnippetVal < 100 ? '0' + newSnippetVal : newSnippetVal
         newLblVal = newLblVal < 10 ? '0' + newLblVal : newLblVal
 
         document.getElementById('lblPostRngSnippet' + sId).innerText = newLblVal
@@ -476,7 +490,9 @@ class SoundPlayer {
             // if file size is good, proceed
             else {
               const buffer = uploadedFile
-              const blob = new Blob([buffer], { type: 'audio/wav; codecs=MS_PCM' })
+              const blob = new Blob([buffer], {
+                type: 'audio/wav; codecs=MS_PCM',
+              })
 
               const promise = new Promise((resolve, reject) => {
                 const fileReader = new FileReader()
@@ -546,7 +562,8 @@ class SoundPlayer {
       if (newVolValue < 100) newVolValue = '0' + newVolValue
       if (newVolValue < 10) newVolValue = '0' + newVolValue
 
-      document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText = newVolValue
+      document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText =
+        newVolValue
 
       // set soundplayer internal gain amount
 
@@ -565,7 +582,8 @@ class SoundPlayer {
       if (newVolValue < 100) newVolValue = '0' + newVolValue
       if (newVolValue < 10) newVolValue = '0' + newVolValue
 
-      document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText = newVolValue
+      document.getElementById('lblPostRngVolume'.concat(sp.soundId)).innerText =
+        newVolValue
     })
 
     // create this.initVol
@@ -603,7 +621,9 @@ class SoundPlayer {
       if (newSnipValue < 100) newSnipValue = '0' + newSnipValue
       if (newSnipValue < 10) newSnipValue = '0' + newSnipValue
 
-      document.getElementById('lblPostRngSnippet'.concat(sp.soundId)).innerText = newSnipValue
+      document.getElementById(
+        'lblPostRngSnippet'.concat(sp.soundId)
+      ).innerText = newSnipValue
 
       // set soundplayer internal snipper amount
 
@@ -618,7 +638,9 @@ class SoundPlayer {
       if (newSnipValue < 100) newSnipValue = '0' + newSnipValue
       if (newSnipValue < 10) newSnipValue = '0' + newSnipValue
 
-      document.getElementById('lblPostRngSnippet'.concat(sp.soundId)).innerText = newSnipValue
+      document.getElementById(
+        'lblPostRngSnippet'.concat(sp.soundId)
+      ).innerText = newSnipValue
     })
 
     // create this.initSnip
