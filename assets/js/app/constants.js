@@ -1,8 +1,6 @@
 /* constants */
 /* set any global constants */
 
-const AH_ENV_PROD_URL = ['audiohash.neb.host', 'ah.neb.host']
-
 const AH_SETTINGS_KEY = 'audiohash-settings'
 
 const AH_APP_TITLE = 'Audio Hash'

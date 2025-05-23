@@ -20,11 +20,6 @@ AudioHash.config = {
  * ******************************** */
 
 AudioHash.initApp = function () {
-  // set env
-  AudioHash.env = AH_ENV_PROD_URL.includes(document.location.hostname)
-    ? 'prod'
-    : 'local'
-
   // set <title>
   document.title = `${AH_APP_TITLE || 'AH'} | ${AH_APP_TAGLINE || 'audio hash'}`
 
