@@ -17,6 +17,8 @@ class SoundPlayer {
     this.isPaused = false
     this.isStopped = true
     this.isPlaying = false
+    this.dragCounter = 0
+    this.hoverClass = 'hovered-over'
 
     this.createUI(file)
   }
@@ -50,7 +52,7 @@ class SoundPlayer {
       this.__onDragOver,
       eventOptions
     )
-    this.dom.soundDiv.addEventListener('drop', this._onDrop, false)
+    this.dom.soundDiv.addEventListener('drop', this.__onDrop, false)
 
     this.dom.soundOverlay = document.createElement('div')
     this.dom.soundOverlay.id = 'soundOverlay' + this.soundId
@@ -418,118 +420,7 @@ class SoundPlayer {
 
         // if a file has been selected, create FileReader object; load file
         if (e.target.value != '') {
-          const fileReader = new FileReader()
-          fileReader.readAsArrayBuffer(file)
-
-          // file read starts
-          fileReader.onloadstart = (e) => {
-            // console.log('FileReader onloadstart', e)
-
-            sp.updateSoundInfo(AH_STATUS_LOADING)
-
-            // check for valid filesize before uploading
-            if (e.total > AH_FILE_MAX_LENGTH) {
-              sp.disableSound(sId)
-
-              e.target.abort()
-
-              alert(AH_ERROR_LENGTH)
-            } else {
-              // TODO: fix server-side conversion of * -> wav
-              // if (file.name.split('.')[1].toLowerCase() != 'wav') {
-              //   console.log('uploaded a non-wav')
-              //   // const path = (window.URL || window.webkitURL).createObjectURL(file);
-              //   const form = new FormData()
-              //   form.append('fileUpload', this.files[0])
-              //   console.log('form', form)
-              //   const url = AH_CONVERT_TO_WAV_SCRIPT
-              //   const request = new Request(url, {
-              //     method: 'POST',
-              //     body: form
-              //   })
-              //   fetch(request)
-              //     .then(response => {
-              //       if (response) {
-              //         console.log('script sent response', response)
-              //         return response.json()
-              //       } else {
-              //         console.error('script did not send response')
-              //         return null
-              //       }
-              //     })
-              //     .then(data => {
-              //       if (data) {
-              //         console.log('response sent data', data)
-              //       } else {
-              //         console.error('response did not send data')
-              //       }
-              //     })
-              // }
-            }
-          }
-
-          // file read progressing, with potential updated status
-          fileReader.onprogress = (e) => {
-            if (e.lengthComputable) {
-              // console.log(`FileReader progress: ${e.loaded} / ${e.total}`)
-            }
-          }
-
-          // file read completed successfully
-          fileReader.onload = function (e) {
-            // console.log('FileReader onload', e)
-
-            const uploadedFile = this.result
-
-            // check for invalid file size after uploading
-            if (uploadedFile.byteLength > AH_FILE_MAX_LENGTH) {
-              alert(AH_ERROR_LENGTH)
-
-              sp.disableSound(sId)
-            }
-            // if file size is good, proceed
-            else {
-              const buffer = uploadedFile
-              const blob = new Blob([buffer], {
-                type: 'audio/wav; codecs=MS_PCM',
-              })
-
-              const promise = new Promise((resolve, reject) => {
-                const fileReader = new FileReader()
-
-                fileReader.onerror = (error) => {
-                  reject(error)
-                }
-
-                fileReader.onload = async () => {
-                  try {
-                    const arrBytesWav = fileReader.result
-
-                    sp.initSound(buffer, arrBytesWav, sId)
-
-                    resolve(arrBytesWav)
-                  } catch (err) {
-                    reject(err)
-                  }
-                }
-
-                fileReader.readAsArrayBuffer(blob)
-              })
-            }
-          }
-
-          // file read completed, success or failure
-          fileReader.onloadend = (e) => {
-            // console.log('FileReader onloadend', e)
-          }
-          // file read aborted (manually)
-          fileReader.onabort = (e) => {
-            console.error('FileReader onabort', e)
-          }
-          // file read error (automatically)
-          fileReader.onerror = (e) => {
-            console.error('FileReader onerror', e)
-          }
+          sp.__addFileToSoundPlayer(file, sp)
         }
       },
       false
@@ -678,21 +569,144 @@ class SoundPlayer {
    * _private __helper methods *
    ************************************************************************/
 
-  __handleDroppedFiles(files) {
+  __addFileToSoundPlayer = (file, sp) => {
+    const fileReader = new FileReader()
+    fileReader.readAsArrayBuffer(file)
+
+    // file read starts
+    fileReader.onloadstart = (e) => {
+      // console.log('FileReader onloadstart', e)
+
+      sp.updateSoundInfo(AH_STATUS_LOADING)
+
+      // check for valid filesize before uploading
+      if (e.total > AH_FILE_MAX_LENGTH) {
+        sp.disableSound(sId)
+
+        e.target.abort()
+
+        alert(AH_ERROR_LENGTH)
+      } else {
+        // TODO: fix server-side conversion of * -> wav
+        // if (file.name.split('.')[1].toLowerCase() != 'wav') {
+        //   console.log('uploaded a non-wav')
+        //   // const path = (window.URL || window.webkitURL).createObjectURL(file);
+        //   const form = new FormData()
+        //   form.append('fileUpload', this.files[0])
+        //   console.log('form', form)
+        //   const url = AH_CONVERT_TO_WAV_SCRIPT
+        //   const request = new Request(url, {
+        //     method: 'POST',
+        //     body: form
+        //   })
+        //   fetch(request)
+        //     .then(response => {
+        //       if (response) {
+        //         console.log('script sent response', response)
+        //         return response.json()
+        //       } else {
+        //         console.error('script did not send response')
+        //         return null
+        //       }
+        //     })
+        //     .then(data => {
+        //       if (data) {
+        //         console.log('response sent data', data)
+        //       } else {
+        //         console.error('response did not send data')
+        //       }
+        //     })
+        // }
+      }
+    }
+
+    // file read progressing, with potential updated status
+    fileReader.onprogress = (e) => {
+      if (e.lengthComputable) {
+        // console.log(`FileReader progress: ${e.loaded} / ${e.total}`)
+      }
+    }
+
+    // file read completed successfully
+    fileReader.onload = function (e) {
+      // console.log('FileReader onload', e)
+
+      const uploadedFile = this.result
+
+      // check for invalid file size after uploading
+      if (uploadedFile.byteLength > AH_FILE_MAX_LENGTH) {
+        alert(AH_ERROR_LENGTH)
+
+        sp.disableSound(sId)
+      }
+      // if file size is good, proceed
+      else {
+        const buffer = uploadedFile
+        const blob = new Blob([buffer], {
+          type: 'audio/wav; codecs=MS_PCM',
+        })
+
+        const promise = new Promise((resolve, reject) => {
+          const fileReader = new FileReader()
+
+          fileReader.onerror = (error) => {
+            reject(error)
+          }
+
+          fileReader.onload = async () => {
+            try {
+              const arrBytesWav = fileReader.result
+
+              sp.initSound(buffer, arrBytesWav, sp.soundId)
+
+              resolve(arrBytesWav)
+            } catch (err) {
+              reject(err)
+            }
+          }
+
+          fileReader.readAsArrayBuffer(blob)
+        })
+      }
+    }
+
+    // file read completed, success or failure
+    fileReader.onloadend = (e) => {
+      // console.log('FileReader onloadend', e)
+    }
+    // file read aborted (manually)
+    fileReader.onabort = (e) => {
+      console.error('FileReader onabort', e)
+    }
+    // file read error (automatically)
+    fileReader.onerror = (e) => {
+      console.error('FileReader onerror', e)
+    }
+  }
+
+  __handleDroppedFiles = (files) => {
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
 
       if (!file.type.startsWith('audio/')) {
         console.error('Only audio files can be dropped here!')
       } else {
-        AudioHash._logStatus('audio files dropped')
+        AudioHash._logStatus(
+          `'${file.name}' dropped on SoundPlayer '#${this.dom.soundDiv.id}'`,
+          file
+        )
+
+        this.__addFileToSoundPlayer(file, this)
       }
     }
   }
 
-  __onDrop(e) {
+  __onDrop = (e) => {
     e.stopPropagation()
     e.preventDefault()
+
+    this.dragCounter = 0
+    this.dom.soundDiv.classList.remove(this.hoverClass)
 
     const dt = e.dataTransfer
     const files = dt.files
@@ -700,42 +714,35 @@ class SoundPlayer {
     this.__handleDroppedFiles(files)
   }
 
-  __onDragEnter(e) {
+  __onDragEnter = (e) => {
     e.stopPropagation()
     e.preventDefault()
 
-    // ignore child elements
-    if (e.target !== e.currentTarget) {
-      return
+    this.dragCounter++
+    if (this.dragCounter === 1) {
+      this.dom.soundDiv.classList.add(this.hoverClass)
     }
 
-    // add hovered-over style
-    const elem = document.querySelector(`#${e.target.id}`)
-    elem.classList.add('hovered-over')
-
-    AudioHash._logStatus('dragenter', e.target.id)
+    // AudioHash._logStatus('dragenter', this)
   }
 
-  __onDragLeave(e) {
+  __onDragLeave = (e) => {
     e.stopPropagation()
     e.preventDefault()
 
-    // ignore child elements
-    if (e.target !== e.currentTarget) {
-      return
+    this.dragCounter--
+    if (this.dragCounter === 0) {
+      this.dom.soundDiv.classList.remove(this.hoverClass)
     }
 
-    // remove hovered-over style
-    const elem = document.querySelector(`#${e.target.id}`)
-    elem.classList.remove('hovered-over')
-
-    AudioHash._logStatus('dragleave', e.target.id)
+    // AudioHash._logStatus('dragleave', this)
   }
 
-  __onDragOver(e) {
+  __onDragOver = (e) => {
     e.stopPropagation()
     e.preventDefault()
 
-    // console.log('dragover', e)
+    // too many triggers, so commented out
+    // AudioHash._logStatus('dragover', e.target.id)
   }
 }

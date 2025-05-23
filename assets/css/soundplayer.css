@@ -23,18 +23,6 @@
   float: left;
 }
 
-.sound.hovered-over {
-  border: 2px dashed #b4a72c;
-}
-.sound.hovered-over > * {
-  pointer-events: none;
-}
-.sound.hovered-over .sound-overlay {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
-
 .sound.loaded {
   background: #f3f4ec;
   border-bottom: 2px solid #b4a72c;
@@ -56,6 +44,18 @@
 }
 .sound.loaded label {
   background: #717711;
+}
+
+.sound.hovered-over {
+  border: 2px dashed #b4a72c;
+}
+.sound.hovered-over > * {
+  pointer-events: none;
+}
+.sound.hovered-over .sound-overlay {
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
 .sound.playing {
@@ -87,7 +87,6 @@
   display: none;
   height: 161px;
   position: absolute;
-  width: 316px;
   z-index: 1;
 }
 .sound .sound-overlay p {
