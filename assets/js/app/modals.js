@@ -1,7 +1,7 @@
 /* various modal configs that get called during gameplay */
 /* global AudioHash */
 
-AudioHash.modalOpen = async (type) {
+AudioHash.modalOpen = async (type) => {
   switch (type) {
     case 'help':
       this.myModal = new Modal(

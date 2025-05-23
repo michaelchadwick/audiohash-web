@@ -260,26 +260,26 @@ AudioHash._attachEventListeners = function () {
   })
 
   AudioHash.dom.interactive.btnHelp.addEventListener('click', () => {
-    modalOpen('help')
+    AudioHash.modalOpen('help')
   })
   AudioHash.dom.interactive.btnSettings.addEventListener('click', () => {
-    modalOpen('settings')
+    AudioHash.modalOpen('settings')
   })
 
   AudioHash.dom.interactive.btnCreateSP.addEventListener('click', () => {
     if (AudioHash._getSPCount() < AH_SP_COUNT_MAX) {
       AudioHash.createSP()
     } else {
-      modalOpen('max-count-reached')
+      AudioHash.modalOpen('max-count-reached')
     }
   })
   AudioHash.dom.interactive.btnCreateAH.addEventListener('click', () => {
     // console.log('btnCreateAH clicked')
 
     if (AudioHash._getSPCount() < 2) {
-      modalOpen('min-count-unmet')
+      AudioHash.modalOpen('min-count-unmet')
     } else if (AudioHash._areSPBuffersEmpty()) {
-      modalOpen('sound-buffer-unmet')
+      AudioHash.modalOpen('sound-buffer-unmet')
     } else {
       AudioHash._createAudioHash()
     }
