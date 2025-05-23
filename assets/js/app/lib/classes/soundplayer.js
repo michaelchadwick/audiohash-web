@@ -685,7 +685,7 @@ class SoundPlayer {
       if (!file.type.startsWith('audio/')) {
         console.error('Only audio files can be dropped here!')
       } else {
-        console.log('audio files dropped')
+        AudioHash._logStatus('audio files dropped')
       }
     }
   }
@@ -713,7 +713,7 @@ class SoundPlayer {
     const elem = document.querySelector(`#${e.target.id}`)
     elem.classList.add('hovered-over')
 
-    console.log('dragenter', e.target.id)
+    AudioHash._logStatus('dragenter', e.target.id)
   }
 
   __onDragLeave(e) {
@@ -729,7 +729,7 @@ class SoundPlayer {
     const elem = document.querySelector(`#${e.target.id}`)
     elem.classList.remove('hovered-over')
 
-    console.log('dragleave', e.target.id)
+    AudioHash._logStatus('dragleave', e.target.id)
   }
 
   __onDragOver(e) {

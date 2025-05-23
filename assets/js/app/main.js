@@ -178,8 +178,6 @@ AudioHash._loadSettings = function () {
 AudioHash._saveSettings = function () {
   try {
     localStorage.setItem(AH_SETTINGS_KEY, JSON.stringify(AudioHash.settings))
-
-    // console.log('!localStorage global settings saved!', JSON.parse(localStorage.getItem(AH_SETTINGS_KEY)))
   } catch (error) {
     console.error('localStorage global settings save failed', error)
   }
@@ -233,8 +231,6 @@ AudioHash._changeSetting = function (setting, event = null) {
   }
 }
 AudioHash._saveSetting = function (setting, value) {
-  // console.log('saving setting to code/LS...', setting, value)
-
   var settings = JSON.parse(localStorage.getItem(AH_SETTINGS_KEY))
 
   if (settings) {
@@ -247,8 +243,6 @@ AudioHash._saveSetting = function (setting, value) {
     // save all settings to LS
     localStorage.setItem(AH_SETTINGS_KEY, JSON.stringify(settings))
   }
-
-  // console.log('!setting saved!', AudioHash.settings)
 }
 
 AudioHash._attachEventListeners = function () {
@@ -274,8 +268,6 @@ AudioHash._attachEventListeners = function () {
     }
   })
   AudioHash.dom.interactive.btnCreateAH.addEventListener('click', () => {
-    // console.log('btnCreateAH clicked')
-
     if (AudioHash._getSPCount() < 2) {
       AudioHash.modalOpen('min-count-unmet')
     } else if (AudioHash._areSPBuffersEmpty()) {
@@ -443,8 +435,7 @@ AudioHash._createAudioHash = function () {
         sp.audioBuffer.numberOfChannels *
         (bitRate / 8))
 
-    // console.log('originalDuration', originalDuration)
-
+    // AudioHash._logStatus('originalDuration', originalDuration)
     //                      bytes             / (samplerate        * channels        * (bps / 8))
     //                      2626647           / (44100             * 2               * (?   / 8))
     const snippetDuration =
@@ -476,7 +467,7 @@ AudioHash._createAudioHash = function () {
       // console.log(`${spFileTitle} - snippetByteStart: ${snippetByteStart}, snippetByteEnd: ${snippetByteEnd}, maxByteEnd: ${maxByteEnd}; valid? ${isValidChunk}`)
     }
 
-    console.log(`make snippet of ${spFileTitle}:
+    AudioHash._logStatus(`make snippet of ${spFileTitle}:
 * ${sp.snippetSeconds}s / ${Math.round(sp.audioBuffer.duration)}s, ${(
       snippetLengthPerc * 100
     ).toFixed(2)}% of track
@@ -491,7 +482,7 @@ AudioHash._createAudioHash = function () {
       .padStart(11, ' ')} / ${sp.arrayBuffer.byteLength.toLocaleString()}
 * Duration:  ${snippetDuration.toFixed(2).padStart(4, ' ')} s
     `)
-    console.log('sp', sp)
+    AudioHash._logStatus('sp', sp)
 
     spArr.push({
       buffer: sp.arrayBuffer,
@@ -509,9 +500,9 @@ AudioHash._createAudioHash = function () {
   // main magic moment where we make the actual audio hash    //
   // ******************************************************** //
 
-  console.log('COOKING UP A NEW AUDIO HASH!')
+  AudioHash._logStatus('COOKING UP A NEW AUDIO HASH!')
   spArr.forEach((sp) => {
-    console.log(sp.snippet)
+    AudioHash._logStatus(sp.snippet)
   })
 
   // get combined original byte length by adding up all byte lengths
@@ -530,17 +521,17 @@ AudioHash._createAudioHash = function () {
     (audioHashByteLength / spArrByteLength) * 100
   )
 
-  console.log(
+  AudioHash._logStatus(
     `hashPercOfOriginal  : ${hashPercOfOriginal
       .toLocaleString()
       .padStart(3, ' ')}%`
   )
-  console.log(
+  AudioHash._logStatus(
     `spArrByteLength     : ${spArrByteLength
       .toLocaleString()
       .padStart(11, ' ')} bytes`
   )
-  console.log(
+  AudioHash._logStatus(
     `audioHashByteLength : ${audioHashByteLength
       .toLocaleString()
       .padStart(11, ' ')} bytes`
@@ -562,7 +553,7 @@ AudioHash._createAudioHash = function () {
 
   let audioHashDuration = 0
 
-  console.log(
+  AudioHash._logStatus(
     `initial spOffset    : ${spOffset.toLocaleString().padStart(11, ' ')} bytes`
   )
 
@@ -573,26 +564,26 @@ AudioHash._createAudioHash = function () {
     const spLength = spArr[i].snippet.len
     const arr = new Uint8Array(spBuffer, spStart, spLength)
 
-    // console.log('arr', arr, spStart, spLength)
+    // AudioHash._logStatus('arr', arr, spStart, spLength)
 
     audioHashByteArray.set(arr, spOffset)
 
     spOffset += spLength
     audioHashDuration += spArr[i].snippet.sec
 
-    console.log(
+    AudioHash._logStatus(
       `next spOffset       : ${spOffset
         .toLocaleString()
         .padStart(11, ' ')} bytes`
     )
   }
 
-  console.log(
+  AudioHash._logStatus(
     `final audioHash     : ${audioHashByteArray.byteLength
       .toLocaleString()
       .padStart(11, ' ')} bytes`
   )
-  console.log(
+  AudioHash._logStatus(
     `                    : ${audioHashDuration
       .toLocaleString()
       .padStart(11, ' ')} s`
@@ -603,7 +594,7 @@ AudioHash._createAudioHash = function () {
     new DataView(spArr[0].buffer)
   )
 
-  // console.log('audioHashAudioHeader', audioHashAudioHeader)
+  // AudioHash._logStatus('audioHashAudioHeader', audioHashAudioHeader)
 
   // actually get the final audio hash audio data
   const audioHashAudioByteArray = AudioHash.__getWavByteArray(
@@ -752,7 +743,7 @@ AudioHash.__getWavHeader = function (options) {
 }
 
 AudioHash.__getAudioData = function () {
-  // console.log('running _getAudioData()')
+  // AudioHash._logStatus('running _getAudioData()')
 
   function WavHeader() {
     this.dataOffset = 0
