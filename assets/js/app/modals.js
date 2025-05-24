@@ -12,7 +12,7 @@ AudioHash.modalOpen = async (type) => {
 
           <ol class="help">
             <li>Create some SoundPlayers</li>
-            <li>Load files into SoundPlayers</li>
+            <li>Load files into SoundPlayers (file upload control or drag 'n' drop)</li>
             <li>Choose how much of each you want sampled</li>
             <li>Optionally: turn on "Play hash on make?" in Settings (gear icon) for an audio player to be created upon successful hash</li>
             <li>Click/tap '# MAKE HASH' and a download link to your new sampler will be created for you to download</li>
