@@ -84,6 +84,11 @@ class SoundPlayer {
     this.dom.soundHeader.appendChild(this.dom.btnStop)
     this.dom.soundHeader.appendChild(this.dom.soundDestroyer)
 
+    this.dom.soundFileTitle = document.createElement('div')
+    this.dom.soundFileTitle.id = 'soundFileTitle' + this.soundId
+    this.dom.soundFileTitle.classList.add('sound-file-title')
+    this.dom.soundFileTitle.innerText = 'n/a'
+
     this.dom.soundStatus = document.createElement('div')
     this.dom.soundStatus.id = 'soundStatus' + this.soundId
     this.dom.soundStatus.classList.add('sound-status')
@@ -143,6 +148,7 @@ class SoundPlayer {
     this.dom.soundSnippetRow.appendChild(this.dom.lblPostRngSnippet)
 
     this.dom.soundDiv.appendChild(this.dom.soundHeader)
+    this.dom.soundDiv.appendChild(this.dom.soundFileTitle)
     this.dom.soundDiv.appendChild(this.dom.soundStatus)
     this.dom.soundDiv.appendChild(this.dom.soundInfo)
 
@@ -160,6 +166,13 @@ class SoundPlayer {
     var gainVal = fraction * fraction
 
     this.gainNode.gain.value = gainVal
+  }
+
+  // updates loaded audio filename
+  updateSoundFileTitle(title) {
+    // console.log('updateSoundFileTitle', title)
+
+    this.dom.soundFileTitle.innerText = title
   }
 
   // updates info about the loaded sound (duration, channels, sample rate)
@@ -190,17 +203,22 @@ class SoundPlayer {
 
     if (status == AH_STATUS_PAUSED || status == AH_STATUS_STOPPED) {
       document.getElementById('sound' + sId).classList.remove('playing')
+      document.getElementById('sound' + sId).classList.remove('paused')
       document.getElementById('sound' + sId).classList.add('loaded')
     } else if (status == AH_STATUS_PLAYING) {
       document.getElementById('sound' + sId).classList.remove('loaded')
       document.getElementById('sound' + sId).classList.add('playing')
+    } else if (status == AH_STATUS_LOADING) {
+      document.getElementById('sound' + sId).classList.remove('loaded')
+      document.getElementById('sound' + sId).classList.add('loading')
     } else if (status == AH_STATUS_LOADED) {
+      document.getElementById('sound' + sId).classList.remove('loading')
       document.getElementById('sound' + sId).classList.add('loaded')
     }
   }
 
   // load the sound into a buffer
-  initSound(arrayBuffer, arrBytesWav, sId) {
+  initSound(filename, arrayBuffer, arrBytesWav, sId) {
     const sound = this
 
     sound.arrayBuffer = arrBytesWav
@@ -229,6 +247,7 @@ class SoundPlayer {
 
         document.getElementById('lblPostRngSnippet' + sId).innerText = newLblVal
 
+        sound.updateSoundFileTitle(filename)
         sound.updateSoundStatus(sId, AH_STATUS_LOADED)
         sound.updateSoundInfo()
 
@@ -415,7 +434,6 @@ class SoundPlayer {
         // console.log('fileUpload changed', e)
 
         const sp = that
-        const sId = sp.soundId
         const file = this.files[0]
 
         // if a file has been selected, create FileReader object; load file
@@ -569,7 +587,7 @@ class SoundPlayer {
    * _private __helper methods *
    ************************************************************************/
 
-  __addFileToSoundPlayer = (file, sp) => {
+  __addFileToSoundPlayer = (file, sp, resetForm = false) => {
     const fileReader = new FileReader()
     fileReader.readAsArrayBuffer(file)
 
@@ -577,7 +595,11 @@ class SoundPlayer {
     fileReader.onloadstart = (e) => {
       // console.log('FileReader onloadstart', e)
 
-      sp.updateSoundInfo(AH_STATUS_LOADING)
+      sp.updateSoundStatus(sp.soundId, AH_STATUS_LOADING)
+      sp.updateSoundFileTitle('n/a')
+      if (resetForm) {
+        sp.dom.fileUpload[0].form.reset()
+      }
 
       // check for valid filesize before uploading
       if (e.total > AH_FILE_MAX_LENGTH) {
@@ -657,7 +679,7 @@ class SoundPlayer {
             try {
               const arrBytesWav = fileReader.result
 
-              sp.initSound(buffer, arrBytesWav, sp.soundId)
+              sp.initSound(file.name, buffer, arrBytesWav, sp.soundId)
 
               resolve(arrBytesWav)
             } catch (err) {
@@ -672,7 +694,7 @@ class SoundPlayer {
 
     // file read completed, success or failure
     fileReader.onloadend = (e) => {
-      // console.log('FileReader onloadend', e)
+      // AudioHash._logStatus('FileReader onloadend', e)
     }
     // file read aborted (manually)
     fileReader.onabort = (e) => {
@@ -691,12 +713,11 @@ class SoundPlayer {
       if (!file.type.startsWith('audio/')) {
         console.error('Only audio files can be dropped here!')
       } else {
-        AudioHash._logStatus(
-          `'${file.name}' dropped on SoundPlayer '#${this.dom.soundDiv.id}'`,
-          file
-        )
+        // AudioHash._logStatus(
+        //   `'${file.name}' dropped on SoundPlayer '#${this.dom.soundDiv.id}'`
+        // )
 
-        this.__addFileToSoundPlayer(file, this)
+        this.__addFileToSoundPlayer(file, this, true)
       }
     }
   }
@@ -721,6 +742,8 @@ class SoundPlayer {
     this.dragCounter++
     if (this.dragCounter === 1) {
       this.dom.soundDiv.classList.add(this.hoverClass)
+      this.dom.soundOverlay.style.height = `${this.dom.soundDiv.clientHeight}px`
+      this.dom.soundOverlay.style.width = `${this.dom.soundDiv.clientWidth}px`
     }
 
     // AudioHash._logStatus('dragenter', this)

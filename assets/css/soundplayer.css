@@ -5,6 +5,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   margin: 0;
   min-height: 165px;
   min-width: 100px;
@@ -23,18 +24,49 @@
   float: left;
 }
 
+.sound.loading {
+  background: #f3f4ec;
+  border-bottom: 2px solid #b4772c;
+  border-right: 2px solid #b4772c;
+}
+.sound.loading .sound-header,
+.sound.loading .sound-file-title,
+.sound.loading .sound-status,
+.sound.loading .sound-info {
+  color: #fff;
+}
+.sound.loading .sound-header {
+  background: #775211;
+}
+.sound.loading .sound-file-title {
+  background: #7e6118;
+}
+.sound.loading .sound-status {
+  background: #8f6e1b;
+}
+.sound.loading .sound-info {
+  background: #a56a23;
+}
+.sound.loading label {
+  background: #774411;
+}
+
 .sound.loaded {
   background: #f3f4ec;
   border-bottom: 2px solid #b4a72c;
   border-right: 2px solid #b4a72c;
 }
 .sound.loaded .sound-header,
+.sound.loaded .sound-file-title,
 .sound.loaded .sound-status,
 .sound.loaded .sound-info {
   color: #fff;
 }
 .sound.loaded .sound-header {
   background: #717711;
+}
+.sound.loaded .sound-file-title {
+  background: #7e7918;
 }
 .sound.loaded .sound-status {
   background: #8f8a1b;
@@ -64,12 +96,16 @@
   border-right: 2px solid #2cb43c;
 }
 .sound.playing .sound-header,
+.sound.playing .sound-file-title,
 .sound.playing .sound-status,
 .sound.playing .sound-info {
   color: #fff;
 }
 .sound.playing .sound-header {
   background: #117719;
+}
+.sound.playing .sound-file-title {
+  background: #187e19;
 }
 .sound.playing .sound-status {
   background: #1b8f1d;
@@ -83,9 +119,7 @@
 
 .sound .sound-overlay {
   background-color: #ffffffc8;
-  border: 2px dashed #b4a72c;
   display: none;
-  height: 161px;
   position: absolute;
   z-index: 1;
 }
@@ -94,6 +128,7 @@
 }
 
 .sound .sound-header,
+.sound .sound-file-title,
 .sound .sound-status,
 .sound .sound-info {
   box-sizing: border-box;
@@ -194,6 +229,7 @@
   }
 }
 
+.sound .sound-file-title,
 .sound .sound-status,
 .sound .sound-info {
   color: #888;
@@ -202,14 +238,20 @@
   padding: 0.3rem 1rem;
   width: 100%;
 }
-/* @media (min-width: 576px) {
-      .sound .sound-status,
-      .sound .sound-info {
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-    } */
+/*
+@media (min-width: 576px) {
+  .sound .sound-file-title,
+  .sound .sound-status,
+  .sound .sound-info {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+*/
 
+.sound .sound-file-title {
+  background: #444;
+}
 .sound .sound-status {
   background: #555;
 }
