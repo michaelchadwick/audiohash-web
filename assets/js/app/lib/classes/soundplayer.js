@@ -405,7 +405,8 @@ class SoundPlayer {
     elem.id = elemId
     elem.title = `Destroy sound${sId}`
     elem.classList.add('sound-destroyer')
-    elem.innerHTML = '<a href="#"><i class="fas fa-times"></i></a>'
+    elem.innerHTML =
+      '<a href="#" aria-label="Delete SoundPlayer"><i class="fas fa-times"></i></a>'
 
     var sp = this
 
