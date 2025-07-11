@@ -369,6 +369,7 @@ class SoundPlayer {
     elem.id = 'btnPlay' + this.soundId
     elem.innerHTML = '<i class="fas fa-play"></i> <i class="fas fa-pause"></i>'
     elem.disabled = true
+    elem.ariaLabel = 'Play/Pause button'
 
     var sp = this
 
@@ -385,6 +386,7 @@ class SoundPlayer {
     elem.id = 'btnStop' + this.soundId
     elem.innerHTML = '<i class="fas fa-stop"></i>'
     elem.disabled = true
+    elem.ariaLabel = 'Stop button'
 
     var sp = this
 
