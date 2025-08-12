@@ -462,6 +462,7 @@ class SoundPlayer {
     elem.min = 0
     elem.max = 100
     elem.value = 75
+    elem.ariaLabel = 'volume'
 
     // user moves the input slider indicator
     elem.addEventListener('input', function (event) {
@@ -521,6 +522,7 @@ class SoundPlayer {
     elem.step = 1
     elem.value = 5
     elem.disabled = true
+    elem.ariaLabel = 'snippet'
 
     // user moves the input slider indicator
     elem.addEventListener('input', function (event) {

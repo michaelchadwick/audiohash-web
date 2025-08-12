@@ -150,20 +150,26 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
     <section id="dashboard">
-      <section id="soundPlayersCount">
+      <section id="soundPlayersCount" aria-label="sound player count">
         <label id="lblSoundPlayersCount"></label>/<label
           id="lblSoundPlayersCountMax"
         ></label>
         sounds
       </section>
-      <button id="button-create-sp" class="icon" title="Add player">
+      <button
+        id="button-create-sp"
+        class="icon"
+        title="Add player"
+        aria-label="add player"
+      >
         <i class="fa-solid fa-circle-plus"></i>
         <span>Add player</span>
       </button>
       <button
         id="button-create-ah"
         class="icon"
-        title="Make audio hash"
+        title="Make hash"
+        aria-label="make hash"
         disabled
       >
         <i class="fa-solid fa-hashtag"></i>
