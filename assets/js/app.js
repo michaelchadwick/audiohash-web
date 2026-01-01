@@ -1,7 +1,7 @@
 // AudioHash object init
 if (typeof AudioHash === 'undefined') var AudioHash = {}
 
-const AH_ENV_PROD_URL = ['audiohash.neb.host', 'ah.neb.host']
+const AH_ENV_PROD_URL = ['audiohash.neb.host', 'ah.neb.host', 'neb.host/apps/audiohash']
 
 AudioHash.env = AH_ENV_PROD_URL.includes(document.location.hostname)
   ? 'prod'
