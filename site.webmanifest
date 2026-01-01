@@ -16,6 +16,6 @@
     "background_color": "#f0f1ff",
     "description": "Mash up multiple audio files into one",
     "display": "standalone",
-    "start_url": "https://audiohash.neb.host",
+    "start_url": "https://neb.host/apps/audiohash",
     "theme_color": "#f0f1ff"
 }
